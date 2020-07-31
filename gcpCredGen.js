@@ -3,7 +3,7 @@ require('dotenv').config();
 
 function gcpCredGen() {
 
-    fs.writeFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, process.env.GCP_CRED);
+    fs.writeFileSync('./' + process.env.GOOGLE_APPLICATION_CREDENTIALS, process.env.GCP_CRED);
 
 }
 
