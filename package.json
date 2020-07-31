@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
-    "start": "node server.js",
+    "start": "node gcpCredGen.js && node server.js",
     "start_local": "nodemon server.js"
   },
   "keywords": [],
