@@ -21,7 +21,7 @@ module.exports = function makeDateTimePhrase(dateTime) {
             return dateTimeStr;
         } else {
             if (startDay > endDay) {
-                return `from ${format(start, 'EEEE')} to next ${format(end, 'EEEE')}`;
+                return `from ${format(start, 'EEEE')} to coming ${format(end, 'EEEE')}`;
             } else {
                 return `from ${format(start, 'EEEE')} to ${format(end, 'EEEE')}`;
             }

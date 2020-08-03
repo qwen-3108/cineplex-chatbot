@@ -45,7 +45,6 @@ bot.post('/', async function (req, res) {
                     currentSession.bookingInfo.cinema = [text.match(/[A-Za-z]+/g).join(' ')];
                     await slotFilling({ text, extractedInfo: {}, sessionToMutate: currentSession });
                 }
-                return;
             }
 
             //ordinary message
