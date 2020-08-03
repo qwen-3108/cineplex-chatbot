@@ -9,7 +9,9 @@ async function inlineQueryResult(cacheId, inlineQueryResult) {
         cachedAt: new Date(),
         inlineQueryResult
     });
-    console.log('return from caching inlineQueryResult: ', JSON.stringify(outcome));
+    if (outcome.result.ok === 1) {
+        console.log('cache inlineQueryResult successfully');
+    }
 }
 
 async function chosenInlineResult(inline_message_id, query) {
@@ -19,7 +21,9 @@ async function chosenInlineResult(inline_message_id, query) {
         cachedAt: new Date(),
         query
     });
-    console.log('return from caching chosenInlineResult: ', JSON.stringify(outcome));
+    if (outcome.result.ok === 1) {
+        console.log('cache chosenInlineResult successfully for query: ', query);
+    }
 }
 
 
