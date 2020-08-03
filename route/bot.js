@@ -85,7 +85,7 @@ bot.post('/', async function (req, res) {
                                         const { daysToDbDate, nextWeekAreDaysLessThan } = currentSession.bookingInfo.dateTime;
                                         currentSession.bookingInfo = resetBookingInfo(daysToDbDate, nextWeekAreDaysLessThan);
                                     }
-                                    const ok = await validateAndMutateInfo({ extractedInfo, sessionToMutate: currentSession });
+                                    const { ok } = await validateAndMutateInfo({ extractedInfo, sessionToMutate: currentSession });
                                     if (ok) {
                                         await slotFilling({ text, sessionToMutate: currentSession });
                                     }
@@ -93,7 +93,7 @@ bot.post('/', async function (req, res) {
                                 break;
                             case INTENT.EDIT:
                                 {
-                                    const ok = await validateAndMutateInfo({ extractedInfo, sessionToMutate: currentSession });
+                                    const { ok } = await validateAndMutateInfo({ extractedInfo, sessionToMutate: currentSession });
                                     if (ok) {
                                         currentSession.status.secondary = SEC_STATUS.CONFIRM_EDIT;
                                         currentSession.counter.editInfoCount++;
@@ -167,6 +167,8 @@ bot.post('/', async function (req, res) {
                 console.log('-----Cache inline_message_id and corresponding query-----');
                 const { inline_message_id, query } = req.body.chosen_inline_result;
                 await cache.chosenInlineResult(inline_message_id, query);
+            } else {
+                console.log('Chosen inline result without cb button, no action needed');
             }
 
         } else {

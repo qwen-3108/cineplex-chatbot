@@ -3,7 +3,6 @@ const slotFilling = require('./slotFilling');
 const mutateSeatNumbers = require('./mutateSeatNumbers');
 const { MAIN_STATUS, SEC_STATUS } = require('../../@global/CONSTANTS');
 const expandSeatPhrases = require('../../@util/expandSeatPhrases');
-const validateAndMutateInfo = require('./validateAndMutateInfo');
 
 module.exports = async function onConfirm({ text, sessionToMutate }) {
 

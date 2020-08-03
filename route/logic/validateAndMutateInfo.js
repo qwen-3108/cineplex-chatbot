@@ -108,5 +108,6 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
     }
 
     //return whether validation ok
+    console.log('output from validateAndMutateInfo.js: ', JSON.stringify(output));
     return output;
 };
