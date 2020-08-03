@@ -58,7 +58,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                     const cinemaList = Array.from(cinemaSet);
                     const cinemaArr = await getCinemas(cinemaList);
                     const cacheId = new Date().getTime().toString() + chatId;
-                    console.log('id for caching cinemas result: ', cacheId);
+                    console.log('Generated id for caching cinemas result: ', cacheId);
                     const cacheIdentifier = 'unique result ❤️ ' + cacheId;
                     const inlineQueryResult = makeInlineQueryResult.cinema(cinemaArr);
                     await cache.inlineQueryResult(cacheId, inlineQueryResult);
@@ -76,7 +76,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                         return;
                     }
                     const cacheId = new Date().getTime().toString() + chatId;
-                    console.log('id for caching showtimes result: ', cacheId);
+                    console.log('Generated id for caching showtimes result: ', cacheId);
                     const cacheIdentifier = 'unique result ❤️ ' + cacheId;
                     const inlineQueryResult = makeInlineQueryResult.showtime(showtimes, bookingInfo, cacheIdentifier);
                     await cache.inlineQueryResult(cacheId, inlineQueryResult);

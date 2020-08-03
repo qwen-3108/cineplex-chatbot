@@ -4,32 +4,22 @@ module.exports = { inlineQueryResult, chosenInlineResult };
 
 async function inlineQueryResult(cacheId, inlineQueryResult) {
 
-    const { acknowledged, insertedId } = await COLLECTIONS.inlineQueryResultCache.insertOne({
+    const outcome = await COLLECTIONS.inlineQueryResultCache.insertOne({
         _id: cacheId,
         cachedAt: new Date(),
         inlineQueryResult
     });
-    if (acknowledged) {
-        console.log("inlineQueryResult's cache id: ", insertedId);
-        return insertedId;
-    } else {
-        console.log("fail to cache inlineQueryResult");
-    }
+    console.log('return from caching inlineQueryResult: ', JSON.stringify(outcome));
 }
 
 async function chosenInlineResult(inline_message_id, query) {
 
-    const { acknowledged, insertedId } = await COLLECTIONS.chosenInlineResultCache.insertOne({
+    const outcome = await COLLECTIONS.chosenInlineResultCache.insertOne({
         _id: inline_message_id,
         cachedAt: new Date(),
         query
     });
-    if (acknowledged) {
-        console.log("chosenInlineResult's cache id: ", insertedId);
-        return insertedId;
-    } else {
-        console.log("fail to cache chosenInlineResult");
-    }
+    console.log('return from caching chosenInlineResult: ', JSON.stringify(outcome));
 }
 
 
