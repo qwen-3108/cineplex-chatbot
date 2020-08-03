@@ -13,7 +13,7 @@ module.exports = async function warnPlatinum(chat_id, text, bookingInfo, schedul
         url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
         data: {
             chat_id,
-            text: Phrases.ACKNOWLEDGEMENT(text) + `I found showtimes for ${bookingInfo.movie.title} ${makeDateTimePhrase(bookingInfo.dateTime)} at ${bookingInfo.cinema}, but it's at our Platnum Movie Suites (ticket price: SGD${unitPrice}). Is that alright for you?`
+            text: Phrases.ACKNOWLEDGEMENT(text) + `I found showtimes for ${bookingInfo.movie.title} ${makeDateTimePhrase(bookingInfo.dateTime)} at ${bookingInfo.cinema}, but it's at our Platnum Movie Suites so each ticket costs SGD${unitPrice}). Is that alright for you?`
         }
     };
     axios(config).catch(err => console.log(JSON.stringify(err.response.data)));

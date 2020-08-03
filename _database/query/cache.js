@@ -4,13 +4,17 @@ module.exports = { inlineQueryResult, chosenInlineResult };
 
 async function inlineQueryResult(cacheId, inlineQueryResult) {
 
-    const cache = await COLLECTIONS.inlineQueryResultCache.insertOne({
+    const { acknowledged, insertedId } = await COLLECTIONS.inlineQueryResultCache.insertOne({
         _id: cacheId,
         cachedAt: new Date(),
         inlineQueryResult
     });
-    console.log("inlineQueryResult's cache id: ", cache._id);
-    return cache._id;
+    if (acknowledged) {
+        console.log("inlineQueryResult's cache id: ", insertedId);
+        return insertedId;
+    } else {
+        console.log("fail to cache inlineQueryResult");
+    }
 }
 
 async function chosenInlineResult(inline_message_id, query) {
@@ -19,9 +23,13 @@ async function chosenInlineResult(inline_message_id, query) {
         _id: inline_message_id,
         cachedAt: new Date(),
         query
-    })
-    console.log("chosenInlineResult's cache id: ", cache._id);
-    return cache._id;
+    });
+    if (acknowledged) {
+        console.log("chosenInlineResult's cache id: ", insertedId);
+        return insertedId;
+    } else {
+        console.log("fail to cache inlineQueryResult");
+    }
 }
 
 

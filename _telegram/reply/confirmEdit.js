@@ -2,7 +2,7 @@ const axios = require('axios');
 const Phrases = require('../../@global/PHRASES');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 
-module.exports = async function confirmEdit(chat_id, text, bookingInfo, editInfoCount) {
+module.exports = async function confirmEdit(chat_id, text, bookingInfo) {
 
     const { movie, dateTime, place, cinema, experience } = bookingInfo;
 

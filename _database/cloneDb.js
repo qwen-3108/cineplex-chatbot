@@ -1,7 +1,8 @@
 const { MongoClient } = require('mongodb');
-const { COLLECTIONS } = require('../@global/COLLECTIONS');
+const connect = require('./connect');
+const uri = require('./connection_string');
 
-module.exports = async function connect(uri, dbName) {
+async function cloneDb() {
 
     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -21,4 +22,7 @@ module.exports = async function connect(uri, dbName) {
         console.log('uri received: ', uri);
         console.log(ex);
     }
+
 }
+
+cloneDb();

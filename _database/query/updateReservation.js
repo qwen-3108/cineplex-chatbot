@@ -65,7 +65,7 @@ module.exports = async function updateReservation(chatId, scheduleId, seatNumber
     console.log('Update query: ', JSON.stringify(reserveStr), JSON.stringify(releaseStr));
 
     if (Object.keys(reserveStr).length === 0 && Object.keys(releaseStr).length === 0) {
-        return;
+        return ({ justTakenSeats, takenSeats, stillAvailable });
     }
 
     const updateOutcome = await COLLECTIONS.showtimes.updateOne({ _id: ObjectId(scheduleId) }, { $set: { ...releaseStr, ...reserveStr } });

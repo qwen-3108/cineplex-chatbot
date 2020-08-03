@@ -26,7 +26,7 @@ module.exports = async function toFallback({ chat_id, currentSession }) {
     if (counter.fallback === 1) {
         switch (status.main) {
             case MAIN_STATUS.PROMPT_MOVIE:
-                config.data.text = "Hmm I don't get you? To see the full list of now showing movie, type \n\`@cathay_sg_bot now showing\`\n or use the 'Now Showing' button if previously provided :)";
+                config.data.text = "Hmm I don't get you? To see the full list of now showing movie, type \n\`@cathay_sg_bot now showing\`";
                 break;
             case MAIN_STATUS.PROMPT_DATETIME:
                 config.data.text = "Um that does not sound like a date? You can say phrases like 'this evening', 'Tuesday', or 'tonight' to let me know when you'd like to watch the movie";

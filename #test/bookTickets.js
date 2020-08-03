@@ -28,40 +28,22 @@ describe('book ticket', () => {
         phone_number: "6583886548"
     }
     const seatNumbers = ["Q5, Q6, Q7"];
+    let seatingPlan;
 
     beforeAll(async () => {
 
         await bookTickets(chatId, ticketing, seatNumbers, order_info);
-
-    });
-
-    test('should update status of seats to 1 in `showtimes` collection', async () => {
-        const expectedSeatDetails = {
-            status: 1,
-            reserved: {
-                by: chatId
-            },
-            sold: {
-                at: null,
-                to: null,
-                ticketId: null
-            }
-        };
-
-        //check status of seat
         const testShowtime = await COLLECTIONS.showtimes.findOne({ _id: ticketing[0].scheduleId }, { seatingPlan: 1 });
-        const seatDetails = [];
-        for (let i = 0; i < seatNumbers.length; i++) {
-            const seatNumber = seatNumbers[i];
-            seatDetails.push({
-                seatNumber,
-                ...testShowtime.seatingPlan[seatNumber]
-            });
-        }
-        expect(seatDetails).toEqual
-
+        seatingPlan = testShowtime.seatingPlan;
 
     });
+
+    test('should saved tickets to `ticket` collection', async () => {
+
+        const savedTickets = await COLLECTIONS.tickets.find({ scheduleId: ticketing[0].scheduleId });
+
+    });
+
 
 
     // test('should return error if status of seats is not 0 prior to booking', async () => {
