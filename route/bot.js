@@ -163,7 +163,7 @@ bot.post('/', async function (req, res) {
 
         } else if (req.body.hasOwnProperty('chosen_inline_result')) {
 
-            if (req.body.chosen_inline_result.hasOwnProperty(inline_message_id)) {
+            if (req.body.chosen_inline_result.hasOwnProperty('inline_message_id')) {
                 console.log('-----Cache inline_message_id and corresponding query-----');
                 const { inline_message_id, query } = req.body.chosen_inline_result;
                 await cache.chosenInlineResult(inline_message_id, query);

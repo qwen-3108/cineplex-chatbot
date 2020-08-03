@@ -19,7 +19,7 @@ async function inlineQueryResult(cacheId, inlineQueryResult) {
 
 async function chosenInlineResult(inline_message_id, query) {
 
-    const cache = await COLLECTIONS.chosenInlineResultCache.insertOne({
+    const { acknowledged, insertedId } = await COLLECTIONS.chosenInlineResultCache.insertOne({
         _id: inline_message_id,
         cachedAt: new Date(),
         query
@@ -28,7 +28,7 @@ async function chosenInlineResult(inline_message_id, query) {
         console.log("chosenInlineResult's cache id: ", insertedId);
         return insertedId;
     } else {
-        console.log("fail to cache inlineQueryResult");
+        console.log("fail to cache chosenInlineResult");
     }
 }
 
