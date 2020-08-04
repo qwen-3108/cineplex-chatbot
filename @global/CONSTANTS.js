@@ -67,6 +67,7 @@ module.exports = {
         END: 'cancel - yes',
         CONFIRM: 'confirm',
         FALLBACK: 'fallback',
+        WELCOME: 'welcome',
         INLINE_QUERY_MOVIE: 'inlineQuery - movie',
         INLINE_QUERY_SHOWTIME: 'inlineQuery - showtime',
         INLINE_QUERY_CACHE: 'inlineQuery - cachedResult'

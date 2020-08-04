@@ -15,6 +15,9 @@ module.exports = {
     GET_CINEMA: { "chatId": "750594803", "sessionInfo": { "startedAt": "2020-08-03T08:35:43.372Z", "endedAt": null }, "status": { "main": "get-cinema", "secondary": null }, "bookingInfo": { "movie": { "title": "TENET", "id": "5ec6603c29431975db467384", "debutDateTime": "2020-05-16T16:00:00.000Z", "isBlockBuster": true }, "dateTime": { "start": "2020-08-05T00:00:00.000Z", "end": "2020-08-05T23:59:59.000Z", "daysToDbDate": 70, "nextWeekAreDaysLessThan": 1 }, "place": null, "cinema": [], "ticketing": [], "seatNumbers": [] }, "counter": { "invalidSeatCount": 0, "invalidSeatPhraseCount": 0, "seatTakenCount": 0, "justTakenCount": 0, "editInfoCount": 0, "fallbackCount": 0, "fallback": 0 }, "confirmPayload": { "adjustedDateTime": {}, "uniqueSchedule": {}, "seatPhraseGuess": {} } },
     // b: ok these cinemas available
     // u: *pick cinema*
+    GET_TIME_EXP: { "chatId": "750594803", "sessionInfo": { "startedAt": "2020-08-03T13:29:06.028Z", "endedAt": null }, "status": { "main": "get time and/or exp", "secondary": null }, "bookingInfo": { "movie": { "title": "TENET", "id": "5ec6603c29431975db467384", "debutDateTime": "2020-05-16T16:00:00.000Z", "isBlockBuster": true }, "dateTime": { "start": "2020-08-03T13:29:06.028Z", "end": "2020-08-09T23:59:59.028Z", "daysToDbDate": 70, "nextWeekAreDaysLessThan": 1 }, "place": null, "cinema": ["Cathay Cineplex Downtown East"], "ticketing": [], "seatNumbers": [] }, "counter": { "invalidSeatCount": 0, "invalidSeatPhraseCount": 0, "seatTakenCount": 0, "justTakenCount": 0, "editInfoCount": 0, "fallbackCount": 0, "fallback": 0 }, "confirmPayload": { "adjustedDateTime": {}, "uniqueSchedule": {}, "seatPhraseGuess": {} } },
+    // b: ok these showtimes available
+    // u: *pick slot*
 
 
 

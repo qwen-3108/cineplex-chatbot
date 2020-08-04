@@ -61,6 +61,9 @@ bot.post('/', async function (req, res) {
                         const { intent, extractedInfo } = await queryDialogflow(chat.id.toString(), text);
                         if (intent !== INTENT.FALLBACK) currentSession.counter.fallback = 0;
                         switch (intent) {
+                            case INTENT.WELCOME:
+                                basics.welcome(chat.id);
+                                break;
                             case INTENT.END:
                                 basics.end(chat.id);
                                 currentSession.end({ isComplete: false });
