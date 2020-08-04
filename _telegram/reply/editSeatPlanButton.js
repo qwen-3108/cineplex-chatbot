@@ -5,6 +5,13 @@ module.exports = async function editSeatPlanButton(chat_id, ticketingEntry, date
     const { isSelected, scheduleId, seatPlanMsgId } = ticketingEntry;
     const { daysToDbDate, nextWeekAreDaysLessThan } = dateTime;
 
+    let callbackButton;
+    if (isSelected) {
+        callbackButton = { text: '✅ Choosing for this plan', callback_data: "uSId =NA=" };
+    } else {
+        callbackButton = { text: '📍 Choose seats', callback_data: `uSId =${scheduleId} ${daysToDbDate} ${nextWeekAreDaysLessThan}=` };
+    }
+
     const config = {
         method: 'post',
         url: process.env.TELEGRAM_ENDPOINT + '/editMessageReplyMarkup',
@@ -12,7 +19,7 @@ module.exports = async function editSeatPlanButton(chat_id, ticketingEntry, date
             chat_id,
             message_id: seatPlanMsgId,
             reply_markup: {
-                inline_keyboard: [[{ text: isSelected ? '✅ Choosing for this plan' : '📍 Choose seats', callback_data: `uSId =${scheduleId} ${daysToDbDate} ${nextWeekAreDaysLessThan}=` }]]
+                inline_keyboard: [[callbackButton]]
             }
         }
     }
