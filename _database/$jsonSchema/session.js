@@ -39,6 +39,7 @@ const session = {
             required: ["startedAt"],
             properties: {
                 startedAt: { bsonType: "date" },
+                lastUpdated: { bsonType: "date" },
                 endedAt: { anyOf: [{ bsonType: "date" }, { bsonType: "null" }] }
             }
         },
@@ -115,7 +116,9 @@ const session = {
                 seatTakenCount: { bsonType: "int" },
                 justTakenCount: { bsonType: "int" },
                 editInfoCount: { bsonType: "int" },
-                fallbackCount: { bsonType: "int" }
+                fallbackCount: { bsonType: "int" },
+                seenMovieCard: { enum: [0, 1] },
+                seenShowtimeCard: { enum: [0, 1] }
             }
         },
         confirmPayload: {

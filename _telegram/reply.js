@@ -8,6 +8,7 @@ module.exports = {
     upcomingMovie: require('./reply/upcomingMovie'),
     warnPlatinum: require('./reply/warnPlatinum'),
     confirmEdit: require('./reply/confirmEdit'),
+    firstTimes: require('./reply/firstTimes'),
     //everything about seating plans
     sendSeatLegend: require('./reply/sendSeatLegend'),
     sendSeatPlan: require('./reply/sendSeatPlan'),

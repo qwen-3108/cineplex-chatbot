@@ -6,7 +6,7 @@ module.exports = async function toFallback({ chat_id, currentSession }) {
 
     const { status, bookingInfo, counter } = currentSession;
 
-    if (counter.fallback > 2) return;
+    if (counter.fallbackCount > 2) return;
 
     const config = {
         method: 'post',
@@ -18,12 +18,12 @@ module.exports = async function toFallback({ chat_id, currentSession }) {
         }
     };
 
-    if (counter.fallback === 2) {
+    if (counter.fallbackCount === 2) {
         if (status.main === MAIN_STATUS.COMPLETE || status.main === MAIN_STATUS.CANCELLED) return;
         config.data.text = "I think I'm not trained to handle this request yet. 😥 Would you contact our human assistants at 1111 1111, please? They will do their best to help";
     }
 
-    if (counter.fallback === 1) {
+    if (counter.fallbackCount === 1) {
         switch (status.main) {
             case MAIN_STATUS.PROMPT_MOVIE:
                 config.data.text = "Hmm I don't get you? To see the full list of now showing movie, type \n\`@cathay_sg_bot now showing\`";

@@ -7,7 +7,7 @@ const printTickets = require('../@util/printTickets');
 const resetBookingInfo = require('../@util/resetBookingInfo');
 const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const { cache, bookTickets } = require('../_database/query');
-const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback, alertMultipleShowtimes, toEditSeatReq, confirmEdit, getTicketPrice, getOperatingHours, faq } = require('../_telegram/reply');
+const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback, alertMultipleShowtimes, firstTimes, toEditSeatReq, confirmEdit, getTicketPrice, getOperatingHours, faq } = require('../_telegram/reply');
 const { validateAndMutateInfo, slotFilling, assignAndValidateSeats, mutateSeatNumbers, onCallback, onConfirm } = require('./logic');
 
 bot.post('/', async function (req, res) {
@@ -39,16 +39,24 @@ bot.post('/', async function (req, res) {
             if (req.body.message.hasOwnProperty('via_bot')) {
                 console.log('Message via bot');
                 const text = req.body.message.text;
-                if (!(/\n/).test(text)) {
+                if ((/💬/).test(text)) {
                     typing(currentSession.chatId);
                     console.log('Updating cinema');
                     currentSession.bookingInfo.cinema = [text.match(/[A-Za-z]+/g).join(' ')];
                     await slotFilling({ text, extractedInfo: {}, sessionToMutate: currentSession });
+                } else if ((/rating/i).test(text) && !currentSession.counter.seenMovieCard) {
+                    typing(currentSession.chatId);
+                    await firstTimes.movieCard(currentSession.chatId);
+                    currentSession.counter.seenMovieCard++;
+                } else if ((/ticket price/i).test(text) && !currentSession.counter.seenShowtimeCard) {
+                    typing(currentSession.chatId);
+                    await firstTimes.showtimeCard(currentSession.chatId);
+                    currentSession.counter.seenShowtimeCard++;
                 }
             }
 
             //ordinary message
-            if (req.body.message.hasOwnProperty('text')) {
+            if (req.body.message.hasOwnProperty('text') && !req.body.message.hasOwnProperty('via_bot')) {
                 typing(currentSession.chatId);
                 const { text, chat } = req.body.message;
                 switch (text) {
@@ -72,7 +80,7 @@ bot.post('/', async function (req, res) {
                                 basics.cancel(chat.id);
                                 break;
                             case INTENT.FALLBACK:
-                                currentSession.counter.fallback++;
+                                currentSession.counter.fallbackCount++;
                                 toFallback({ chat_id: chat.id, currentSession });
                                 break;
                             case INTENT.CONFIRM:
@@ -113,7 +121,7 @@ bot.post('/', async function (req, res) {
                                         currentSession.payload.seatNumber = extractedInfo['seat-number'];
                                         console.log("saved seat number to payload: ", currentSession.payload.seatNumber);
                                         await alertMultipleShowtimes(chat.id);
-                                    }else{
+                                    } else {
                                         const expandedSeatNumObj = await assignAndValidateSeats({ text, extractedInfo, sessionToMutate: currentSession });
                                         if (expandedSeatNumObj === undefined) break;
                                         await mutateSeatNumbers({ expandedSeatNumObj, sessionToMutate: currentSession });
@@ -133,8 +141,8 @@ bot.post('/', async function (req, res) {
                                 break;
                             case INTENT.FAQ_TICKET_PRICE:
                                 {
-                                    const ok = await validateAndMutateInfo({extractedInfo, sessionToMutate: currentSession});
-                                    if(ok){
+                                    const ok = await validateAndMutateInfo({ extractedInfo, sessionToMutate: currentSession });
+                                    if (ok) {
                                         await getTicketPrice(chat.id, currentSession, extractedInfo['customer-type']);
                                     }
                                 }

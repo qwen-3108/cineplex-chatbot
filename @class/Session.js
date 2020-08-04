@@ -18,7 +18,11 @@ module.exports = class Session {
         const sessionInDb = await COLLECTIONS.sessions.findOne({ _id: this.chatId });
         if (sessionInDb === null) {
 
-            this.sessionInfo = { startedAt: new Date(), endedAt: null };
+            this.sessionInfo = {
+                startedAt: new Date(),
+                lastUpdated: null,
+                endedAt: null
+            };
             this.status = { main: null, secondary: null };
 
             const todayDay = this.sessionInfo.startedAt.getDay();
@@ -42,7 +46,9 @@ module.exports = class Session {
                 seatTakenCount: 0,
                 justTakenCount: 0,
                 editInfoCount: 0,
-                fallbackCount: 0
+                fallbackCount: 0,
+                seenMovieCard: 0,
+                seenShowtimeCard: 0
             };
 
             this.confirmPayload = { adjustedDateTime: {}, uniqueSchedule: {}, seatPhraseGuess: {} };
@@ -61,6 +67,7 @@ module.exports = class Session {
 
     async saveToDb() {
         console.log('-----saving session-----');
+        this.sessionInfo.lastUpdated = new Date();
         console.log('Session to save: ', JSON.stringify(this));
         await COLLECTIONS.sessions.replaceOne(
             { _id: this.chatId },
@@ -86,7 +93,9 @@ module.exports = class Session {
             invalidSeatPhraseCount: 0,
             seatTakenCount: 0,
             justTakenCount: 0,
-            fallbackCount: 0
+            fallbackCount: 0,
+            seenMovieCard: 0,
+            seenShowtimeCard: 0
         };
         this.confirmPayload = {};
         this.payload = {};
