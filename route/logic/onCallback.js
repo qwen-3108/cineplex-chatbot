@@ -3,6 +3,8 @@ const { typing, toMovieCallback, editSeatPlanButton, deleteRepeatSeatPlan, sendS
 const { MAIN_STATUS } = require('../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const populateBookingInfo = require('../../@util/populateBookingInfo');
+const assignAndValidateSeats = require('./assignAndValidateSeats');
+const mutateSeatNumbers = require('./mutateSeatNumbers');
 
 module.exports = async function onCallback({ data, inline_message_id, sessionToMutate }) {
 
@@ -39,6 +41,7 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
         case 'uSId':
             {
                 typing(sessionToMutate.chatId);
+
                 const [scheduleId, daysToDbDate, nextWeekAreDaysLessThan] = value.split(' ');
                 sessionToMutate.bookingInfo.dateTime = { daysToDbDate: Number(daysToDbDate), nextWeekAreDaysLessThan: Number(nextWeekAreDaysLessThan) };
 
@@ -62,7 +65,21 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                         sessionToMutate.bookingInfo.ticketing[i].seatPlanCallback = seatPlanCallback;
                     }
                 }
-                //#3: Repeat showtime and cue for seat numbers
+                //#3a: if seat number exists in payload, use that directly
+                console.log("payload: ", sessionToMutate.payload);
+                if(sessionToMutate.payload.seatNumber !== null){
+                    console.log("payload contains seatNumber, using ", sessionToMutate.payload.seatNumber, " as seat-number");
+                    const text = '';
+                    const extractedInfo = {};
+                    extractedInfo['seat-number'] = sessionToMutate.payload.seatNumber;
+                    const expandedSeatNumObj = await assignAndValidateSeats({ text, extractedInfo, sessionToMutate: sessionToMutate });
+                    if (expandedSeatNumObj === undefined) break;
+                    await mutateSeatNumbers({ expandedSeatNumObj, sessionToMutate: sessionToMutate });
+                    sessionToMutate.payload.seatNumber = null;
+                    break;
+                }
+
+                //#3b: Repeat showtime and cue for seat numbers
                 const { chatId, bookingInfo } = sessionToMutate;
                 await getSeats(chatId, bookingInfo);
                 break;
@@ -138,6 +155,11 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                     sessionToMutate.bookingInfo.ticketing[0].seatPlanCallback = seatPlanCallback;
 
                 }
+
+                // else {
+                //     console.log('Not first nor second plan viewed, current ticketing length: ', bookingInfo.ticketing.length);
+                //     console.log('Current ticketing data: ', bookingInfo.ticketing);
+                // }
                 //#6: send seat plan with button except for first seat plan sent
                 console.log('Sending seat plan');
                 const { seatPlanMsgId, seatPlanFileId, seatPlanCallback } = await sendSeatPlan({

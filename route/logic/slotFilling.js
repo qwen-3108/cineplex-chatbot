@@ -69,7 +69,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
             case MAIN_STATUS.GET_TIME_EXP:
                 {
                     console.log('-----Prepare to get exact showtime-----');
-                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: "dateTime cinema totalSeats sold isPlatinum" });
+                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {} });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
                         await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);

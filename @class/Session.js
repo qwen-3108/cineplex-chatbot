@@ -11,6 +11,7 @@ module.exports = class Session {
         this.bookingInfo = {};
         this.counter = {};
         this.confirmPayload = {};
+        this.payload = {};
     }
 
     async init() {
@@ -45,13 +46,14 @@ module.exports = class Session {
             };
 
             this.confirmPayload = { adjustedDateTime: {}, uniqueSchedule: {}, seatPhraseGuess: {} };
+            this.payload = { seatNumber: null };
             console.log('-----Instantiating new session-----');
             console.log('New session: ', JSON.stringify(this));
 
         } else {
             console.log('-----Reconstructing existing session-----');
-            const { sessionInfo, status, bookingInfo, counter, confirmPayload } = sessionInDb;
-            this.sessionInfo = sessionInfo; this.status = status; this.bookingInfo = bookingInfo; this.counter = counter; this.confirmPayload = confirmPayload;
+            const { sessionInfo, status, bookingInfo, counter, confirmPayload, payload } = sessionInDb;
+            this.sessionInfo = sessionInfo; this.status = status; this.bookingInfo = bookingInfo; this.counter = counter; this.confirmPayload = confirmPayload; this.payload = payload;
             console.log('Existing: ', JSON.stringify(this));
         }
 
@@ -69,6 +71,7 @@ module.exports = class Session {
                 bookingInfo: this.bookingInfo,
                 counter: this.counter,
                 confirmPayload: this.confirmPayload,
+                payload: this.payload,
             },
             { upsert: true }, function (err) { console.log('Session saving error:', err) });
         console.log('-----done-----');
@@ -86,6 +89,7 @@ module.exports = class Session {
             fallbackCount: 0
         };
         this.confirmPayload = {};
+        this.payload = {};
         console.log('marked session as end');
     }
 }

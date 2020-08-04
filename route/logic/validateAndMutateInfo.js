@@ -93,9 +93,10 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                 case 'experience':
                     sessionToMutate.bookingInfo.experience = extractedInfo.experience;
                     break;
+                case 'customer-type':
+                    break;
                 default:
                     break;
-
             }
         }
     }

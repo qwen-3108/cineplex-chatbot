@@ -6,7 +6,10 @@ const calculatePrice = require('../../@util/calculatePrice');
 
 module.exports = async function warnPlatinum(chat_id, text, bookingInfo, schedule) {
 
-    const unitPrice = await calculatePrice(schedule);
+    const { dateTime, isPlatinum } = schedule;
+    const { movie } = bookingInfo;
+
+    const unitPrice = await calculatePrice({ movie: movie, dateTime: dateTime, isPlatinum: isPlatinum });
 
     const config = {
         method: 'post',

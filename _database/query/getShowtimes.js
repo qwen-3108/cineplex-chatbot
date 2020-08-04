@@ -12,7 +12,7 @@ module.exports = async function getShowtimes(bookingInfo, { projection = {}, off
 
     if (offset !== "") {
         const searchCursor = await COLLECTIONS.showtimes.find({ ...combinedQuery, ...availabilityQuery }, projection).skip(offset).limit(10).sort({ dateTime: 1 });
-        output.showtimes = await searchCursor.toArray();
+        output.showtimes = await searchCursor.project(projection).toArray();
         if (output.showtimes.length === 0) {
             output.success = false;
             output.noResultReason = NO_RESULT_REASON.END_PAGINATION;
@@ -20,7 +20,7 @@ module.exports = async function getShowtimes(bookingInfo, { projection = {}, off
         }
     } else {
         const searchCursor = await COLLECTIONS.showtimes.find({ ...combinedQuery, ...availabilityQuery }, projection).sort({ dateTime: 1 });
-        output.showtimes = await searchCursor.toArray();
+        output.showtimes = await searchCursor.project(projection).toArray();
     }
 
     if (output.showtimes.length > 0) {
