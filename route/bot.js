@@ -7,7 +7,7 @@ const printTickets = require('../@util/printTickets');
 const resetBookingInfo = require('../@util/resetBookingInfo');
 const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const { cache, bookTickets } = require('../_database/query');
-const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback, alertMultipleShowtimes, toEditSeatReq, confirmEdit } = require('../_telegram/reply');
+const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback, alertMultipleShowtimes, toEditSeatReq, confirmEdit, getTicketPrice, getOperatingHours, faq } = require('../_telegram/reply');
 const { validateAndMutateInfo, slotFilling, assignAndValidateSeats, mutateSeatNumbers, onCallback, onConfirm } = require('./logic');
 
 bot.post('/', async function (req, res) {
@@ -110,14 +110,16 @@ bot.post('/', async function (req, res) {
                                     const { ticketing } = currentSession.bookingInfo;
                                     if (ticketing.length > 1 && ticketing.every(selection => !selection.isSelected)) {
                                         console.log('-----confirming chosen showtime-----');
+                                        currentSession.payload.seatNumber = extractedInfo['seat-number'];
+                                        console.log("saved seat number to payload: ", currentSession.payload.seatNumber);
                                         await alertMultipleShowtimes(chat.id);
-                                        return;
+                                    }else{
+                                        const expandedSeatNumObj = await assignAndValidateSeats({ text, extractedInfo, sessionToMutate: currentSession });
+                                        if (expandedSeatNumObj === undefined) break;
+                                        await mutateSeatNumbers({ expandedSeatNumObj, sessionToMutate: currentSession });
                                     }
-                                    const expandedSeatNumObj = await assignAndValidateSeats({ text, extractedInfo, sessionToMutate: currentSession });
-                                    if (expandedSeatNumObj === undefined) break;
-                                    await mutateSeatNumbers({ expandedSeatNumObj, sessionToMutate: currentSession });
-                                    break;
                                 }
+                                break;
                             case INTENT.ADD_SEAT:
                             case INTENT.CHANGE_SEAT:
                             case INTENT.REMOVE_SEAT:
@@ -127,8 +129,36 @@ bot.post('/', async function (req, res) {
                                         secondary: SEC_STATUS.MODIFY_SEAT
                                     };
                                     await toEditSeatReq(chat.id, text, intent);
-                                    break;
                                 }
+                                break;
+                            case INTENT.FAQ_TICKET_PRICE:
+                                {
+                                    const ok = await validateAndMutateInfo({extractedInfo, sessionToMutate: currentSession});
+                                    if(ok){
+                                        await getTicketPrice(chat.id, currentSession, extractedInfo['customer-type']);
+                                    }
+                                }
+                                break;
+                            case INTENT.FAQ_OPERATING_HOURS:
+                                {
+                                    await getOperatingHours(chat.id, extractedInfo);
+                                }
+                                break;
+                            case INTENT.FAQ_CANCEL_BOOKING:
+                                {
+                                    await faq.faqCancelBooking(chat.id);
+                                }
+                                break;
+                            case INTENT.FAQ_MODIFY_BOOKING:
+                                {
+                                    await faq.faqModifyBooking(chat.id);
+                                }
+                                break;
+                            case INTENT.FAQ_ADVANCED_BOOKING:
+                                {
+                                    await faq.faqAdvancedBooking(chat.id);
+                                }
+                                break;
                             default:
                                 throw `Custom error: Unrecognized intent ${intent}`;
                         }

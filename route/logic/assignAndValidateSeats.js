@@ -8,6 +8,7 @@ const { SEC_STATUS, MAIN_STATUS } = require('../../@global/CONSTANTS');
 
 module.exports = async function assignAndValidateSeats({ text, extractedInfo, sessionToMutate }) {
 
+    console.log(extractedInfo);
     const seatPhraseArr = extractedInfo['seat-number'];
     const { chatId, status, bookingInfo } = sessionToMutate;
 

@@ -140,6 +140,15 @@ const session = {
                     }
                 }
             }
+        },
+        payload: {
+            bsonType: "object",
+            properties: {
+                seatNumbers: {
+                    bsonType: "array",
+                    items: {bsonType: "string"}
+                }
+            }
         }
     }
 };

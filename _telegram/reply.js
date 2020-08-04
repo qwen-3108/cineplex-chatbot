@@ -33,4 +33,8 @@ module.exports = {
     //others
     answerPreCheckoutQuery: require('./reply/answerPreCheckoutQuery'),
     toMovieCallback: require('./reply/toMovieCallback'),
+    //FAQ
+    faq: require('./reply/faq'),
+    getTicketPrice: require('./reply/getTicketPrice'),
+    getOperatingHours: require('./reply/getOperatingHours'),
 }
