@@ -14,11 +14,12 @@ module.exports = {
         CUSTOMER_TYPE: {
             STUDENT: 'student',
             SENIOR: 'senior citizen',
-            PIONEER_MERDEKA: 'pioneer/merdeka generation'
+            PIONEER_MERDEKA: 'pioneer/merdeka generation',
+            CHILD: 'child'
         },
         YES_NO_REGEX: {
-            YES_NO: /(?:what|when|where|how|why|who)/i,
-            OPEN: /(is|are|am|will|would|do|does|did)\s(?:i|my|you|your|he|his|she|her|it|the)/i
+            OPEN: /(?:what|when|where|how|why|who)/i,
+            YES_NO: /(?:is|are|am|will|would|do|does|did)\s(?:i|my|you|your|he|his|she|her|it|the)/i
         }
     },
     TICKET: {
