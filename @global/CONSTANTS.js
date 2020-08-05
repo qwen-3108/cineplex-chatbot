@@ -10,6 +10,17 @@ module.exports = {
         PLATINUM: ["K", "J", "H", "G", "F", "E", "D", "C", "B", "A"]
     },
     TIMEZONE_OFFSET: 8,
+    FAQ: {
+        CUSTOMER_TYPE: {
+            STUDENT: 'student',
+            SENIOR: 'senior citizen',
+            PIONEER_MERDEKA: 'pioneer/merdeka generation'
+        },
+        YES_NO_REGEX: {
+            YES_NO: /(?:what|when|where|how|why|who)/i,
+            OPEN: /(is|are|am|will|would|do|does|did)\s(?:i|my|you|your|he|his|she|her|it|the)/i
+        }
+    },
     TICKET: {
         WIDTH: 810,
         HEIGHT: 1155,
