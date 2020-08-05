@@ -22,7 +22,7 @@ module.exports = async function getPayment(chatId, bookingInfo) {
             ...invoice
         }
     };
-    await axios(invoiceConfig).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(invoiceConfig);
     //send msg
     const msgConfig = {
         method: 'post',
@@ -32,7 +32,7 @@ module.exports = async function getPayment(chatId, bookingInfo) {
             text: Phrases.POSITIVE() + "I've just sent you a payment link, kindly review the order details. Once you've completed the payment, we'll send you your digital tickets"
         }
     };
-    await axios(msgConfig).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(msgConfig);
 };
 
 /*---helper functions--*/

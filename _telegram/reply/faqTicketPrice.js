@@ -3,7 +3,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const calculatePrice = require('../../@util/calculatePrice');
 
-module.exports = async function getTicketPrice(chat_id, currentSession, customerType) {
+module.exports = async function faqTicketPrice(chat_id, currentSession, customerType) {
 
     console.log('-----Getting ticket price-----')
     const formData = new FormData();
@@ -73,6 +73,6 @@ module.exports = async function getTicketPrice(chat_id, currentSession, customer
         data: formData,
         headers: formData.getHeaders()
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response)));
+    await axios(config);
 
 }

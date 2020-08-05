@@ -17,9 +17,9 @@ module.exports = async function confirmDetails(chat_id, bookingInfo) {
     const seatStr = seatNumbers.length > 1 ? 'seats' : 'seat';
     const text = `Great! So ${seatNumbers.length} ${experienceStr}movie ${ticketStr} for ${movie.title} ${makeDateTimePhrase({ start: mappedDate, end: mappedDate })} at ${cinema}, ${seatStr} ${makeSeatNumPhrase(bookingInfo.seatNumbers)}. ${Phrases.DOUBLE_CHECK()}`
 
-    axios({
+    await axios({
         method: 'post',
         url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
         data: { chat_id, text }
-    }).catch(err => console.log(JSON.stringify(err.response.data)));
+    });
 };

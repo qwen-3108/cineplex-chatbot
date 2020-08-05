@@ -61,6 +61,6 @@ module.exports = async function toFallback({ chat_id, currentSession }) {
         }
     }
 
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }

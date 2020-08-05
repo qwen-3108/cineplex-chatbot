@@ -52,7 +52,7 @@ module.exports = class Session {
             };
 
             this.confirmPayload = { adjustedDateTime: {}, uniqueSchedule: {}, seatPhraseGuess: {} };
-            this.payload = { seatNumber: null };
+            this.payload = { seatNumber: null, movie: null };
             console.log('-----Instantiating new session-----');
             console.log('New session: ', JSON.stringify(this));
 

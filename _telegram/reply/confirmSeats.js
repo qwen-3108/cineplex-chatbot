@@ -11,5 +11,5 @@ module.exports = async function confirmSeats(chat_id, seatNumbers) {
         url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
         data: { chat_id, text }
     };
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }

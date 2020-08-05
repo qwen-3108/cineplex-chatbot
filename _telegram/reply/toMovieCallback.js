@@ -25,7 +25,7 @@ async function showMovieDetail(inline_message_id, movie) {
             }
         }
     };
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
     await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id, state: "show" });
 }
 
@@ -54,7 +54,7 @@ async function hideMovieDetail(inline_message_id, movie) {
             }
         }
     };
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
     await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id, state: "hide" });
 }
 
@@ -77,6 +77,6 @@ async function howToFilter(inline_message_id, movieId, movieTitle) {
             }
         }
     };
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }

@@ -25,6 +25,6 @@ module.exports = async function toEditSeatReq(chat_id, text, intent) {
         url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
         data: { chat_id, text: Phrases.ACKNOWLEDGEMENT(text) + `But instead of the seats you want to ${actionStr}, it would be great if you could tell me your final preferred seats, is that alright?` }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }

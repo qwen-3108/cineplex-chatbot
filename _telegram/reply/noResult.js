@@ -61,6 +61,6 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
             throw `${__filename} | Unrecognized no result reason during slot filling ${noResultReason}`;
     }
 
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }

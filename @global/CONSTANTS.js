@@ -74,11 +74,14 @@ module.exports = {
         REMOVE_SEAT: 'chooseSeat - remove',
         CHANGE_SEAT: 'chooseSeat - change',
         ADD_SEAT: 'chooseSeat - add',
-        FAQ_ADVANCED_BOOKING: 'faq - advanceBooking',
-        FAQ_CANCEL_BOOKING: 'faq -cancelBooking',
+        FAQ_ADVANCE_BOOKING: 'faq - advanceBooking',
+        FAQ_CANCEL_BOOKING: 'faq - cancelBooking',
         FAQ_MODIFY_BOOKING: 'faq - modifyBooking',
+        FAQ_MOVIE_SCHED: 'faq - movieScheduleUpdate',
         FAQ_OPERATING_HOURS: 'faq - checkOperatingHours',
         FAQ_TICKET_PRICE: 'faq - checkTicketPrice',
+        FAQ_MOVIE_AVAILABILITY: 'faq - checkMovieAvailability',
+        FAQ_NOW_SHOWING: 'faq - nowShowing',
         CANCEL: 'cancel',
         END: 'cancel - yes',
         CONFIRM: 'confirm',
@@ -116,7 +119,9 @@ module.exports = {
         SEAT_TAKEN: 'seat taken',
         MODIFY_SEAT: 'modify seat',
         CONFIRM_SEAT: 'confirm seat',
-        CONFIRM_CONTINUE: 'confirm continue'
+        CONFIRM_CONTINUE: 'confirm continue',
+        //from faq
+        CONFIRM_MOVIE: 'confirm movie',
     },
     NO_RESULT_REASON: {
         NO_SLOT: 'NO_SLOT',

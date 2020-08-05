@@ -23,7 +23,7 @@ module.exports = async function editSeatPlanButton(chat_id, ticketingEntry, date
             }
         }
     }
-    return axios(config)
+    return await axios(config)
         .then(res => {
             let seatPlanCallback = res.data.result.reply_markup.inline_keyboard;
             console.log(`Edit seat plan button successfully. reply_markup: ${JSON.stringify(seatPlanCallback)}`);

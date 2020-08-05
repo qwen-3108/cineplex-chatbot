@@ -41,7 +41,7 @@ module.exports = async function editSeatPlan(chat_id, scheduleId, bookingInfo) {
     };
 
     let file_id;
-    return axios(config)
+    return await axios(config)
         .then(res => {
             file_id = res.data.result.photo[0].file_id;
             console.log(`Edit seat plan successfully. New file id: ${file_id}`);
@@ -53,6 +53,5 @@ module.exports = async function editSeatPlan(chat_id, scheduleId, bookingInfo) {
         })
         .then(res => {
             return ({ session: chat_id, scheduleId, newFileId: file_id });
-        })
-        .catch(err => err);
+        });
 }

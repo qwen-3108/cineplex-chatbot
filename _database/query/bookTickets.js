@@ -26,7 +26,7 @@ module.exports = async function bookTickets(chatId, ticketing, seatNumbers, orde
         ticketArr.push({ ...ticket });
     }
     console.log(ticketArr);
-    let response = await COLLECTIONS.tickets.insertMany(ticketArr).catch(err => console.log(err));
+    let response = await COLLECTIONS.tickets.insertMany(ticketArr);
     const savedTickets = response.ops;
     console.log('Saved tickets: ', JSON.stringify(savedTickets));
 

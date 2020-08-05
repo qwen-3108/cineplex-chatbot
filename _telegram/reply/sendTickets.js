@@ -18,6 +18,5 @@ module.exports = async function sendTickets(chat_id, ticketBuffers) {
                 fs.unlinkSync(`#asset/image/e_ticket/${chat_id}_${i}.png`);
                 console.log(`#asset/image/e_ticket/${chat_id}_${i}.png was deleted`);
             })
-            .catch(err => console.log(JSON.stringify(err.response.data)));
     }
 };

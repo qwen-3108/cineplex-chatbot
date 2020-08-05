@@ -28,5 +28,5 @@ module.exports = async function invalidDateTime(chat_id, adjustedDateTime) {
         }
     };
 
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }

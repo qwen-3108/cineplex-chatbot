@@ -48,7 +48,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
             case MAIN_STATUS.GET_CINEMA:
                 {
                     console.log('-----Prepare to get cinema-----');
-                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: "cinema" });
+                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {cinema: 1} });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
                         await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
@@ -86,7 +86,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
             case MAIN_STATUS.CONFIRM_PROCEED:
                 {
                     console.log('-----Prepare to get final confirmation-----')
-                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: '' });
+                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {} });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
                         await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);

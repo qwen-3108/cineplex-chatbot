@@ -14,6 +14,6 @@ module.exports = async function upcomingMovie(chat_id, upcomingMovieInfo) {
             reply_markup: { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] }
         }
     };
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }

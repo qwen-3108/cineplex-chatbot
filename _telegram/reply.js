@@ -36,6 +36,9 @@ module.exports = {
     toMovieCallback: require('./reply/toMovieCallback'),
     //FAQ
     faq: require('./reply/faq'),
-    getTicketPrice: require('./reply/getTicketPrice'),
-    getOperatingHours: require('./reply/getOperatingHours'),
+    faqTicketPrice: require('./reply/faqTicketPrice'),
+    faqMovieAvailability: require('./reply/faqMovieAvailability'),
+    faqOperatingHours: require('./reply/faqOperatingHours'),
+    //send error
+    sendError: require('./reply/sendError'),
 }

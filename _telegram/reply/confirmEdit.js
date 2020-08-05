@@ -45,7 +45,7 @@ module.exports = async function confirmEdit(chat_id, text, bookingInfo) {
             text: reply
         }
     };
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }
 
 /*----helper----*/

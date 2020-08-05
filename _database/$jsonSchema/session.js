@@ -150,6 +150,27 @@ const session = {
                 seatNumbers: {
                     bsonType: "array",
                     items: {bsonType: "string"}
+                },
+                movie: {
+                    bsonType: "object",
+                    properties: {
+                        title: {
+                            anyOf: [
+                                { bsonType: "string" }, { bsonType: "null" }]
+                        },
+                        id: {
+                            anyOf: [
+                                { bsonType: "string" }, { bsonType: "null" }]
+                        },
+                        debutDateTime: {
+                            anyOf: [
+                                { bsonType: "date" }, { bsonType: "null" }]
+                        },
+                        isBlockBuster: {
+                            anyOf: [
+                                { bsonType: "bool" }, { bsonType: "null" }]
+                        },
+                    }
                 }
             }
         }

@@ -7,10 +7,13 @@ const printTickets = require('../@util/printTickets');
 const resetBookingInfo = require('../@util/resetBookingInfo');
 const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const { cache, bookTickets } = require('../_database/query');
-const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback, alertMultipleShowtimes, firstTimes, toEditSeatReq, confirmEdit, getTicketPrice, getOperatingHours, faq } = require('../_telegram/reply');
+const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback, alertMultipleShowtimes, toEditSeatReq, confirmEdit, faqTicketPrice, faqOperatingHours, faqMovieAvailability, faq, sendError } = require('../_telegram/reply');
 const { validateAndMutateInfo, slotFilling, assignAndValidateSeats, mutateSeatNumbers, onCallback, onConfirm } = require('./logic');
 
 bot.post('/', async function (req, res) {
+
+    let chatId = '';
+
     try {
         console.log('-----Post req received-----');
         console.log('Req body: ', JSON.stringify(req.body));
@@ -19,7 +22,8 @@ bot.post('/', async function (req, res) {
         if (req.body.hasOwnProperty('message')) {
 
             //Pull session information from db or instantiate new Session
-            const currentSession = new Session(req.body.message.chat.id.toString());
+            chatId = req.body.message.chat.id.toString();
+            const currentSession = new Session(chatId);
             await currentSession.init();
 
             //successful payment message
@@ -30,7 +34,7 @@ bot.post('/', async function (req, res) {
                 const order_info = req.body.message.successful_payment.order_info;
                 const newTickets = await bookTickets(chatId, bookingInfo.ticketing, bookingInfo.seatNumbers, order_info);
                 const ticketBuffers = await printTickets(newTickets, bookingInfo);
-                sendTickets(chatId, ticketBuffers);
+                await sendTickets(chatId, ticketBuffers);
                 await finish(chatId, bookingInfo.seatNumbers);
                 currentSession.end({ isComplete: true });
             }
@@ -61,7 +65,7 @@ bot.post('/', async function (req, res) {
                 const { text, chat } = req.body.message;
                 switch (text) {
                     case '/start':
-                        basics.welcome(chat.id);
+                        await basics.welcome(chat.id);
                         break;
                     case '/help':
                         break;
@@ -70,18 +74,18 @@ bot.post('/', async function (req, res) {
                         if (intent !== INTENT.FALLBACK) currentSession.counter.fallback = 0;
                         switch (intent) {
                             case INTENT.WELCOME:
-                                basics.welcome(chat.id);
+                                await basics.welcome(chat.id);
                                 break;
                             case INTENT.END:
-                                basics.end(chat.id);
+                                await basics.end(chat.id);
                                 currentSession.end({ isComplete: false });
                                 break;
                             case INTENT.CANCEL:
-                                basics.cancel(chat.id);
+                                await basics.cancel(chat.id);
                                 break;
                             case INTENT.FALLBACK:
                                 currentSession.counter.fallbackCount++;
-                                toFallback({ chat_id: chat.id, currentSession });
+                                await toFallback({ chat_id: chat.id, currentSession });
                                 break;
                             case INTENT.CONFIRM:
                                 await onConfirm({ text, sessionToMutate: currentSession });
@@ -149,7 +153,17 @@ bot.post('/', async function (req, res) {
                                 break;
                             case INTENT.FAQ_OPERATING_HOURS:
                                 {
-                                    await getOperatingHours(chat.id, extractedInfo);
+                                    await faqOperatingHours(chat.id, extractedInfo);
+                                }
+                                break;
+                            case INTENT.FAQ_MOVIE_AVAILABILITY:
+                                {
+                                    await faqMovieAvailability(chat.id, extractedInfo, currentSession);
+                                }
+                                break;
+                            case INTENT.FAQ_NOW_SHOWING:
+                                {
+                                    await faq.faqNowShowing(chat.id, extractedInfo);
                                 }
                                 break;
                             case INTENT.FAQ_CANCEL_BOOKING:
@@ -159,12 +173,17 @@ bot.post('/', async function (req, res) {
                                 break;
                             case INTENT.FAQ_MODIFY_BOOKING:
                                 {
-                                    await faq.faqModifyBooking(chat.id);
+                                    await faq.faqModifyBooking(chat.id, extractedInfo);
                                 }
                                 break;
-                            case INTENT.FAQ_ADVANCED_BOOKING:
+                            case INTENT.FAQ_ADVANCE_BOOKING:
                                 {
-                                    await faq.faqAdvancedBooking(chat.id);
+                                    await faq.faqAdvanceBooking(chat.id);
+                                }
+                                break;
+                            case INTENT.FAQ_MOVIE_SCHED:
+                                {
+                                    await faq.faqMovieScheduleUpdate(chat.id);
                                 }
                                 break;
                             default:
@@ -187,12 +206,13 @@ bot.post('/', async function (req, res) {
 
         } else if (req.body.hasOwnProperty('pre_checkout_query')) {
 
-            answerPreCheckoutQuery(req.body.pre_checkout_query.id);
+            await answerPreCheckoutQuery(req.body.pre_checkout_query.id);
 
         } else if (req.body.hasOwnProperty('callback_query')) {
 
             const { from, data, inline_message_id } = req.body.callback_query;
-            const currentSession = new Session(from.id.toString());
+            chatId = from.id.toString();
+            const currentSession = new Session();
             await currentSession.init();
             await onCallback({ data, inline_message_id, sessionToMutate: currentSession });
             await currentSession.saveToDb();
@@ -214,11 +234,11 @@ bot.post('/', async function (req, res) {
         } else {
             console.log('No logic defined to handle such request yet');
         }
-    }
 
-    catch (ex) {
+    } catch (ex) {
         console.log('-----! Error-----');
         console.log(ex);
+        await sendError(chatId);
     }
 
 });

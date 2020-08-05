@@ -33,7 +33,7 @@ async function invalidSeats(chat_id, invalidSeats, seatNumbers, invalidSeatCount
         url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
         data: { chat_id, text, parse_mode: 'Markdown' }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }
 
@@ -79,7 +79,7 @@ async function invalidSeatPhrases(chat_id, expandProgressObj, invalidSeatPhraseC
         data: { chat_id, text }
     }
 
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }
 
@@ -97,7 +97,7 @@ async function takenSeats(chat_id, takenSeats, seatTakenCount) {
         url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
         data: { chat_id, text: textArr[seatTakenCount - 1] }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }
 
 async function justTakenSeats(chat_id, justTakenSeats, justTakenCount) {
@@ -116,7 +116,7 @@ async function justTakenSeats(chat_id, justTakenSeats, justTakenCount) {
         url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
         data: { chat_id, text: textArr[justTakenCount - 1] }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 
 }
@@ -130,7 +130,7 @@ async function mixedTakenSeats(chat_id, takenSeats, justTakenSeats) {
         url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
         data: { chat_id, text }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }
 
@@ -154,6 +154,6 @@ async function fullyBooked(chat_id, movieTitle, hasAlternative) {
         text = `Tickets for that showtime have just been sold out, and it seems like other showtimes are fully booked as well. I'm really sorry about that :/ Is there anything else I can help?`;
     }
 
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }

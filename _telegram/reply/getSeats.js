@@ -18,6 +18,6 @@ module.exports = async function getSeats(chat_id, bookingInfo) {
             text: `Got it. ${ticketStr} for ${movie.title} ${makeDateTimePhrase({ start: mappedDate, end: mappedDate })} at ${cinema}. What are your preferred seats?`
         }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }

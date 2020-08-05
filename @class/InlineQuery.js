@@ -161,7 +161,7 @@ module.exports = class InlineQuery {
 /*---helper functions---*/
 
 async function answerInlineQuery(inlineQueryId, inlineQueryResult, nextOffset) {
-    axios({
+    await axios({
         method: 'post',
         url: process.env.TELEGRAM_ENDPOINT + '/answerInlineQuery',
         data: {
@@ -169,6 +169,5 @@ async function answerInlineQuery(inlineQueryId, inlineQueryResult, nextOffset) {
             results: inlineQueryResult,
             next_offset: nextOffset
         }
-    })
-        .catch(err => console.log(JSON.stringify(err.response.data)));
+    });
 }

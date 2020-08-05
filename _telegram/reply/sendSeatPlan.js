@@ -42,7 +42,7 @@ module.exports = async function sendSeatPlan({ chat_id, bookingInfo, seatingPlan
         data: formData,
         headers: formData.getHeaders()
     };
-    return axios(config)
+    return await axios(config)
         .then(res => {
             const { message_id, photo } = res.data.result;
             let seatPlanCallback = [];

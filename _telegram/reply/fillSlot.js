@@ -17,7 +17,7 @@ async function getMovie(chat_id, text) {
             reply_markup: { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] }
         }
     };
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }
 
 async function getDateTime(chat_id, text, maxDate) {
@@ -31,7 +31,7 @@ async function getDateTime(chat_id, text, maxDate) {
             text: Phrases.ACKNOWLEDGEMENT(text) + `Around when? Showtimes are up until coming ${format(maxDate, 'EEEE')} (${format(maxDate, 'd/M')})`
         }
     };
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }
 
 async function getCinema(chat_id, text, bookingInfo, cacheIdentifier) {
@@ -47,7 +47,7 @@ async function getCinema(chat_id, text, bookingInfo, cacheIdentifier) {
             }
         }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }
 
 async function getExactSlot(chat_id, text, bookingInfo, cacheIdentifier) {
@@ -79,7 +79,7 @@ async function getExactSlot(chat_id, text, bookingInfo, cacheIdentifier) {
             }
         }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }
 
 async function getExperienceOnly(chat_id, text, bookingInfo, showtimes, cacheIdentifier) {
@@ -109,7 +109,7 @@ async function getExperienceOnly(chat_id, text, bookingInfo, showtimes, cacheIde
             }
         }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }
 
 async function confirmProceed(chat_id, bookingInfo) {
@@ -128,6 +128,6 @@ async function confirmProceed(chat_id, bookingInfo) {
             text: Phrases.POSITIVE() + `So I'll proceed to get tickets ${experienceStr}for ${movie.title} ${makeDateTimePhrase(dateTime)} at ${cinema}?`,
         }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 
 }

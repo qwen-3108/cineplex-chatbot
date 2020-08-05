@@ -7,5 +7,5 @@ module.exports = async function deleteRepeatSeatPlan(chat_id, message_id) {
         url: process.env.TELEGRAM_ENDPOINT + '/deleteMessage',
         data: { chat_id, message_id }
     }
-    axios(config).catch(err => console.log(JSON.stringify(err.response.data)));
+    await axios(config);
 }
