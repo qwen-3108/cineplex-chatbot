@@ -10,18 +10,6 @@ module.exports = {
         PLATINUM: ["K", "J", "H", "G", "F", "E", "D", "C", "B", "A"]
     },
     TIMEZONE_OFFSET: 8,
-    FAQ: {
-        CUSTOMER_TYPE: {
-            STUDENT: 'student',
-            SENIOR: 'senior citizen',
-            PIONEER_MERDEKA: 'pioneer/merdeka generation',
-            CHILD: 'child'
-        },
-        YES_NO_REGEX: {
-            OPEN: /(?:what|when|where|how|why|who)/i,
-            YES_NO: /(?:is|are|am|will|would|do|does|did)\s(?:i|my|you|your|he|his|she|her|it|the)/i
-        }
-    },
     TICKET: {
         WIDTH: 810,
         HEIGHT: 1155,
@@ -65,32 +53,102 @@ module.exports = {
         5: "2020-05-29",
         6: "2020-05-30"
     },
+    PARAMETERS: {
+        EXPERIENCE: {
+            PLATINUM: 'Platinum Movie Suites',
+            REGULAR: ''
+        },
+        CUSTOMER_TYPE: {
+            CHILDREN: 'children',
+            STUDENT: 'student',
+            SENIOR_CITIZEN: 'senior citizen',
+            PIONEER_MERDEKA: 'pioneer/merdeka generation'
+        }
+    },
     INTENT: {
-        BOOK: 'bookTicket',
-        ANSWER: 'bookTicket - answer',
-        EDIT: 'bookTicket - edit',
-        ASK_OTHER: 'bookTicket - ask',
-        CHOOSE_SEAT: 'chooseSeat',
-        EDIT_SEAT: 'chooseSeat - edit',
-        REMOVE_SEAT: 'chooseSeat - remove',
-        CHANGE_SEAT: 'chooseSeat - change',
-        ADD_SEAT: 'chooseSeat - add',
-        FAQ_ADVANCE_BOOKING: 'faq - advanceBooking',
-        FAQ_CANCEL_BOOKING: 'faq - cancelBooking',
-        FAQ_MODIFY_BOOKING: 'faq - modifyBooking',
-        FAQ_MOVIE_SCHED: 'faq - movieScheduleUpdate',
-        FAQ_OPERATING_HOURS: 'faq - checkOperatingHours',
-        FAQ_TICKET_PRICE: 'faq - checkTicketPrice',
-        FAQ_MOVIE_AVAILABILITY: 'faq - checkMovieAvailability',
-        FAQ_NOW_SHOWING: 'faq - nowShowing',
-        CANCEL: 'cancel',
-        END: 'cancel - yes',
-        CONFIRM: 'confirm',
-        FALLBACK: 'fallback',
-        WELCOME: 'welcome',
-        INLINE_QUERY_MOVIE: 'inlineQuery - movie',
-        INLINE_QUERY_SHOWTIME: 'inlineQuery - showtime',
-        INLINE_QUERY_CACHE: 'inlineQuery - cachedResult'
+        SERVICE: {
+            SELF: 'service',
+            BOOK: {
+                SELF: 'book',
+                START: { SELF: 'start' },
+                EDIT_INFO: { SELF: 'editInfo' },
+                ANSWER_PROMPT: { SELF: 'answerPrompt' },
+                WHAT_ABOUT: { SELF: 'whatAbout' },
+                SEAT: {
+                    SELF: 'seat',
+                    FIRST_CHOOSE: { SELF: 'firstChoose' },
+                    EDIT: { SELF: 'edit' },
+                    ADD: { SELF: 'add' },
+                    CHANGE: { SELF: 'change' },
+                    REMOVE: { SELF: 'remove' },
+                }
+            }
+        },
+        PRODUCT_QUERY: {
+            SELF: 'productQuery',
+            NOW_SHOWING: { SELF: 'now showing' },
+            MOVIE: {
+                SELF: 'movie',
+                AVAILABLE: { SELF: 'available' },
+                IS_BLOCKBUSTER: { SELF: 'isBlockBuster' },
+                PRICE: { SELF: 'price' }
+            }
+        },
+        FAQ: {
+            SELF: 'faq',
+            NORMAL_RATES: {
+                SELF: 'normalRates',
+                CALCULATION: { SELF: 'calculation' }
+            },
+            SPECIAL_RATES: {
+                SELF: 'specialRates',
+                GENERAL: { SELF: 'general' },
+                CHANNEL: { SELF: 'channel' },
+                PRICE: { SELF: 'price' },
+                SCOPE: { SELF: 'scope' },
+                ELIGIBILITY: { SELF: 'eligibility' },
+            },
+            EXPERIENCES: {
+                SELF: 'experiences',
+                PLATINUM: {
+                    SELF: 'platinum',
+                    FEATURES: { SELF: 'features' },
+                    SCOPE: { SELF: 'scope' },
+                    PRICE: { SELF: 'price' },
+                }
+            },
+            PROGRAMME: {
+                SELF: 'programme',
+                BLOCKBUSTER: {
+                    SELF: 'blockbuster',
+                    ABOUT: { SELF: 'about' },
+                    PRICING_REASON: { SELF: 'pricingReason' },
+                    HOW_TO_KNOW: { SELF: 'howToKnow' },
+                }
+            },
+            CINEMA: {
+                SELF: 'cinema',
+                ADDRESS: { SELF: 'address' }
+            },
+            OPERATIONS: {
+                SELF: 'operations',
+                CHANGE_BOOKING: { SELF: 'changeBooking' },
+                CANCEL_BOOKING: { SELF: 'cancelBooking' },
+                ADVANCE_BOOKING: { SELF: 'advanceBooking' },
+                SHOWTIME_UPDATING: { SELF: 'showtimeUpdating' },
+                OPERATING_HOURS: { SELF: 'operatingHours' },
+            },
+        },
+        CANCEL: { SELF: 'cancel' },
+        END: { SELF: 'cancel - yes' },
+        CONFIRM: { SELF: 'confirm' },
+        FALLBACK: { SELF: 'fallback' },
+        WELCOME: { SELF: 'welcome' },
+        INLINE: {
+            MOVIE: { SELF: 'inline.movie' },
+            SHOWTIME: { SELF: 'inline.showtime' },
+            CACHE: { SELF: 'inline.cachedResult' }
+        }
     },
     MAIN_STATUS: {
         NULL: null,
@@ -148,5 +206,7 @@ module.exports = {
         TO_REPLACE_2: /(?:(?:[A-Z]\d+)(?:\s?(?:to|-)\s?)?(?:[A-Z]\d+)?)(?:(?:,\s?|,?\s?(?:and|&|n)\s)?(?:(?:[A-Z]\d+)(?:\s?(?:to|-)\s?)?(?:[A-Z]\d+)?))*(?= instead)/i,
         TO_CHANGE: /(?<=(?:change|change from)\s)(?<remove>(?:[A-Z]\d+)(?:\s?(?:to|-)\s?)?(?:[A-Z]\d+)?)(?:\sto\s)(?<add>(?:[A-Z]\d+)(?:\s?(?:to|-)\s?)?(?:[A-Z]\d+)?)*/i,
         TO_REMOVE: /(?<=(?:no|don't need|won't get|not getting|not|remove|release|instead of|not taking|delete|get rid of)\s)(?:(?:[A-Z]\d+)(?:\s?(?:to|-)\s?)?(?:[A-Z]\d+)?)(?:(?:,\s?|,?\s?(?:and|&|n)\s)?(?:(?:[A-Z]\d+)(?:\s?(?:to|-)\s?)?(?:[A-Z]\d+)?))*/i,
+        IS_YES_NO: /(?:is|are|am|will|would|do|does|did)\s(?:i|my|you|your|he|his|she|her|it|the)/i,
+        NOT_YES_NO: /(?:what|when|where|how|why|who)/i,
     }
 }

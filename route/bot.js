@@ -72,32 +72,33 @@ bot.post('/', async function (req, res) {
                     default:
                         const { intent, extractedInfo } = await queryDialogflow(chat.id.toString(), text);
                         if (intent !== INTENT.FALLBACK) currentSession.counter.fallback = 0;
-                        switch (intent.match(/^[A-Z]/i)[0]) {
-                            case INTENT.WELCOME:
+                        const intentArr = intent.split('.');
+                        switch (intentArr[0]) {
+                            case INTENT.WELCOME.SELF:
                                 await basics.welcome(chat.id);
                                 break;
-                            case INTENT.END:
+                            case INTENT.END.SELF:
                                 await basics.end(chat.id);
                                 currentSession.end({ isComplete: false });
                                 break;
-                            case INTENT.CANCEL:
+                            case INTENT.CANCEL.SELF:
                                 await basics.cancel(chat.id);
                                 break;
-                            case INTENT.FALLBACK:
+                            case INTENT.FALLBACK.SELF:
                                 currentSession.counter.fallbackCount++;
                                 await fallbackHandler({ chat_id: chat.id, currentSession });
                                 break;
-                            case INTENT.CONFIRM:
+                            case INTENT.CONFIRM.SELF:
                                 await confirmHandler({ text, sessionToMutate: currentSession });
                                 break;
-                            case INTENT.SERVICE:
-                                await serviceHandler();
+                            case INTENT.SERVICE.SELF:
+                                await serviceHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                                 break;
-                            case INTENT.PRODUCT_QUERY:
-                                await productQueryHandler();
+                            case INTENT.PRODUCT_QUERY.SELF:
+                                await productQueryHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                                 break;
-                            case INTENT.FAQ:
-                                await faqHandler();
+                            case INTENT.FAQ.SELF:
+                                await faqHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                                 break;
                             // case INTENT.BOOK:
                             // case INTENT.ANSWER:
@@ -223,7 +224,7 @@ bot.post('/', async function (req, res) {
             chatId = from.id.toString();
             const currentSession = new Session();
             await currentSession.init();
-            await onCallback({ data, inline_message_id, sessionToMutate: currentSession });
+            await callbackHandler({ data, inline_message_id, sessionToMutate: currentSession });
             await currentSession.saveToDb();
 
         } else if (req.body.hasOwnProperty('edited_message')) {
