@@ -8,7 +8,7 @@ module.exports = function assignDateTime(dateTimeObj) {
     };
 
     if (typeof dateTimeObj === 'string') {
-        if(dateTimeObj != ''){
+        if (dateTimeObj !== '') {
             date.start = new Date(dateTimeObj);
             date.end = new Date(dateTimeObj);
             date.start.setHours(0, 0, 0);

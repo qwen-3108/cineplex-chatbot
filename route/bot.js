@@ -14,6 +14,7 @@ const callbackHandler = require('./handlers/callbackHandler');
 const faqHandler = require('./handlers/faqHandler');
 const serviceHandler = require('./handlers/serviceHandler');
 const bookHandler = require('./handlers/service/book');
+const productQueryHandler = require('./handlers/productQueryHandler');
 
 bot.post('/', async function (req, res) {
 
