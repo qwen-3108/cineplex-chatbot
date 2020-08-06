@@ -1,7 +1,7 @@
-const { checkAvailable, updateReservation } = require('../../_database/query');
-const { alertSeatProblem, confirmSeats, confirmDetails } = require('../../_telegram/reply');
+const { checkAvailable, updateReservation } = require('../../../../../_database/query');
+const { alertSeatProblem, confirmSeats, confirmDetails } = require('../../../../../_telegram/reply');
 
-const { SEC_STATUS, MAIN_STATUS } = require('../../@global/CONSTANTS');
+const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
 
 module.exports = async function mutateSeatNumbers({ expandedSeatNumObj, sessionToMutate }) {
 

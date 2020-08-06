@@ -2,8 +2,6 @@ const { INTENT } = require('../../../@global/CONSTANTS');
 const FAQ = INTENT.FAQ;
 
 const cinema = require('./cinema/cinema');
-const experiences = require('./experiences/experiences');
-const normalRates = require('./normalRates/normalRates');
 const operations = require('./operations/operations');
 const programme = require('./programme/programme');
 const specialRates = require('./specialRates/specialRates');

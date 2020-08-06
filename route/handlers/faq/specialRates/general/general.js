@@ -8,7 +8,6 @@ module.exports = async function general({ text, intentArr, extractedInfo, sessio
     console.log('customer type: ', customerType);
     switch (customerType) {
         case CUSTOMER_TYPE.CHILDREN:
-
             break;
         case CUSTOMER_TYPE.STUDENT:
             break;
@@ -20,5 +19,3 @@ module.exports = async function general({ text, intentArr, extractedInfo, sessio
             throw `Unrecognized customer type ${customerType}`;
     }
 }
-
-};

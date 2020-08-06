@@ -1,6 +1,7 @@
 const { differenceInCalendarDays } = require('date-fns');
 const { MAIN_STATUS, DATES_IN_DB } = require('../@global/CONSTANTS');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
+const logType = require('../@util/logType');
 
 module.exports = class Session {
 
@@ -52,7 +53,7 @@ module.exports = class Session {
             };
 
             this.confirmPayload = { adjustedDateTime: {}, uniqueSchedule: {}, seatPhraseGuess: {} };
-            this.payload = { seatNumber: null, movie: null };
+            this.payload = { seatNumber: [], movie: { title: null, id: null, debutDateTime: null, isBlockBuster: null } };
             console.log('-----Instantiating new session-----');
             console.log('New session: ', JSON.stringify(this));
 
@@ -69,6 +70,7 @@ module.exports = class Session {
         console.log('-----saving session-----');
         this.sessionInfo.lastUpdated = new Date();
         console.log('Session to save: ', JSON.stringify(this));
+        // console.log('Session object with type: ', logType(this, 0));
         await COLLECTIONS.sessions.replaceOne(
             { _id: this.chatId },
             {

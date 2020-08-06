@@ -7,8 +7,11 @@ const printTickets = require('../@util/printTickets');
 const resetBookingInfo = require('../@util/resetBookingInfo');
 const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const { cache, bookTickets } = require('../_database/query');
-const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback, alertMultipleShowtimes, toEditSeatReq, confirmEdit, faqTicketPrice, faqOperatingHours, faqMovieAvailability, faq, sendError } = require('../_telegram/reply');
-const { validateAndMutateInfo, slotFilling, assignAndValidateSeats, mutateSeatNumbers, onCallback, onConfirm } = require('./logic');
+const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback, alertMultipleShowtimes, toEditSeatReq, confirmEdit, faqTicketPrice, faqMovieAvailability, faq, sendError } = require('../_telegram/reply');
+const slotFilling = require('./handlers/service/book/helpers/slotFilling');
+const confirmHandler = require('./handlers/confirmHandler');
+const callbackHandler = require('./handlers/callbackHandler');
+const faqHandler = require('./handlers/faq/faqHandler');
 
 bot.post('/', async function (req, res) {
 
@@ -71,7 +74,7 @@ bot.post('/', async function (req, res) {
                         break;
                     default:
                         const { intent, extractedInfo } = await queryDialogflow(chat.id.toString(), text);
-                        if (intent !== INTENT.FALLBACK) currentSession.counter.fallback = 0;
+                        if (intent !== INTENT.FALLBACK) currentSession.counter.fallbackCount = 0;
                         const intentArr = intent.split('.');
                         switch (intentArr[0]) {
                             case INTENT.WELCOME.SELF:

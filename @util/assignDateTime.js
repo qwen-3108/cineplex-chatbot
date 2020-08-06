@@ -8,10 +8,12 @@ module.exports = function assignDateTime(dateTimeObj) {
     };
 
     if (typeof dateTimeObj === 'string') {
-        date.start = new Date(dateTimeObj);
-        date.end = new Date(dateTimeObj);
-        date.start.setHours(0, 0, 0);
-        date.end.setHours(23, 59, 59);
+        if(dateTimeObj != ''){
+            date.start = new Date(dateTimeObj);
+            date.end = new Date(dateTimeObj);
+            date.start.setHours(0, 0, 0);
+            date.end.setHours(23, 59, 59);
+        }
     } else if (dateTimeObj.hasOwnProperty('date_time')) {
         date.start = new Date(dateTimeObj['date_time']);
         date.end = new Date(dateTimeObj['date_time']);

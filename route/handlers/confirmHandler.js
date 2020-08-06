@@ -1,6 +1,6 @@
 const { confirmDetails, getEditSeats, sendSeatLegend, sendSeatPlan, getPayment } = require('../../_telegram/reply');
-const slotFilling = require('../logic/slotFilling');
-const mutateSeatNumbers = require('../logic/mutateSeatNumbers');
+const slotFilling = require('./service/book/helpers/slotFilling');
+const mutateSeatNumbers = require('./service/book/helpers/mutateSeatNumbers');
 const { MAIN_STATUS, SEC_STATUS } = require('../../@global/CONSTANTS');
 const expandSeatPhrases = require('../../@util/expandSeatPhrases');
 

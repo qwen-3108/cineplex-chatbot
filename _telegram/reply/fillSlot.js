@@ -9,9 +9,9 @@ module.exports = { getMovie, getDateTime, getCinema, getExactSlot, getExperience
 
 async function getMovie(chat_id, text) {
 
-    const text = Phrases.ACKNOWLEDGEMENT(text) + 'For which movie?';
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + 'For which movie?';
     const replyMarkup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
-    await sendMessage(chat_id, text, {replyMarkup});
+    await sendMessage(chat_id, reply, {replyMarkup});
 
 }
 
@@ -19,18 +19,18 @@ async function getDateTime(chat_id, text, maxDate) {
 
     const maxDateStart = new Date(maxDate); maxDateStart.setHours(0);
     const maxDateEnd = new Date(maxDate); maxDateEnd.setHours(23);
-    const text = Phrases.ACKNOWLEDGEMENT(text) + `Around when? Showtimes are up until coming ${format(maxDate, 'EEEE')} (${format(maxDate, 'd/M')})`;
-    await sendMessage(chat_id, text);
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Around when? Showtimes are up until coming ${format(maxDate, 'EEEE')} (${format(maxDate, 'd/M')})`;
+    await sendMessage(chat_id, reply);
 
 }
 
 async function getCinema(chat_id, text, bookingInfo, cacheIdentifier) {
 
-    const text = `${Phrases.ACKNOWLEDGEMENT(text)}Any specific location in mind? These cinemas have tickets for ${bookingInfo.movie.title} ${makeDateTimePhrase(bookingInfo.dateTime)}. Pick one or simply tell me your preferred area :) like "near Jurong East"`;
+    const reply = `${Phrases.ACKNOWLEDGEMENT(text)}Any specific location in mind? These cinemas have tickets for ${bookingInfo.movie.title} ${makeDateTimePhrase(bookingInfo.dateTime)}. Pick one or simply tell me your preferred area :) like "near Jurong East"`;
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Cinemas', switch_inline_query_current_chat: cacheIdentifier }]]
     };
-    await sendMessage(chat_id, text, {replyMarkup});
+    await sendMessage(chat_id, reply, {replyMarkup});
 
 }
 
@@ -52,11 +52,11 @@ async function getExactSlot(chat_id, text, bookingInfo, cacheIdentifier) {
         dateTimeStr = makeDateTimePhrase(bookingInfo.dateTime);
     }
 
-    const text = Phrases.ACKNOWLEDGEMENT(text) + `Here are the showtimes ${locationStr} for ${movieStr}${dateTimeStr}. Which do you prefer?`;
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Here are the showtimes ${locationStr} for ${movieStr}${dateTimeStr}. Which do you prefer?`;
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Showtimes', switch_inline_query_current_chat: cacheIdentifier }]]
     };
-    await sendMessage(chat_id, text, {replyMarkup});
+    await sendMessage(chat_id, reply, {replyMarkup});
 
 }
 
@@ -76,11 +76,11 @@ async function getExperienceOnly(chat_id, text, bookingInfo, showtimes, cacheIde
         }
     }
 
-    const text = Phrases.ACKNOWLEDGEMENT(text) + `We have both platinum (S$${platinumPrice.toFixed(2)}) and regular (S$${regularPrice.toFixed(2)}) tickets for ${movie.title} ${makeDateTimePhrase(dateTime)} at ${cinema}. Which ticket type would you like to get?`;
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + `We have both platinum (S$${platinumPrice.toFixed(2)}) and regular (S$${regularPrice.toFixed(2)}) tickets for ${movie.title} ${makeDateTimePhrase(dateTime)} at ${cinema}. Which ticket type would you like to get?`;
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Experiences', switch_inline_query_current_chat: cacheIdentifier }]]
     };
-    await sendMessage(chat_id, text, {replyMarkup});
+    await sendMessage(chat_id, reply, {replyMarkup});
 }
 
 async function confirmProceed(chat_id, bookingInfo) {

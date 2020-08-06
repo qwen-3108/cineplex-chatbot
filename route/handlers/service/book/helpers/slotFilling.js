@@ -1,8 +1,8 @@
 const { addDays } = require('date-fns');
-const { MAIN_STATUS } = require('../../@global/CONSTANTS');
-const { fillSlot, noResult, warnPlatinum } = require('../../_telegram/reply');
-const { checkAvailable, getShowtimes, getCinemas, cache } = require('../../_database/query');
-const makeInlineQueryResult = require('../../@util/makeInlineQueryResult');
+const { MAIN_STATUS } = require('../../../../../@global/CONSTANTS');
+const { fillSlot, noResult, warnPlatinum } = require('../../../../../_telegram/reply');
+const { checkAvailable, getShowtimes, getCinemas, cache } = require('../../../../../_database/query');
+const makeInlineQueryResult = require('../../../../../@util/makeInlineQueryResult');
 
 module.exports = async function slotFilling({ text, sessionToMutate }) {
 

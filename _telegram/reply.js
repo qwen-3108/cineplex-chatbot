@@ -38,7 +38,6 @@ module.exports = {
     faq: require('./reply/faq'),
     faqTicketPrice: require('./reply/faqTicketPrice'),
     faqMovieAvailability: require('./reply/faqMovieAvailability'),
-    faqOperatingHours: require('./reply/faqOperatingHours'),
     //send error
     sendError: require('./reply/sendError'),
 }
