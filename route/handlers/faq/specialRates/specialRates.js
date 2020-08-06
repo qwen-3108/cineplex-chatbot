@@ -13,19 +13,19 @@ module.exports = async function specialRates({ text, intentArr, extractedInfo, s
     console.log('specialRates subintent: ', intentArr[2]);
     switch (intentArr[2]) {
         case SPECIAL_RATES.GENERAL.SELF:
-            await general({ text, intentArr, extractedInfo, sessionToMutate });
+            await general({ text, extractedInfo, sessionToMutate });
             break;
         case SPECIAL_RATES.CHANNEL.SELF:
-            await channel({ text, intentArr, extractedInfo, sessionToMutate });
+            await channel({ text, extractedInfo, sessionToMutate });
             break;
         case SPECIAL_RATES.PRICE.SELF:
-            await price({ text, intentArr, extractedInfo, sessionToMutate });
+            await price({ text, extractedInfo, sessionToMutate });
             break;
         case SPECIAL_RATES.SCOPE.SELF:
-            await scope({ text, intentArr, extractedInfo, sessionToMutate });
+            await scope({ text, extractedInfo, sessionToMutate });
             break;
         case SPECIAL_RATES.ELIGIBILITY.SELF:
-            await eligibility({ text, intentArr, extractedInfo, sessionToMutate });
+            await eligibility({ text, extractedInfo, sessionToMutate });
             break;
         default:
             throw `Unrecognized specialRates sub intent ${intentArr[2]}`;
