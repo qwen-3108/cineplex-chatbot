@@ -38,11 +38,7 @@ module.exports = async function general({ text, extractedInfo, sessionToMutate }
         default:
             throw `Unrecognized customer type ${customerType}`;
     }
-<<<<<<< Updated upstream
-}
-=======
 
     await sendMessage(sessionToMutate.chatId, text);
 
 };
->>>>>>> Stashed changes

@@ -11,7 +11,8 @@ const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback,
 const slotFilling = require('./handlers/service/book/helpers/slotFilling');
 const confirmHandler = require('./handlers/confirmHandler');
 const callbackHandler = require('./handlers/callbackHandler');
-const faqHandler = require('./handlers/faq/faqHandler');
+const faqHandler = require('./handlers/faqHandler');
+const bookHandler = require('./handlers/service/book');
 
 bot.post('/', async function (req, res) {
 
@@ -103,6 +104,8 @@ bot.post('/', async function (req, res) {
                             case INTENT.FAQ.SELF:
                                 await faqHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                                 break;
+                            case INTENT.BOOK.SELF:
+                                await bookHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                             // case INTENT.BOOK:
                             // case INTENT.ANSWER:
                             // case INTENT.ASK_OTHER:

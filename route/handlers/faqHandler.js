@@ -1,10 +1,10 @@
-const { INTENT } = require('../../../@global/CONSTANTS');
+const { INTENT } = require('../../@global/CONSTANTS');
 const FAQ = INTENT.FAQ;
 
-const cinema = require('./cinema/cinema');
-const operations = require('./operations/operations');
-const programme = require('./programme/programme');
-const specialRates = require('./specialRates/specialRates');
+const cinema = require('./faq/cinema');
+const operations = require('./faq/operations/operations');
+const programme = require('./faq/programme');
+const specialRates = require('./faq/specialRates');
 
 module.exports = async function faqHandler({ text, intentArr, extractedInfo, sessionToMutate }) {
 
