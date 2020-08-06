@@ -1,6 +1,6 @@
-const axios = require('axios');
 const Phrases = require('../../@global/PHRASES');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = async function confirmEdit(chat_id, text, bookingInfo) {
 
@@ -37,15 +37,7 @@ module.exports = async function confirmEdit(chat_id, text, bookingInfo) {
         reply += makeGuidancePhrase();
     }
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: reply
-        }
-    };
-    await axios(config);
+    await sendMessage(chat_id, reply);
 }
 
 /*----helper----*/

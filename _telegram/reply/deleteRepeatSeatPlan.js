@@ -1,11 +1,7 @@
-const axios = require('axios');
+const deleteMessage = require('../post/deleteMessage');
 
 module.exports = async function deleteRepeatSeatPlan(chat_id, message_id) {
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/deleteMessage',
-        data: { chat_id, message_id }
-    }
-    await axios(config);
+    await deleteMessage(chat_id, message_id);
+
 }

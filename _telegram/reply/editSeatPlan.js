@@ -1,9 +1,9 @@
 const fs = require('fs');
-const axios = require('axios');
 const FormData = require('form-data');
 const { format } = require('date-fns');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const mapDateTime = require('../../@util/mapDateTime');
+const editMessageMedia = require('../post/editMessageMedia');
 
 module.exports = async function editSeatPlan(chat_id, scheduleId, bookingInfo) {
 
@@ -33,15 +33,8 @@ module.exports = async function editSeatPlan(chat_id, scheduleId, bookingInfo) {
         inline_keyboard: seatPlanCallback
     }));
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/editMessageMedia',
-        data: formData,
-        headers: formData.getHeaders()
-    };
-
     let file_id;
-    return await axios(config)
+    return await editMessageMedia(formData)
         .then(res => {
             file_id = res.data.result.photo[0].file_id;
             console.log(`Edit seat plan successfully. New file id: ${file_id}`);

@@ -1,6 +1,6 @@
-const axios = require('axios');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 const mapDateTime = require('../../@util/mapDateTime');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = async function getSeats(chat_id, bookingInfo) {
 
@@ -10,14 +10,7 @@ module.exports = async function getSeats(chat_id, bookingInfo) {
     const mappedDate = mapDateTime(dateTime, daysToDbDate, nextWeekAreDaysLessThan);
     const ticketStr = isPlatinum ? 'Platinum tickets' : 'Tickets';
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: `Got it. ${ticketStr} for ${movie.title} ${makeDateTimePhrase({ start: mappedDate, end: mappedDate })} at ${cinema}. What are your preferred seats?`
-        }
-    }
-    await axios(config);
+    const text = `Got it. ${ticketStr} for ${movie.title} ${makeDateTimePhrase({ start: mappedDate, end: mappedDate })} at ${cinema}. What are your preferred seats?`;
+    await sendMessage(chat_id, text);
 
 }

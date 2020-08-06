@@ -1,8 +1,8 @@
-const axios = require('axios');
 const { addDays, addMinutes, isBefore } = require('date-fns');
 const getShowTimes = require('../../_database/query/getShowtimes');
 const assignDateTime = require('../../@util/assignDateTime');
 const isYesNo = require('../../@util/isYesNo');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = async function faqOperatingHours(chat_id, extractedInfo, text){
 
@@ -56,13 +56,6 @@ module.exports = async function faqOperatingHours(chat_id, extractedInfo, text){
     }
     console.log("Operating hours respond: ", reply);
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: reply,
-        }
-    };
-    await axios(config);
+    await sendMessage(chat_id, reply);
+
 }

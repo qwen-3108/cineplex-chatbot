@@ -1,14 +1,9 @@
-const axios = require('axios');
 const Phrases = require('../../@global/PHRASES');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = async function getEditSeats(chat_id) {
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: Phrases.POSITIVE() + 'May I have the seat numbers?'
-        }
-    }
-    await axios(config);
+
+    const text = Phrases.POSITIVE() + 'May I have the seat numbers?';
+    await sendMessage(chat_id, text);
+
 }

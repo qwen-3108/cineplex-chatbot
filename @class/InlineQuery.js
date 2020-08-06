@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { differenceInCalendarDays, addDays } = require('date-fns');
 
 const queryDialogflow = require('../_dialogflow/queryDialogflow');
@@ -7,6 +6,7 @@ const { COLLECTIONS } = require('../@global/COLLECTIONS');
 const { INTENT, NO_RESULT_REASON, DATES_IN_DB } = require('../@global/CONSTANTS');
 const assignDateTime = require('../@util/assignDateTime');
 const makeInlineQueryResult = require('../@util/makeInlineQueryResult');
+const answerInlineQuery = require('../_telegram/post/answerInlineQuery');
 
 
 module.exports = class InlineQuery {
@@ -156,18 +156,4 @@ module.exports = class InlineQuery {
             throw `Unrecognized inline query intent ${intent} in ${__filename}`;
         }
     }
-}
-
-/*---helper functions---*/
-
-async function answerInlineQuery(inlineQueryId, inlineQueryResult, nextOffset) {
-    await axios({
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/answerInlineQuery',
-        data: {
-            inline_query_id: inlineQueryId,
-            results: inlineQueryResult,
-            next_offset: nextOffset
-        }
-    });
 }

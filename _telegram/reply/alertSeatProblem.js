@@ -1,4 +1,4 @@
-const axios = require('axios');
+const sendMessage = require('../post/sendMessage');
 const makeSeatNumPhrase = require('../../@util/makeSeatNumPhrase');
 const listInEnglish = require('../../@util/listInEnglish');
 
@@ -28,12 +28,7 @@ async function invalidSeats(chat_id, invalidSeats, seatNumbers, invalidSeatCount
             return;
     }
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: { chat_id, text, parse_mode: 'Markdown' }
-    }
-    await axios(config);
+    await sendMessage(chat_id, text, {parseMode: 'Markdown'});
 
 }
 
@@ -73,13 +68,7 @@ async function invalidSeatPhrases(chat_id, expandProgressObj, invalidSeatPhraseC
 
     }
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: { chat_id, text }
-    }
-
-    await axios(config);
+    await sendMessage(chat_id, text);
 
 }
 
@@ -92,12 +81,8 @@ async function takenSeats(chat_id, takenSeats, seatTakenCount) {
         `It seems like your seat selections are still unavailable. If you are facing any issue, please contact our human assistants at 1111 1111. They will do their best to help`
     ]
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: { chat_id, text: textArr[seatTakenCount - 1] }
-    }
-    await axios(config);
+    await sendMessage(chat_id, textArr[seatTakenCount - 1]);
+
 }
 
 async function justTakenSeats(chat_id, justTakenSeats, justTakenCount) {
@@ -111,13 +96,7 @@ async function justTakenSeats(chat_id, justTakenSeats, justTakenCount) {
         `Unfortunately we didn't get it. Let me know your preferred seats again?`,
     ];
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: { chat_id, text: textArr[justTakenCount - 1] }
-    }
-    await axios(config);
-
+    await sendMessage(chat_id, textArr[justTakenCount - 1]);
 
 }
 
@@ -125,35 +104,25 @@ async function mixedTakenSeats(chat_id, takenSeats, justTakenSeats) {
 
     text = `I'm afraid ${makeSeatStr(takenSeats)} ${makeSeatNumPhrase(takenSeats)} ${makeBeStr(takenSeats)} taken. Unfortunately, ${makeSeatStr(justTakenSeats)} ${makeSeatNumPhrase(justTakenSeats)} ${makeHaveStr(justTakenSeats)} also just been reserved. Could you tell me your preferred seats again, please?`
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: { chat_id, text }
-    }
-    await axios(config);
+    await sendMessage(chat_id, text);
 
 }
 
 async function fullyBooked(chat_id, movieTitle, hasAlternative) {
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: { chat_id, text: '' }
-    }
-
     if (hasAlternative) {
-        text = `Tickets for that showtime have just been sold out 😥 I'm sorry about that. Here are ${movieTitle}'s other available showtimes (filter by typing date/location). Let me know how else I can help`;
-        config.data.reply_markup = {
+        const text = `Tickets for that showtime have just been sold out 😥 I'm sorry about that. Here are ${movieTitle}'s other available showtimes (filter by typing date/location). Let me know how else I can help`;
+        const replyMarkup = {
             inline_keyboard: [[{
                 text: `Showtimes · ${movieTitle}`,
                 switch_inline_query_current_chat: `${movieTitle}`
             }]]
         };
-    } else {
-        text = `Tickets for that showtime have just been sold out, and it seems like other showtimes are fully booked as well. I'm really sorry about that :/ Is there anything else I can help?`;
-    }
+        await sendMessage(chat_id, text, {replyMarkup});
 
-    await axios(config);
+    } else {
+        const text = `Tickets for that showtime have just been sold out, and it seems like other showtimes are fully booked as well. I'm really sorry about that :/ Is there anything else I can help?`;
+        await sendMessage(chat_id, text);
+    }
 
 }

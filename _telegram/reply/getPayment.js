@@ -1,38 +1,20 @@
-const axios = require('axios');
 const { format } = require('date-fns');
 const Phrases = require('../../@global/PHRASES');
 const calculatePrice = require('../../@util/calculatePrice');
 const mapDateTime = require('../../@util/mapDateTime');
+const sendMessage = require('../post/sendMessage');
+const sendInvoice = require('../post/sendInvoice');
 
 module.exports = async function getPayment(chatId, bookingInfo) {
     //make & send invoice
     const invoice = makeInvoice(bookingInfo);
-    const invoiceConfig = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendInvoice',
-        data: {
-            chat_id: chatId,
-            provider_token: TELEGRAM.STRIPE_TOKEN,
-            start_parameter: '123',
-            payload: '.',
-            currency: 'SGD',
-            photo_url: 'https://cdn.dribbble.com/users/2108918/screenshots/6414729/popcorn2-_recovered_.jpg',
-            need_name: true,
-            need_phone_number: true,
-            ...invoice
-        }
-    };
-    await axios(invoiceConfig);
+    const photoUrl = 'https://cdn.dribbble.com/users/2108918/screenshots/6414729/popcorn2-_recovered_.jpg';
+    await sendInvoice(chatId, invoice, {photoUrl});
+    
     //send msg
-    const msgConfig = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id: chatId,
-            text: Phrases.POSITIVE() + "I've just sent you a payment link, kindly review the order details. Once you've completed the payment, we'll send you your digital tickets"
-        }
-    };
-    await axios(msgConfig);
+    const text = Phrases.POSITIVE() + "I've just sent you a payment link, kindly review the order details. Once you've completed the payment, we'll send you your digital tickets";
+    await sendMessage(chat_id, text);
+
 };
 
 /*---helper functions--*/

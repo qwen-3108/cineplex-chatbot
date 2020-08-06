@@ -1,22 +1,18 @@
-const axios = require('axios');
 const { INLINE_KEYBOARD } = require('../../@global/CONSTANTS');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = { faqNowShowing, faqCancelBooking, faqModifyBooking, faqAdvanceBooking, faqMovieScheduleUpdate };
 
 async function faqNowShowing(chat_id){
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: 'Here’s a list of all movies showing at our cinemas 😁 Tap the button to view 👇🏻',
-            reply_markup: { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] }
-        }
-    };
-    await axios(config);
+
+    const text = 'Here’s a list of all movies showing at our cinemas 😁 Tap the button to view 👇🏻';
+    const replyMarkup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
+    await sendMessage(chat_id, text, {replyMarkup});
+
 }
 
 async function faqModifyBooking(chat_id, extractedInfo) {
+
     const { movie, cinema } = extractedInfo;
     const hasDateTime = extractedInfo['date-time'].length != 0;
     let text = '';
@@ -28,51 +24,29 @@ async function faqModifyBooking(chat_id, extractedInfo) {
                 'Currently that can only be done at our box office counter, not later than 2 hours before the movie. '+
                 'But work is underway so you’ll be able to modify your bookings through me very soon! :)';
     }
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: text,
-        }
-    };
-    await axios(config);
+    await sendMessage(chat_id, text);
+
 }
 
 async function faqCancelBooking(chat_id) {
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: 'Unfortunately all tickets purchased are non-cancellable and non-refundable. Thank you for your kind understanding',
-        }
-    };
-    await axios(config);
+
+    const text = 'Unfortunately all tickets purchased are non-cancellable and non-refundable. Thank you for your kind understanding';
+    await sendMessage(chat_id, text);
+
 }
 
 async function faqAdvanceBooking(chat_id) {
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: 'One week in advance. Any movie you’d like me to check now? :)',
-            reply_markup: { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] },
-        }
-    };
-    await axios(config);
+
+    const text = 'One week in advance. Any movie you’d like me to check now? :)';
+    const replyMarkup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
+    await sendMessage(chat_id, text, {replyMarkup});
+
 }
 
 async function faqMovieScheduleUpdate(chat_id) {
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: 'Showtimes are usually released one week before the actual showtime. Any movie you’d like me to check now?',
-            reply_markup: { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] },
-        }
-    };
-    await axios(config);
+
+    const text = 'Showtimes are usually released one week before the actual showtime. Any movie you’d like me to check now?';
+    const replyMarkup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
+    await sendMessage(chat_id, text, {replyMarkup});
+
 }

@@ -1,9 +1,9 @@
 const fs = require('fs');
-const axios = require('axios');
 const FormData = require('form-data');
 const { format } = require('date-fns');
 const drawSeatPlan = require('../../@util/drawSeatPlan');
 const mapDateTime = require('../../@util/mapDateTime');
+const sendPhoto = require('../post/sendPhoto');
 
 module.exports = async function sendSeatPlan({ chat_id, bookingInfo, seatingPlan }) {
 
@@ -36,13 +36,7 @@ module.exports = async function sendSeatPlan({ chat_id, bookingInfo, seatingPlan
     formData.append('caption', caption);
 
     //posting
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendPhoto',
-        data: formData,
-        headers: formData.getHeaders()
-    };
-    return await axios(config)
+    return await sendPhoto(formData)
         .then(res => {
             const { message_id, photo } = res.data.result;
             let seatPlanCallback = [];

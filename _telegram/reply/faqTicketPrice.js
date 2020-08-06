@@ -1,7 +1,7 @@
 const fs = require('fs');
-const axios = require('axios');
 const FormData = require('form-data');
 const calculatePrice = require('../../@util/calculatePrice');
+const sendPhoto = require('../post/sendPhoto');
 
 module.exports = async function faqTicketPrice(chat_id, currentSession, customerType) {
 
@@ -67,12 +67,6 @@ module.exports = async function faqTicketPrice(chat_id, currentSession, customer
     formData.append('caption', caption);
     console.log("Ticket price respond: ", caption);
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendPhoto',
-        data: formData,
-        headers: formData.getHeaders()
-    }
-    await axios(config);
+    await sendPhoto(formData);
 
 }

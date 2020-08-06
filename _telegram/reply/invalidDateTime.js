@@ -1,7 +1,7 @@
-const axios = require('axios');
 const { format, differenceInHours, addDays } = require('date-fns');
 const Phrases = require('../../@global/PHRASES');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = async function invalidDateTime(chat_id, adjustedDateTime) {
 
@@ -19,14 +19,7 @@ module.exports = async function invalidDateTime(chat_id, adjustedDateTime) {
         maxStr = `past ${format(max, 'EEEE')} midnight and after`;
     }
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: `Showtimes ${maxStr} are not available yet. But I can get back to you on showtimes ${dateTimeStr}. ` + Phrases.SUGGEST_ALTERNATIVE_ACTIONS()
-        }
-    };
+    const text = `Showtimes ${maxStr} are not available yet. But I can get back to you on showtimes ${dateTimeStr}. ` + Phrases.SUGGEST_ALTERNATIVE_ACTIONS();
+    await sendMessage(chat_id, text);
 
-    await axios(config);
 }

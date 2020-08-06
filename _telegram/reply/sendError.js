@@ -1,13 +1,8 @@
-const axios = require('axios');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = async function faqNowShowing(chat_id){
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: 'Server error',
-        }
-    };
-    await axios(config);
+
+    const text = "Server error";
+    await sendMessage(chat_id, text);
+
 }

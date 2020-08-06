@@ -1,16 +1,11 @@
-const axios = require('axios');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = async function finish(chat_id, seatNumbers) {
 
     const tixStr = seatNumbers.length > 1 ? 'tickets' : 'ticket';
     const codeStr = seatNumbers.length > 1 ? 'codes' : 'code';
 
-    await axios({
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: `Thanks. Here are your ${tixStr}. Please scan the QR ${codeStr} at the entrace to enter. Have a pleasant time :)`
-        }
-    });
+    const text = `Thanks. Here are your ${tixStr}. Please scan the QR ${codeStr} at the entrace to enter. Have a pleasant time :)`;
+    await sendMessage(chat_id, text);
+
 }

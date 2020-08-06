@@ -1,39 +1,25 @@
-const axios = require('axios');
-const { TELEGRAM, INLINE_KEYBOARD } = require('../../@global/CONSTANTS');
+const { INLINE_KEYBOARD } = require('../../@global/CONSTANTS');
 const Phrases = require('../../@global/PHRASES');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = { welcome, cancel, end };
 
 async function welcome(chat_id) {
-    await axios({
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: Phrases.GREETING() + 'Just so you know, you can talk to me like you would to a box office clerk 👩🏻‍💻 How may I help you?',
-            reply_markup: { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] }
-        }
-    });
+
+    const text = Phrases.GREETING() + 'Just so you know, you can talk to me like you would to a box office clerk 👩🏻‍💻 How may I help you?';
+    const replyMarkup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
+    await sendMessage(chat_id, text, {replyMarkup});
+
 }
 
 async function cancel(chat_id) {
-    await axios({
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: Phrases.CANCEL()
-        }
-    });
+
+    await sendMessage(chat_id, Phrases.CANCEL());
+
 }
 
 async function end(chat_id) {
-    await axios({
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: Phrases.END()
-        }
-    });
+
+    await sendMessage(chat_id, Phrases.END());
+
 }

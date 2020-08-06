@@ -1,12 +1,5 @@
-const axios = require('axios');
+const sendTypingAction = require('../post/sendTypingAction');
 
 module.exports = async function typing(chat_id) {
-    await axios({
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendChatAction',
-        data: {
-            chat_id,
-            action: 'typing'
-        }
-    });
+    await sendTypingAction(chat_id);
 }

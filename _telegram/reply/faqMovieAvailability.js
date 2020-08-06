@@ -1,9 +1,9 @@
-const axios = require('axios');
 const { addDays } = require('date-fns');
 const mapDateTime = require('../../@util/mapDateTime');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 const { SEC_STATUS } = require('../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = async function faqMovieAvailability(chat_id, extractedInfo, currentSession){
     console.log('-----checking movie availability-----');
@@ -34,13 +34,6 @@ module.exports = async function faqMovieAvailability(chat_id, extractedInfo, cur
         currentSession.payload.movie.isBlockBuster = movie.isBlockBuster;
     }
 
-    const config = {
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: {
-            chat_id,
-            text: text,
-        }
-    };
-    await axios(config);
+    await sendMessage(chat_id, text);
+
 }

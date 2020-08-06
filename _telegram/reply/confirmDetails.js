@@ -1,8 +1,8 @@
-const axios = require('axios');
 const Phrases = require('../../@global/PHRASES');
 const mapDateTime = require('../../@util/mapDateTime');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 const makeSeatNumPhrase = require('../../@util/makeSeatNumPhrase');
+const sendMessage = require('../post/sendMessage');
 
 module.exports = async function confirmDetails(chat_id, bookingInfo) {
 
@@ -17,9 +17,6 @@ module.exports = async function confirmDetails(chat_id, bookingInfo) {
     const seatStr = seatNumbers.length > 1 ? 'seats' : 'seat';
     const text = `Great! So ${seatNumbers.length} ${experienceStr}movie ${ticketStr} for ${movie.title} ${makeDateTimePhrase({ start: mappedDate, end: mappedDate })} at ${cinema}, ${seatStr} ${makeSeatNumPhrase(bookingInfo.seatNumbers)}. ${Phrases.DOUBLE_CHECK()}`
 
-    await axios({
-        method: 'post',
-        url: process.env.TELEGRAM_ENDPOINT + '/sendMessage',
-        data: { chat_id, text }
-    });
+    await sendMessage(chat_id, text);
+
 };
