@@ -1,10 +1,10 @@
 
-const validateSeatPhrases = require('../../@util/validateSeatPhrases');
-const assignSeatPhrases = require('../../@util/assignSeatPhrases');
-const expandSeatPhrases = require('../../@util/expandSeatPhrases');
-const { alertSeatProblem } = require('../../_telegram/reply');
+const validateSeatPhrases = require('../../../../../@util/validateSeatPhrases');
+const assignSeatPhrases = require('../../../../../@util/assignSeatPhrases');
+const expandSeatPhrases = require('../../../../../@util/expandSeatPhrases');
+const { alertSeatProblem } = require('../../../../../_telegram/reply');
 
-const { SEC_STATUS, MAIN_STATUS } = require('../../@global/CONSTANTS');
+const { SEC_STATUS, MAIN_STATUS } = require('../../../../../@global/CONSTANTS');
 
 module.exports = async function assignAndValidateSeats({ text, extractedInfo, sessionToMutate }) {
 

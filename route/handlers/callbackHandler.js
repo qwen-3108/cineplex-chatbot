@@ -3,8 +3,8 @@ const { typing, toMovieCallback, editSeatPlanButton, deleteRepeatSeatPlan, sendS
 const { MAIN_STATUS } = require('../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const populateBookingInfo = require('../../@util/populateBookingInfo');
-const assignAndValidateSeats = require('./assignAndValidateSeats');
-const mutateSeatNumbers = require('./mutateSeatNumbers');
+const assignAndValidateSeats = require('../logic/assignAndValidateSeats');
+const mutateSeatNumbers = require('../logic/mutateSeatNumbers');
 
 module.exports = async function onCallback({ data, inline_message_id, sessionToMutate }) {
 

@@ -1,6 +1,6 @@
 const { confirmDetails, getEditSeats, sendSeatLegend, sendSeatPlan, getPayment } = require('../../_telegram/reply');
-const slotFilling = require('./slotFilling');
-const mutateSeatNumbers = require('./mutateSeatNumbers');
+const slotFilling = require('../logic/slotFilling');
+const mutateSeatNumbers = require('../logic/mutateSeatNumbers');
 const { MAIN_STATUS, SEC_STATUS } = require('../../@global/CONSTANTS');
 const expandSeatPhrases = require('../../@util/expandSeatPhrases');
 
@@ -8,9 +8,9 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
 
     const { chatId, status, bookingInfo, confirmPayload } = sessionToMutate;
 
-    if(status.secondary !== null){
+    if (status.secondary !== null) {
 
-        switch(status.secondary){
+        switch (status.secondary) {
             case SEC_STATUS.CONFIRM_EDIT:
                 {
                     await slotFilling({ text, sessionToMutate });
@@ -19,18 +19,18 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
             case SEC_STATUS.CONFIRM_MOVIE:
                 {
                     sessionToMutate.bookingInfo.movie = sessionToMutate.payload.movie;
-                    sessionToMutate.payload.movie = {id: null, title: null, debutDateTime: null, isBlockBuster: null};
-                    await slotFilling({text, sessionToMutate});
+                    sessionToMutate.payload.movie = { id: null, title: null, debutDateTime: null, isBlockBuster: null };
+                    await slotFilling({ text, sessionToMutate });
                 }
                 break;
             default:
                 throw `${__filename} | No logic to handle confirmation on such status yet ${JSON.stringify(status)}`;
-            }
+        }
 
     } else {
 
         switch (status.main) {
-    
+
             case MAIN_STATUS.PROMPT_DATETIME:
                 console.log('Received user agreement to adjust date time range');
                 if (status.secondary === SEC_STATUS.EXCEED_SCHEDULE) {
@@ -44,7 +44,7 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
                     throw `${__filename} | Nothing to confirm for this state ${JSON.stringify(status)}`;
                 }
                 break;
-    
+
             case MAIN_STATUS.CHOOSE_SEAT:
                 {
                     switch (status.secondary) {
@@ -112,8 +112,8 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
                 break;
             default:
                 throw `${__filename} | No logic to handle confirmation on such status yet ${JSON.stringify(status)}`;
-            }
+        }
     }
-    
+
 
 };
