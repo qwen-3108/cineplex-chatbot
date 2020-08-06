@@ -1,20 +1,20 @@
-const { INTENT } = require("../../../../@global/CONSTANTS");
+const { INTENT } = require("../../../@global/CONSTANTS");
 const OPERATIONS = INTENT.FAQ.OPERATIONS;
 
-const advanceBooking = require('./advanceBooking/advanceBooking');
-const cancelBooking = require('./cancelBooking/cancelBooking');
-const changeBooking = require('./changeBooking/changeBooking');
-const operatingHours = require('./operatingHours/operatingHours');
-const showtimeUpdating = require('./showtimeUpdating/showtimeUpdating');
+const advanceBooking = require('./operations/advanceBooking');
+const cancelBooking = require('./operations/cancelBooking');
+const changeBooking = require('./operations/changeBooking');
+const operatingHours = require('./operations/operatingHours');
+const showtimeUpdating = require('./operations/showtimeUpdating');
 
-module.exports = async function({ text, intentArr, extractedInfo, sessionToMutate }){
+module.exports = async function ({ text, intentArr, extractedInfo, sessionToMutate }) {
 
     console.log('-----operationHandler triggered-----');
     console.log('operation subintent: ', intentArr[2]);
 
     const chatId = sessionToMutate.chatId;
 
-    switch(intentArr[2]){
+    switch (intentArr[2]) {
         case OPERATIONS.ADVANCE_BOOKING.SELF:
             {
                 await advanceBooking(chatId);

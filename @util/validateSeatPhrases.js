@@ -27,7 +27,7 @@ function isValidSeatNum(seatNumber, experience) {
     const { row, num } = seatNumber.match(REGEX.SEAT_CHAR_NUM).groups;
 
     return (experience === 'Platinum Movie Suites') ?
-        ROW.PLATINUM.includes(row) && num >= 1 && num <= 8
-        : ROW.REGULAR.includes(row) && num >= 1 && num <= 14;
+        ROW.PLATINUM.includes(row.toUpperCase()) && num >= 1 && num <= 8
+        : ROW.REGULAR.includes(row.toUpperCase()) && num >= 1 && num <= 14;
 
 }

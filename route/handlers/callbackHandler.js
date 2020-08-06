@@ -70,7 +70,7 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                 }
                 //#3a: if seat number exists in payload, use that directly
                 console.log("payload: ", sessionToMutate.payload);
-                if (sessionToMutate.payload.seatNumber !== null) {
+                if (sessionToMutate.payload.seatNumber.length != 0) {
                     console.log("payload contains seatNumber, using ", sessionToMutate.payload.seatNumber, " as seat-number");
                     const text = '';
                     const extractedInfo = {};

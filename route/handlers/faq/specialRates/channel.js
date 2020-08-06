@@ -1,6 +1,6 @@
-const { PARAMETERS } = require('../../../../../@global/CONSTANTS');
+const { PARAMETERS } = require('../../../../@global/CONSTANTS');
+const sendMessage = require('../../../../_telegram/post/sendMessage');
 const CUSTOMER_TYPE = PARAMETERS.CUSTOMER_TYPE;
-const sendMessage = require('../../../../../_telegram/post');
 
 module.exports = async function channel({ text, extractedInfo, sessionToMutate }) {
 
@@ -8,7 +8,7 @@ module.exports = async function channel({ text, extractedInfo, sessionToMutate }
     const customerType = extractedInfo["customer-type"];
     console.log('customer type: ', customerType);
 
-    let text;
+    let reply;
 
     switch (customerType) {
         case CUSTOMER_TYPE.CHILDREN:
@@ -35,6 +35,6 @@ module.exports = async function channel({ text, extractedInfo, sessionToMutate }
             throw `Unrecognized customer type ${customerType}`;
     }
 
-    await sendMessage(sessionToMutate.chatId, text);
+    await sendMessage(sessionToMutate.chatId, reply);
 
 };

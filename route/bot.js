@@ -12,6 +12,7 @@ const slotFilling = require('./handlers/service/book/helpers/slotFilling');
 const confirmHandler = require('./handlers/confirmHandler');
 const callbackHandler = require('./handlers/callbackHandler');
 const faqHandler = require('./handlers/faqHandler');
+const serviceHandler = require('./handlers/serviceHandler');
 const bookHandler = require('./handlers/service/book');
 
 bot.post('/', async function (req, res) {
@@ -214,8 +215,9 @@ bot.post('/', async function (req, res) {
 
         } else if (req.body.hasOwnProperty('inline_query')) {
 
-            const { id, query, offset } = req.body.inline_query;
+            const { id, from, query, offset } = req.body.inline_query;
             if (query !== "") {
+                chatId = from.id;
                 let currentInlineQuery = new InlineQuery(id);
                 await currentInlineQuery.handleInlineQuery(query, offset);
             }
@@ -228,7 +230,7 @@ bot.post('/', async function (req, res) {
 
             const { from, data, inline_message_id } = req.body.callback_query;
             chatId = from.id.toString();
-            const currentSession = new Session();
+            const currentSession = new Session(chatId);
             await currentSession.init();
             await callbackHandler({ data, inline_message_id, sessionToMutate: currentSession });
             await currentSession.saveToDb();

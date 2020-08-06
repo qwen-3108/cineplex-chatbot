@@ -2,7 +2,7 @@ const { INTENT } = require('../../@global/CONSTANTS');
 const FAQ = INTENT.FAQ;
 
 const cinema = require('./faq/cinema');
-const operations = require('./faq/operations/operations');
+const operations = require('./faq/operations');
 const programme = require('./faq/programme');
 const specialRates = require('./faq/specialRates');
 

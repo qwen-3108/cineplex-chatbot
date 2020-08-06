@@ -6,11 +6,11 @@ module.exports = async function editMessageReplyMarkup(chatId, messageId, replyM
         method: 'post',
         url: process.env.TELEGRAM_ENDPOINT + '/editMessageReplyMarkup',
         data: {
-            chat_id: chatId, 
-            message_id: messageId, 
+            chat_id: chatId,
+            message_id: messageId,
             reply_markup: replyMarkup
         }
     }
-    await axios(config);
+    return await axios(config);
 
 }

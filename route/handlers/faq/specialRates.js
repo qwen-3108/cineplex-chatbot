@@ -1,11 +1,11 @@
 const { INTENT } = require('../../../@global/CONSTANTS');
 const SPECIAL_RATES = INTENT.FAQ.SPECIAL_RATES;
 
-const general = require('./specialRates/general/general');
-const channel = require('./specialRates/channel/channel');
-const price = require('./specialRates/price/price');
+const general = require('./specialRates/general');
+const channel = require('./specialRates/channel');
+const price = require('./specialRates/price');
 const scope = require('./specialRates/scope');
-const eligibility = require('./specialRates/eligibility/eligibility');
+const eligibility = require('./specialRates/eligibility');
 
 module.exports = async function specialRates({ text, intentArr, extractedInfo, sessionToMutate }) {
 

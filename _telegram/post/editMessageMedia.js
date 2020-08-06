@@ -3,7 +3,7 @@ const axios = require('axios');
 
 module.exports = async function editMessageMedia(formData) {
 
-    if(formData instanceof FormData){
+    if (formData instanceof FormData) {
 
         const config = {
             method: 'post',
@@ -11,9 +11,9 @@ module.exports = async function editMessageMedia(formData) {
             data: formData,
             headers: formData.getHeaders()
         }
-        await axios(config);
+        return await axios(config);
 
-    }else{
+    } else {
         throw new Error("edit message media: formData parameter must be of type FormData");
     }
 

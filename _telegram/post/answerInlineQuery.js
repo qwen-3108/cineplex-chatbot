@@ -11,6 +11,6 @@ module.exports = async function answerInlineQuery(inlineQueryId, inlineQueryResu
             next_offset: nextOffset
         }
     };
-    await axios(config);
+    return await axios(config);
 
 }

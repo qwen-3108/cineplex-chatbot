@@ -10,6 +10,6 @@ module.exports = async function typing(chatId) {
             action: 'typing'
         }
     };
-    await axios(config);
+    return await axios(config);
 
 }

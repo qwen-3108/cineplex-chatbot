@@ -1,8 +1,8 @@
 const { addDays } = require('date-fns');
-const { COLLECTIONS } = require('../../@global/COLLECTIONS');
-const { MAIN_STATUS, SEC_STATUS } = require('../../@global/CONSTANTS');
-const assignDateTime = require('../../@util/assignDateTime');
-const { upcomingMovie, invalidDateTime } = require('../../_telegram/reply');
+const { COLLECTIONS } = require('../../../../../@global/COLLECTIONS');
+const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
+const assignDateTime = require('../../../../../@util/assignDateTime');
+const { upcomingMovie, invalidDateTime } = require('../../../../../_telegram/reply');
 
 module.exports = async function validateAndMutateInfo({ extractedInfo, sessionToMutate }) {
 

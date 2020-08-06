@@ -11,6 +11,6 @@ module.exports = async function answerPreCheckoutQuery(preCheckoutQueryId) {
         }
     };
 
-    await axios(config);
+    return await axios(config);
 
 }

@@ -1,7 +1,7 @@
-const { INTENT } = require('../../../@global/CONSTANTS');
+const { INTENT } = require('../../@global/CONSTANTS');
 const SERVICE = INTENT.SERVICE;
 
-const book = require('./book/book');
+const book = require('./service/book');
 
 module.exports = async function serviceHandler({ text, intentArr, extractedInfo, sessionToMutate }) {
 

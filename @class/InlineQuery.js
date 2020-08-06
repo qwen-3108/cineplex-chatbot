@@ -14,7 +14,7 @@ module.exports = class InlineQuery {
         this.queryId = queryId;
 
         const today = new Date();
-        today.setHours(6,0,0);
+        today.setHours(6, 0, 0);
         const todayDay = today.getDay();
         const todayDbDate = new Date(DATES_IN_DB[todayDay]);
         const maxDate = addDays(today, 6);
@@ -85,7 +85,7 @@ module.exports = class InlineQuery {
         }
 
 
-        if (intent === INTENT.INLINE_QUERY_MOVIE) {
+        if (intent === INTENT.INLINE.MOVIE.SELF) {
 
             const { dateTime, cinema, place, movieStatus } = this.queryFilter;
 
@@ -120,7 +120,7 @@ module.exports = class InlineQuery {
             inlineQueryResult = makeInlineQueryResult.movie(movies, query);
             await answerInlineQuery(this.queryId, inlineQueryResult);
 
-        } else if (intent === INTENT.INLINE_QUERY_SHOWTIME) {
+        } else if (intent === INTENT.INLINE.SHOWTIME.SELF) {
 
             if (this.queryFilter.movie.title === null) throw 'Wrong intent matching: Matched query showtime when no movie is provided';
 
@@ -145,7 +145,7 @@ module.exports = class InlineQuery {
             // console.log(JSON.stringify(inlineQueryResult));
             await answerInlineQuery(this.queryId, inlineQueryResult, currentOffset + 10);
 
-        } else if (intent === INTENT.INLINE_QUERY_CACHE) {
+        } else if (intent === INTENT.INLINE.CACHE.SELF) {
 
             const cacheId = query.match(/\d+/)[0];
             const cachedResult = await COLLECTIONS.inlineQueryResultCache.findOne({ _id: cacheId });

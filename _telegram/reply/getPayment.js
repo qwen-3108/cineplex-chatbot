@@ -9,11 +9,11 @@ module.exports = async function getPayment(chatId, bookingInfo) {
     //make & send invoice
     const invoice = makeInvoice(bookingInfo);
     const photoUrl = 'https://cdn.dribbble.com/users/2108918/screenshots/6414729/popcorn2-_recovered_.jpg';
-    await sendInvoice(chatId, invoice, {photoUrl});
-    
+    await sendInvoice(chatId, invoice, { photoUrl });
+
     //send msg
     const text = Phrases.POSITIVE() + "I've just sent you a payment link, kindly review the order details. Once you've completed the payment, we'll send you your digital tickets";
-    await sendMessage(chat_id, text);
+    await sendMessage(chatId, text);
 
 };
 

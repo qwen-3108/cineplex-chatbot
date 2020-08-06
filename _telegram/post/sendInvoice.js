@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-module.exports = async function sendInvoice(chatId, invoice, {photoUrl}) {
+module.exports = async function sendInvoice(chatId, invoice, { photoUrl }) {
 
     const config = {
         method: 'post',
@@ -17,6 +17,6 @@ module.exports = async function sendInvoice(chatId, invoice, {photoUrl}) {
             ...invoice
         }
     };
-    await axios(config);
+    return await axios(config);
 
 }
