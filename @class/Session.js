@@ -60,7 +60,13 @@ module.exports = class Session {
         } else {
             console.log('-----Reconstructing existing session-----');
             const { sessionInfo, status, bookingInfo, counter, confirmPayload, payload } = sessionInDb;
-            this.sessionInfo = sessionInfo; this.status = status; this.bookingInfo = bookingInfo; this.counter = counter; this.confirmPayload = confirmPayload; this.payload = payload;
+            this.sessionInfo = sessionInfo;
+            this.status = status;
+            this.bookingInfo = bookingInfo;
+            this.bookingInfo.dateTime.sessionStartedAt = this.sessionInfo.startedAt;
+            this.counter = counter;
+            this.confirmPayload = confirmPayload;
+            this.payload = payload;
             console.log('Existing: ', JSON.stringify(this));
         }
 
