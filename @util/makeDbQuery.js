@@ -33,6 +33,7 @@ module.exports = function makeDbQuery(bookingInfo) {
             //if day is today, trim away time before ask time
             if (isToday) {
                 console.log('isToday, trimming start time');
+                console.log('Enquiry hour: ', sessionStartedAt.getHours());
                 const sessionStartTime = sessionStartedAt.getHours();
                 adjustedStart = new Date(start);
                 adjustedStart.setHours(sessionStartTime);
