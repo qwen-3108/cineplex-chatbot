@@ -38,9 +38,8 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                     break;
                 case 'date-time':
                     console.log('Update: Validating date-time...');
-                    const maxDate = addDays(sessionToMutate.sessionInfo.startedAt, 6);
+                    const maxDate = addDays(sessionToMutate.sessionInfo.startedAt, 7);
                     const dateTime = assignDateTime(extractedInfo[param]);
-                    maxDate.setHours(23, 59, 59);
                     console.log(`Update: Parsed dateTime: ${JSON.stringify(dateTime)}`);
                     if (dateTime.start > maxDate) {
                         console.log('Update: dateTime totally exceed schedule');
@@ -104,7 +103,7 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
 
     if (dateExceeds) {
         sessionToMutate.status = { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE };
-        await invalidDateTime(sessionToMutate.chatId, sessionToMutate.confirmPayload.adjustedDateTime);
+        await invalidDateTime(sessionToMutate.chatId, sessionToMutate.sessionInfo.startedAt, sessionToMutate.confirmPayload.adjustedDateTime);
         output.ok = false;
     }
 
