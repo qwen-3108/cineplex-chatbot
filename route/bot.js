@@ -6,7 +6,7 @@ const { cache, bookTickets } = require('../_database/query');
 
 const { INTENT } = require('../@global/CONSTANTS');
 const printTickets = require('../@util/printTickets');
-const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, sendError } = require('../_telegram/reply');
+const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, sendError, firstTimes } = require('../_telegram/reply');
 
 const slotFilling = require('./handlers/service/book/helpers/slotFilling');
 const replyToConfirmHandler = require('./handlers/replyToConfirmHandler');
