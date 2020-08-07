@@ -1,8 +1,8 @@
 const { format } = require('date-fns');
-const { PARAMETERS } = require('../../../../../@global/CONSTANTS');
+const { PARAMETERS } = require('../../../../@global/CONSTANTS');
 const CUSTOMER_TYPE = PARAMETERS.CUSTOMER_TYPE;
-const assignDateTime = require('../../../../../@util/assignDateTime');
-const sendMessage = require('../../../../../_telegram/post');
+const assignDateTime = require('../../../../@util/assignDateTime');
+const sendMessage = require('../../../../_telegram/post/sendMessage');
 
 module.exports = async function price({ text, extractedInfo, sessionToMutate }) {
 
