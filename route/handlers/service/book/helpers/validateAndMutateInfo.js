@@ -39,7 +39,7 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                     break;
                 case 'date-time':
                     console.log('Update: Validating date-time...');
-                    const { maxDate, maxTimePhrase } = decideMaxTime(sessionToMutate.sessionInfo.startedAt);
+                    const { maxDate } = decideMaxTime(sessionToMutate.sessionInfo.startedAt);
                     const dateTime = assignDateTime(extractedInfo[param]);
                     console.log(`Update: Parsed dateTime: ${JSON.stringify(dateTime)}`);
                     if (dateTime.start > maxDate) {
