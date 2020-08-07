@@ -150,7 +150,7 @@ function showtimeNotUp(maxDate) {
         type: 'article',
         id: 'showtime not available',
         title: 'Oops! Schedules Not Available ',
-        description: `Showtimes are only updated until ${decideMaxDate.phrase(maxDate)}`,
+        description: `Showtimes are updated until ${decideMaxDate.phrase(maxDate)} :)`,
         thumb_url: NA_THUMB,
         input_message_content,
     });
