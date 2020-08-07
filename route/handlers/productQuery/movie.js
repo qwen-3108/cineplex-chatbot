@@ -5,7 +5,7 @@ const { SEC_STATUS } = require('../../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../../@global/COLLECTIONS');
 const sendMessage = require('../../../_telegram/post/sendMessage');
 
-module.exports = async function movieAvailability(chat_id, extractedInfo, currentSession) {
+module.exports = async function movieAvailability(extractedInfo, currentSession) {
     console.log('-----checking movie availability-----');
     const movie = await COLLECTIONS.movies.findOne({ title: extractedInfo.movie }, { projection: { title: 1, debutDateTime: 1, isBlockBuster: 1 } });
     const latestDate = addDays(new Date('2020-05-17T23:59'), 7);
@@ -38,6 +38,6 @@ module.exports = async function movieAvailability(chat_id, extractedInfo, curren
         currentSession.payload.movie.isBlockBuster = movie.isBlockBuster;
     }
 
-    await sendMessage(chat_id, text);
+    await sendMessage(currentSession.chatId, text);
 
 }

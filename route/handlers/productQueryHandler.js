@@ -14,7 +14,7 @@ module.exports = async function productQueryHandler({ text, intentArr, extracted
             await nowShowing(sessionToMutate.chatId);
             break;
         case PRODUCT_QUERY.MOVIE.SELF:
-            await movie(sessionToMutate.chatId, extractedInfo, sessionToMutate);
+            await movie(extractedInfo, sessionToMutate);
             break;
         default:
             throw `Unrecognized product query sub intent ${intentArr[1]}`;

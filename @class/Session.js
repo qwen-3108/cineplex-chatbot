@@ -33,7 +33,8 @@ module.exports = class Session {
                 dateTime: {
                     start: null, end: null,
                     daysToDbDate: differenceInCalendarDays(this.sessionInfo.startedAt, todayDbDate),
-                    nextWeekAreDaysLessThan: todayDay
+                    nextWeekAreDaysLessThan: todayDay,
+                    sessionStartedAt: this.sessionInfo.startedAt
                 },
                 place: null,
                 cinema: [],

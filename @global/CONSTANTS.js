@@ -141,7 +141,11 @@ module.exports = {
         },
         CANCEL: { SELF: 'cancel' },
         END: { SELF: 'cancel - yes' },
-        CONFIRM: { SELF: 'confirm' },
+        REPLY_TO_CONFIRM: {
+            SELF: 'replyToConfirm',
+            YES: { SELF: 'yes' },
+            NO: { SELF: 'no' },
+        },
         FALLBACK: { SELF: 'fallback' },
         WELCOME: { SELF: 'welcome' },
         INLINE: {

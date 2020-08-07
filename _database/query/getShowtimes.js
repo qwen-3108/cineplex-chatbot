@@ -3,14 +3,14 @@ const { NO_RESULT_REASON } = require('../../@global/CONSTANTS');
 const makeDbQuery = require('../../@util/makeDbQuery');
 const whyNoSchedules = require('./whyNoSchedules');
 
-module.exports = async function getShowtimes(bookingInfo, { projection = {}, offset = 0 }) {
+module.exports = async function getShowtimes(bookingInfo, { projection = {}, offset }) {
 
     console.log('Filtering and retrieving showtimes - getShowtimes.js');
     const output = { success: undefined, showtimes: [], noResultReason: null, alternativeQuery: null };
 
     const { combinedQuery, availabilityQuery } = makeDbQuery(bookingInfo);
 
-    if (offset !== "") {
+    if (offset !== undefined) {
         const searchCursor = await COLLECTIONS.showtimes.find({ ...combinedQuery, ...availabilityQuery }, projection).skip(offset).limit(10).sort({ dateTime: 1 });
         output.showtimes = await searchCursor.project(projection).toArray();
         if (output.showtimes.length === 0) {

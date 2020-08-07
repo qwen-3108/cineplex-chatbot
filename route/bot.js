@@ -9,12 +9,13 @@ const printTickets = require('../@util/printTickets');
 const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, sendError } = require('../_telegram/reply');
 
 const slotFilling = require('./handlers/service/book/helpers/slotFilling');
-const confirmHandler = require('./handlers/confirmHandler');
+const replyToConfirmHandler = require('./handlers/replyToConfirmHandler');
 const callbackHandler = require('./handlers/callbackHandler');
 const faqHandler = require('./handlers/faqHandler');
 const serviceHandler = require('./handlers/serviceHandler');
 const bookHandler = require('./handlers/service/book');
 const productQueryHandler = require('./handlers/productQueryHandler');
+const toFallback = require('../_telegram/reply/toFallback');
 
 bot.post('/', async function (req, res) {
 
@@ -92,10 +93,10 @@ bot.post('/', async function (req, res) {
                                 break;
                             case INTENT.FALLBACK.SELF:
                                 currentSession.counter.fallbackCount++;
-                                await fallbackHandler({ chat_id: chat.id, currentSession });
+                                await toFallback({ chat_id: chat.id, currentSession });
                                 break;
-                            case INTENT.CONFIRM.SELF:
-                                await confirmHandler({ text, sessionToMutate: currentSession });
+                            case INTENT.REPLY_TO_CONFIRM.SELF:
+                                await replyToConfirmHandler({ intentArr, text, sessionToMutate: currentSession });
                                 break;
                             case INTENT.SERVICE.SELF:
                                 await serviceHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
