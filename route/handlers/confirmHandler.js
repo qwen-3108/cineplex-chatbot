@@ -1,4 +1,4 @@
-const { confirmDetails, getEditSeats, sendSeatLegend, sendSeatPlan, getPayment } = require('../../_telegram/reply');
+const { getDayWithinSchedule, confirmDetails, getEditSeats, sendSeatLegend, sendSeatPlan, getPayment } = require('../../_telegram/reply');
 const slotFilling = require('./service/book/helpers/slotFilling');
 const mutateSeatNumbers = require('./service/book/helpers/mutateSeatNumbers');
 const { MAIN_STATUS, SEC_STATUS } = require('../../@global/CONSTANTS');
@@ -24,18 +24,21 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
 
         case MAIN_STATUS.PROMPT_DATETIME:
             console.log('Received user agreement to adjust date time range');
-            if (status.secondary === SEC_STATUS.EXCEED_SCHEDULE) {
-                const { start, end } = confirmPayload.adjustedDateTime;
-                sessionToMutate.bookingInfo.dateTime.start = start;
-                sessionToMutate.bookingInfo.dateTime.end = end;
-                sessionToMutate.confirmPayload.adjustedDateTime = {};
-                console.log('Removed confirmPayload.adjustedDateTime: ', JSON.stringify(sessionToMutate));
-                await slotFilling({ text, sessionToMutate });
-            } else {
-                throw `${__filename} | Nothing to confirm for this state ${JSON.stringify(status)}`;
+            switch (status.secondary) {
+                case SEC_STATUS.EXCEED_SCHEDULE_PARTIAL:
+                    const { start, end } = confirmPayload.adjustedDateTime;
+                    sessionToMutate.bookingInfo.dateTime.start = start;
+                    sessionToMutate.bookingInfo.dateTime.end = end;
+                    sessionToMutate.confirmPayload.adjustedDateTime = {};
+                    console.log('Removed confirmPayload.adjustedDateTime: ', JSON.stringify(sessionToMutate));
+                    await slotFilling({ text, sessionToMutate });
+                    break;
+                case SEC_STATUS.EXCEED_SCHEDULE_TOTAL:
+                    await getDayWithinSchedule(sessionToMutate.chatId);
+                default:
+                    throw `${__filename} | Nothing to confirm for this state ${JSON.stringify(status)}`;
             }
             break;
-
         case MAIN_STATUS.CHOOSE_SEAT:
             {
                 switch (status.secondary) {

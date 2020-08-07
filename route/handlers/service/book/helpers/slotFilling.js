@@ -1,8 +1,8 @@
-const { addDays } = require('date-fns');
 const { MAIN_STATUS } = require('../../../../../@global/CONSTANTS');
 const { fillSlot, noResult, warnPlatinum } = require('../../../../../_telegram/reply');
 const { checkAvailable, getShowtimes, getCinemas, cache } = require('../../../../../_database/query');
 const makeInlineQueryResult = require('../../../../../@util/makeInlineQueryResult');
+const decideMaxDate = require('../../../../../@util/decideMaxDate');
 
 module.exports = async function slotFilling({ text, sessionToMutate }) {
 
@@ -42,7 +42,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                         await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
                         return;
                     }
-                    await fillSlot.getDateTime(chatId, text, sessionToMutate.sessionInfo.startedAt);
+                    await fillSlot.getDateTime(chatId, text, decideMaxDate.date(sessionToMutate.sessionInfo.startedAt));
                     break;
                 }
             case MAIN_STATUS.GET_CINEMA:

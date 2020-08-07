@@ -4,6 +4,7 @@ module.exports = {
     //fill slot
     fillSlot: require('./reply/fillSlot'),
     invalidDateTime: require('./reply/invalidDateTime'),
+    getDayWithinSchedule: require('./reply/getDayWithinSchedule'),
     noResult: require('./reply/noResult'),
     upcomingMovie: require('./reply/upcomingMovie'),
     warnPlatinum: require('./reply/warnPlatinum'),

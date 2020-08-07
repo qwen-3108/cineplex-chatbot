@@ -20,21 +20,19 @@ const askAboutClose = function (text) {
     return regex.test(text);
 }
 
-module.exports = async function operatingHours(chatId, text, extractedInfo) {
+module.exports = async function operatingHours(chatId, text, extractedInfo, sessionInfo) {
 
     console.log('-----Getting operating hours-----')
     const cinema = extractedInfo['cinema'];
-    let dateTime = {};
+    let dateTime = { start: null, end: null, sessionStartedAt: sessionInfo.startedAt };
     if (extractedInfo['date-time'] != '') {
-        dateTime = assignDateTime(extractedInfo['date-time']);
-    } else {
-        dateTime = { start: null, end: null };
+        dateTime = { ...dateTime, ...assignDateTime(extractedInfo['date-time']) };
     }
 
     let reply = '';
     if (cinema == '' || dateTime.start === null) {
         reply = 'Our box office opens half an hour before the earliest movie of the day and ' +
-            'closes half an hour after the last movie of the day, which is generally from 9:30am to 4:30am of the next day';
+            'closes half an hour after the last movie (which is generally from 9:30am to 4:30am of the next day) :)';
     } else {
 
         const dateTimePhrase = makeDateTimePhrase(dateTime);

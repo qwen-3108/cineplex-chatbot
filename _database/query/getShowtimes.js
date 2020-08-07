@@ -5,7 +5,7 @@ const whyNoSchedules = require('./whyNoSchedules');
 
 module.exports = async function getShowtimes(bookingInfo, { projection = {}, offset = 0 }) {
 
-    console.log('Filtering and retrieving showtimes');
+    console.log('Filtering and retrieving showtimes - getShowtimes.js');
     const output = { success: undefined, showtimes: [], noResultReason: null, alternativeQuery: null };
 
     const { combinedQuery, availabilityQuery } = makeDbQuery(bookingInfo);

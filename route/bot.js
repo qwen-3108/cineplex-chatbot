@@ -106,7 +106,7 @@ bot.post('/', async function (req, res) {
                             case INTENT.FAQ.SELF:
                                 await faqHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                                 break;
-                            case INTENT.BOOK.SELF:
+                            case INTENT.SERVICE.BOOK.SELF:
                                 await bookHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                             // case INTENT.BOOK:
                             // case INTENT.ANSWER:

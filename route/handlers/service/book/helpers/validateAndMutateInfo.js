@@ -3,7 +3,7 @@ const { COLLECTIONS } = require('../../../../../@global/COLLECTIONS');
 const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
 const assignDateTime = require('../../../../../@util/assignDateTime');
 const { upcomingMovie, invalidDateTime } = require('../../../../../_telegram/reply');
-const decideMaxTime = require('../../../../../@util/decideMaxTime');
+const decideMaxDate = require('../../../../../@util/decideMaxDate');
 
 module.exports = async function validateAndMutateInfo({ extractedInfo, sessionToMutate }) {
 
@@ -11,7 +11,7 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
     console.log('BookingInfo before assignment: ', JSON.stringify(sessionToMutate.bookingInfo));
 
     let output = { ok: true };
-    let dateExceeds = false;
+    let dateExceeds = null;
 
     for (const param in extractedInfo) {
         if (extractedInfo[param] !== "") {
@@ -39,30 +39,21 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                     break;
                 case 'date-time':
                     console.log('Update: Validating date-time...');
-                    const { maxDate } = decideMaxTime(sessionToMutate.sessionInfo.startedAt);
+                    const maxDate = decideMaxDate.date(sessionToMutate.sessionInfo.startedAt);
                     const dateTime = assignDateTime(extractedInfo[param]);
                     console.log(`Update: Parsed dateTime: ${JSON.stringify(dateTime)}`);
                     if (dateTime.start > maxDate) {
                         console.log('Update: dateTime totally exceed schedule');
-                        dateExceeds = true;
-                        sessionToMutate.confirmPayload.adjustedDateTime = {
-                            start: sessionToMutate.sessionInfo.startedAt,
-                            end: maxDate
-                        };
+                        dateExceeds = { isTotal: true, maxDate };
                     } else if (dateTime.end > maxDate) {
                         console.log('Update: dateTime partially exceed schedule');
-                        dateExceeds = true;
+                        dateExceeds = { isTotal: false, maxDate };
                         sessionToMutate.confirmPayload.adjustedDateTime = { start: dateTime.start, end: maxDate };
                     } else {
                         console.log('Update: dateTime within viable range, assigning to bookingInfo, clearing confirmPayload if any');
                         sessionToMutate.bookingInfo.dateTime.start = dateTime.start;
                         sessionToMutate.bookingInfo.dateTime.end = dateTime.end;
                         sessionToMutate.confirmPayload.adjustedDateTime = {}; //user provide values themselves at adjusted date time
-                    }
-                    if (dateExceeds) {
-                        sessionToMutate.status = { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE };
-                        await invalidDateTime(sessionToMutate.chatId, sessionToMutate.confirmPayload.adjustedDateTime, maxTimePhrase);
-                        output.ok = false;
                     }
                     break;
                 case 'place':
@@ -106,6 +97,15 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
         }
     }
     console.log(`BookingInfo after assignment: ${JSON.stringify(sessionToMutate.bookingInfo)}`);
+
+    //handle failed validation (currently only date-time)
+    if (dateExceeds) {
+        output.ok = false;
+        sessionToMutate.status = dateExceeds.isTotal
+            ? { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE_TOTAL }
+            : { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE_PARTIAL };
+        await invalidDateTime(sessionToMutate.chatId, dateExceeds.isTotal, dateExceeds.maxDate);
+    }
 
     //return whether validation ok
     console.log('output from validateAndMutateInfo.js: ', JSON.stringify(output));

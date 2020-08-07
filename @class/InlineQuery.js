@@ -7,7 +7,7 @@ const { INTENT, NO_RESULT_REASON, DATES_IN_DB } = require('../@global/CONSTANTS'
 const assignDateTime = require('../@util/assignDateTime');
 const makeInlineQueryResult = require('../@util/makeInlineQueryResult');
 const answerInlineQuery = require('../_telegram/post/answerInlineQuery');
-const decideMaxTime = require('../@util/decideMaxTime');
+const decideMaxTime = require('../@util/decideMaxDate');
 
 
 module.exports = class InlineQuery {

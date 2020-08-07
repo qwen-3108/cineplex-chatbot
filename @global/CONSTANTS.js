@@ -168,7 +168,8 @@ module.exports = {
     SEC_STATUS: {
         //slot filling
         NULL: null,
-        EXCEED_SCHEDULE: 'exceed schedule',
+        EXCEED_SCHEDULE_TOTAL: 'exceed schedule total',
+        EXCEED_SCHEDULE_PARTIAL: 'exceed schedule partial',
         UPCOMING_MOVIE: 'upcoming-movie',
         WARN_PLATINUM: 'warn platinum',
         CONFIRM_EDIT: 'confirm-edit',

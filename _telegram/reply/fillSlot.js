@@ -1,10 +1,9 @@
-const { format } = require('date-fns');
 const { INLINE_KEYBOARD } = require('../../@global/CONSTANTS');
 const Phrases = require('../../@global/PHRASES');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 const calculatePrice = require('../../@util/calculatePrice');
 const sendMessage = require('../post/sendMessage');
-const decideMaxTime = require('../../@util/decideMaxTime');
+const decideMaxDate = require('../../@util/decideMaxDate');
 
 module.exports = { getMovie, getDateTime, getCinema, getExactSlot, getExperienceOnly, confirmProceed };
 
@@ -16,10 +15,9 @@ async function getMovie(chat_id, text) {
 
 }
 
-async function getDateTime(chat_id, text, startedAt) {
+async function getDateTime(chat_id, text, maxDate) {
 
-    const { maxTimePhrase } = decideMaxTime(startedAt);
-    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Around when? Showtimes are up until ${maxTimePhrase}`;
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Around when? Showtimes are up until ${decideMaxDate.phrase(maxDate)}`;
     await sendMessage(chat_id, reply);
 
 }

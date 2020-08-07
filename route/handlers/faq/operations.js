@@ -12,7 +12,7 @@ module.exports = async function ({ text, intentArr, extractedInfo, sessionToMuta
     console.log('-----operationHandler triggered-----');
     console.log('operation subintent: ', intentArr[2]);
 
-    const chatId = sessionToMutate.chatId;
+    const { chatId, sessionInfo } = sessionToMutate;
 
     switch (intentArr[2]) {
         case OPERATIONS.ADVANCE_BOOKING.SELF:
@@ -32,7 +32,7 @@ module.exports = async function ({ text, intentArr, extractedInfo, sessionToMuta
             break;
         case OPERATIONS.OPERATING_HOURS.SELF:
             {
-                await operatingHours(chatId, text, extractedInfo);
+                await operatingHours(chatId, text, extractedInfo, sessionInfo);
             }
             break;
         case OPERATIONS.SHOWTIME_UPDATING.SELF:
