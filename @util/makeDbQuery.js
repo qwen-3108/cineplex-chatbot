@@ -1,5 +1,5 @@
 const { DATES_IN_DB } = require('../@global/CONSTANTS');
-const { differenceInCalendarDays } = require('date-fns');
+const { differenceInCalendarDays, addHours } = require('date-fns');
 const decideMaxTime = require('./decideMaxTime');
 
 module.exports = function makeDbQuery(bookingInfo) {

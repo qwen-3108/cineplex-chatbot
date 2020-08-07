@@ -19,7 +19,7 @@ module.exports = class InlineQuery {
         const todayDbDate = new Date(DATES_IN_DB[todayDay]);
         const { maxDate } = decideMaxTime(today);
         this.queryFilter = {
-            dateTime: { start: today, end: maxDate, daysToDbDate: differenceInCalendarDays(today, todayDbDate), nextWeekAreDaysLessThan: todayDay },
+            dateTime: { start: today, end: maxDate, sessionStartedAt: today, daysToDbDate: differenceInCalendarDays(today, todayDbDate), nextWeekAreDaysLessThan: todayDay },
             movie: { title: null, id: null },
             cinema: []
         };
