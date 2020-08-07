@@ -1,4 +1,4 @@
-const { addDays } = require('date-fns');
+const { addDays, format } = require('date-fns');
 
 module.exports = function decideMaxTime(startedAt) {
 
@@ -23,13 +23,13 @@ module.exports = function decideMaxTime(startedAt) {
 
         output.maxDate = addDays(startedAt, 7);
         output.maxDate.setHours(11, 59, 59);
-        output.maxTimePhrase = `coming ${format(maxDate, 'EEEE (d/M)')} noon`;
+        output.maxTimePhrase = `coming ${format(output.maxDate, 'EEEE (d/M)')} noon`;
 
     } else if (startTime >= 18 && startTime <= 23) {
 
         output.maxDate = addDays(startedAt, 7);
         output.maxDate = setHours(17, 59, 59);
-        output.maxTimePhrase = `coming ${format(maxDate, 'EEEE (d/M)')} afternoon`;
+        output.maxTimePhrase = `coming ${format(output.maxDate, 'EEEE (d/M)')} afternoon`;
 
     }
 

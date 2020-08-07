@@ -39,11 +39,7 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                     break;
                 case 'date-time':
                     console.log('Update: Validating date-time...');
-<<<<<<< HEAD
                     const { maxDate, maxTimePhrase } = decideMaxTime(sessionToMutate.sessionInfo.startedAt);
-=======
-                    const maxDate = addDays(sessionToMutate.sessionInfo.startedAt, 7);
->>>>>>> 6f5ce601053136e4d585e9624578d012e433f3be
                     const dateTime = assignDateTime(extractedInfo[param]);
                     console.log(`Update: Parsed dateTime: ${JSON.stringify(dateTime)}`);
                     if (dateTime.start > maxDate) {
@@ -62,6 +58,11 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                         sessionToMutate.bookingInfo.dateTime.start = dateTime.start;
                         sessionToMutate.bookingInfo.dateTime.end = dateTime.end;
                         sessionToMutate.confirmPayload.adjustedDateTime = {}; //user provide values themselves at adjusted date time
+                    }
+                    if (dateExceeds) {
+                        sessionToMutate.status = { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE };
+                        await invalidDateTime(sessionToMutate.chatId, sessionToMutate.confirmPayload.adjustedDateTime, maxTimePhrase);
+                        output.ok = false;
                     }
                     break;
                 case 'place':
@@ -105,12 +106,6 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
         }
     }
     console.log(`BookingInfo after assignment: ${JSON.stringify(sessionToMutate.bookingInfo)}`);
-
-    if (dateExceeds) {
-        sessionToMutate.status = { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE };
-        await invalidDateTime(sessionToMutate.chatId, sessionToMutate.sessionInfo.startedAt, sessionToMutate.confirmPayload.adjustedDateTime);
-        output.ok = false;
-    }
 
     //return whether validation ok
     console.log('output from validateAndMutateInfo.js: ', JSON.stringify(output));

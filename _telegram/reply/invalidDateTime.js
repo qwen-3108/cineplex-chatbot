@@ -3,7 +3,7 @@ const Phrases = require('../../@global/PHRASES');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 const sendMessage = require('../post/sendMessage');
 
-module.exports = async function invalidDateTime(chat_id, adjustedDateTime) {
+module.exports = async function invalidDateTime(chat_id, adjustedDateTime, maxTimePhrase) {
 
     const { start, end: max } = adjustedDateTime;
 
@@ -12,7 +12,7 @@ module.exports = async function invalidDateTime(chat_id, adjustedDateTime) {
     if (differenceInHours(max, start) > 24) {
         const startStart = new Date(start); startStart.setHours(0);
         const startEnd = new Date(start); startEnd.setHours(23);
-        dateTimeStr = `from ${makeDateTimePhrase({ start: startStart, end: startEnd })} to ${format(max, 'd MMMM')}`;
+        dateTimeStr = `from ${makeDateTimePhrase({ start: startStart, end: startEnd })} to ${maxTimePhrase}`;
         maxStr = `after ${format(max, 'd MMMM (E)')}`;
     } else {
         //use case: On Sunday, user query for showtime 'this weekend' > start = max = sat
