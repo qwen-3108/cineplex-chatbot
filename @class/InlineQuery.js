@@ -35,10 +35,18 @@ module.exports = class InlineQuery {
             if (extractedInfo[param] !== "") {
                 switch (param) {
                     case "date-time":
+                        const maxDate = decideMaxDate.date(this.queryFilter.dateTime.sessionStartedAt);
                         const { start, end } = assignDateTime(extractedInfo['date-time']);
-                        this.queryFilter.dateTime.start = start;
-                        this.queryFilter.dateTime.end = end;
-                        //showtime not up handler
+                        if (start > maxDate) {
+                            console.log('dateTime totally exceed schedule');
+                            const inlineQueryResult = makeInlineQueryResult.showtimeNotUp(maxDate);
+                            await answerInlineQuery(this.queryId, inlineQueryResult);
+                            return;
+                        } else {
+                            console.log('dateTime within viable range, assigning to queryFilter');
+                            this.queryFilter.dateTime.start = start;
+                            this.queryFilter.dateTime.end = end;
+                        }
                         break;
                     case "movie-status":
                         this.queryFilter.movieStatus = extractedInfo[param];

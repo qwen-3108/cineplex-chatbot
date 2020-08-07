@@ -128,8 +128,8 @@ function resultExpired() {
     inlineQueryResult.push({
         type: 'article',
         id: 'result expired',
-        title: 'OOPS! Search Expired',
-        description: 'Tell me your preferred movie or date/location to watch a movie again! :)',
+        title: 'Oops! Search Expired',
+        description: 'Tell me your preferred movie or date/location again! :)',
         thumb_url: NA_THUMB,
         input_message_content,
     });
@@ -149,7 +149,7 @@ function showtimeNotUp(maxDate) {
     inlineQueryResult.push({
         type: 'article',
         id: 'showtime not available',
-        title: 'OOPS! Schedules Not Available ',
+        title: 'Oops! Schedules Not Available ',
         description: `Showtimes are only updated until ${decideMaxDate.phrase(maxDate)}`,
         thumb_url: NA_THUMB,
         input_message_content,
@@ -171,13 +171,13 @@ function noResult({ type }) { //type = 'movie' or 'showtime'
     switch (type) {
         case 'movie':
             inlineQueryResult.input_message_content = { message_text: 'No movies found 🍃' };
-            inlineQueryResult.title = 'OOPS! No Movies Found';
+            inlineQueryResult.title = 'Oops! No Movies Found';
             inlineQueryResult.description = 'Try another day / place?';
             inlineQueryResult.reply_markup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
             break;
         case 'showtime':
             inlineQueryResult.input_message_content = { message_text: 'No showtimes found 🍃' };
-            inlineQueryResult.title = 'OOPS! No Showtimes Found';
+            inlineQueryResult.title = 'Oops! No Showtimes Found';
             inlineQueryResult.description = 'Try another movie / day / place?';
             break;
         default:

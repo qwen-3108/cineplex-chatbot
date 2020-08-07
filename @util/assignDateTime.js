@@ -30,5 +30,6 @@ module.exports = function assignDateTime(dateTimeObj) {
         throw `${__filename} | Unrecongized dateTimeObj format: ${JSON.stringify(dateTimeObj)}`;
     }
 
+    console.log('Parsed date time: ', JSON.stringify(date));
     return date;
 };
