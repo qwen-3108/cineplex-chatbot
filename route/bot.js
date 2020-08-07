@@ -1,13 +1,13 @@
 const bot = require('express').Router();
-
-const { INTENT, MAIN_STATUS, SEC_STATUS } = require('../@global/CONSTANTS');
 const Session = require('../@class/Session');
 const InlineQuery = require('../@class/InlineQuery');
-const printTickets = require('../@util/printTickets');
-const resetBookingInfo = require('../@util/resetBookingInfo');
 const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const { cache, bookTickets } = require('../_database/query');
-const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, toFallback, alertMultipleShowtimes, toEditSeatReq, confirmEdit, faqTicketPrice, faqMovieAvailability, faq, sendError } = require('../_telegram/reply');
+
+const { INTENT } = require('../@global/CONSTANTS');
+const printTickets = require('../@util/printTickets');
+const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, sendError } = require('../_telegram/reply');
+
 const slotFilling = require('./handlers/service/book/helpers/slotFilling');
 const confirmHandler = require('./handlers/confirmHandler');
 const callbackHandler = require('./handlers/callbackHandler');

@@ -3,6 +3,7 @@ const getShowTimes = require('../../../../_database/query/getShowtimes');
 const assignDateTime = require('../../../../@util/assignDateTime');
 const CONSTANTS = require('../../../../@global/CONSTANTS');
 const makeDateTimePhrase = require("../../../../@util/makeDateTimePhrase");
+const isTimeLessThan = require('../../../../@util/isTimeLessThan');
 const { addDays, addMinutes, subMinutes } = require("date-fns");
 
 const isYesNo = function (text) {
@@ -19,31 +20,16 @@ const askAboutClose = function (text) {
     return regex.test(text);
 }
 
-const extractTime = function (dateTime) {
-    return [
-        dateTime.getHours(),
-        dateTime.getMinutes()
-    ];
-}
-
-// t1, t2 are arrays of [hour, minute]
-const isBefore = function (t1, t2) {
-    if (t1[0] < t2[0]) {
-        return true;
-    } else if (t1[0] > t2[0]) {
-        return false;
-    } else if (t1[1] < t2[1]) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 module.exports = async function operatingHours(chatId, text, extractedInfo) {
 
     console.log('-----Getting operating hours-----')
     const cinema = extractedInfo['cinema'];
-    const dateTime = assignDateTime(extractedInfo['date-time']);
+    let dateTime = {};
+    if (extractedInfo['date-time'] != '') {
+        dateTime = assignDateTime(extractedInfo['date-time']);
+    } else {
+        dateTime = { start: null, end: null };
+    }
 
     let reply = '';
     if (cinema == '' || dateTime.start === null) {
@@ -54,11 +40,7 @@ module.exports = async function operatingHours(chatId, text, extractedInfo) {
         const dateTimePhrase = makeDateTimePhrase(dateTime);
 
         // calculate operating hours of the date
-        const dateTimeCopy = {};
-        dateTimeCopy.start = new Date(dateTime.start.getTime());
-        dateTimeCopy.start.setHours(6, 0, 0);
-        dateTimeCopy.end = addDays(dateTimeCopy.start, 1);
-        const tempBookingInfo = { movie: { id: null }, cinema: [cinema], dateTime: dateTimeCopy };
+        const tempBookingInfo = { movie: { id: null }, cinema: [cinema], dateTime: dateTime };
         const { showtimes } = await getShowTimes(tempBookingInfo, { projection: { movieId: 1, dateTime: 1 } });
 
         if (showtimes.length === 0) {
@@ -90,9 +72,9 @@ module.exports = async function operatingHours(chatId, text, extractedInfo) {
                 }
                 // time specified, assume YesNo question
             } else {
-                if (isBefore(extractTime(dateTime.start), extractTime(openingTime))) {
+                if (isTimeLessThan(dateTime.start, openingTime)) {
                     reply = `Nope, the box office at ${cinema} will be open after ${openingTime.toLocaleTimeString()} ${dateTimePhrase}, half an hour before the first movie of the day `;
-                } else if (isBefore(extractTime(closingTime), extractTime(dateTime.start))) {
+                } else if (isTimeLessThan(closingTime, dateTime.start)) {
                     reply = `Nope, the box office at ${cinema} will be closing at ${closingTime.toLocaleTimeString()} ${dateTimePhrase}, half an hour after the last movie of the day `;
                 } else {
                     reply = `Yep it will `;

@@ -86,7 +86,7 @@ module.exports = {
         },
         PRODUCT_QUERY: {
             SELF: 'productQuery',
-            NOW_SHOWING: { SELF: 'now showing' },
+            NOW_SHOWING: { SELF: 'nowShowing' },
             MOVIE: {
                 SELF: 'movie',
                 AVAILABLE: { SELF: 'available' },
