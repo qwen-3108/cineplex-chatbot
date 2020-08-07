@@ -19,18 +19,18 @@ module.exports = async function price({ extractedInfo, sessionToMutate }) {
     switch (customerType) {
         case CUSTOMER_TYPE.CHILDREN:
             {
-                reply = "Unfortunately we do not have special rate for chilren. Children who are below 0.9m in height can enter for free but he/she will not be entitled to have a seat to himself/herself. For children taller than 0.9m, tickets need to be purchased and normal rates apply";
+                reply = "Unfortunately we do not have special rates for chilren. Children who are below 0.9m in height can enter for free but he/she will not be entitled to have a seat to himself/herself. For children taller than 0.9m, tickets need to be purchased and normal rates apply 👩🏻‍💻";
             }
             break;
         case CUSTOMER_TYPE.STUDENT:
         case CUSTOMER_TYPE.PIONEER_MERDEKA:
             {
                 const ct = CUSTOMER_TYPE.STUDENT ? 'Student rates' : 'Special rates for pioneer/merdeka generations';
-                const tueRate = CUSTOMER_TYPE.STUDENT ? '*S$6*' : '*S$4*';
-                const rate = CUSTOMER_TYPE.STUDENT ? '*S$7*' : '*S$5*';
+                const tueRate = CUSTOMER_TYPE.STUDENT ? 'S$6' : 'S$4';
+                const rate = CUSTOMER_TYPE.STUDENT ? 'S$7' : 'S$5';
                 //#1: user does not provide time
                 if (dateTime.start === null) {
-                    reply = `${ct} are *S$6* on ${tueRate} (all day!) and ${rate} on Mon, Wed to Fri (before 6pm)`;
+                    reply = `${ct} are *${tueRate}* on Tue (all day!) and *${rate}* on Mon, Wed to Fri (before 6pm)`;
                     break;
                 }
 
@@ -45,7 +45,7 @@ module.exports = async function price({ extractedInfo, sessionToMutate }) {
 
                 //#3: user ask for student price on tue
                 if (startDay === endDay && startDay === 2) {
-                    reply = `That'd be ${tueRate} 😁 applicable to all showtimes of the day`;
+                    reply = `That'd be *${tueRate}* 😁 applicable to all showtimes of the day`;
                     break;
                 }
 
@@ -59,14 +59,14 @@ module.exports = async function price({ extractedInfo, sessionToMutate }) {
                 }
 
                 //#5: user ask for student price on any non-Tue weekday
-                reply = `That'd be ${rate}, applicable to all showtimes before 6pm :)`;
+                reply = `That'd be *${rate}*, applicable to all showtimes before 6pm :)`;
             }
             break;
         case CUSTOMER_TYPE.SENIOR_CITIZEN:
             {
                 //#1: user does not provide time
                 if (dateTime.start === null) {
-                    reply = "Senior citizen rate is , applicable on weekdays to all showtimes before 6pm :)";
+                    reply = "Senior citizen rate is *S$5*, applicable on weekdays to all showtimes before 6pm :)";
                     break;
                 }
 
@@ -82,7 +82,7 @@ module.exports = async function price({ extractedInfo, sessionToMutate }) {
                 //#3: user ask for senior price on tue
                 if (startDay === endDay && startDay === 2) {
                     if (startDay)
-                        reply = "That'd be S$5 :) valid for showtimes before 6pm. For senior citizens who are also Pioneer/Merdeka generations, tickets are available at S$4 for all showtimes on Tuesdays";
+                        reply = "That'd be *S$5* :) valid for showtimes before 6pm. For senior citizens who are also Pioneer/Merdeka generations, tickets are available at *S$4* for all showtimes on Tuesdays";
                     break;
                 }
 
@@ -96,7 +96,7 @@ module.exports = async function price({ extractedInfo, sessionToMutate }) {
                 }
 
                 //#5: user ask for senior price on any non-Tue weekday
-                reply = "That'd be S$5, applicable to all showtimes before 6pm :)";
+                reply = "That'd be *S$5*, applicable to all showtimes before 6pm :)";
             }
             break;
         default:

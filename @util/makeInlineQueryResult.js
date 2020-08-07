@@ -1,9 +1,10 @@
 const { format, addDays } = require('date-fns');
 
-const { CINEMA_THUMB } = require('../@global/CONSTANTS');
+const { INLINE_KEYBOARD, CINEMA_THUMB, NA_THUMB } = require('../@global/CONSTANTS');
 const calculatePrice = require('./calculatePrice');
+const decideMaxDate = require('./decideMaxDate');
 
-module.exports = { movie, cinema, showtime };
+module.exports = { movie, cinema, showtime, resultExpired, showtimeNotUp, noResult };
 
 function movie(movieArr, queryIdentifier) { //queryIdentifier can be query text or unique result ❤️ cacheId string
 
@@ -113,5 +114,76 @@ function showtime(showtimeArr, bookingInfo, queryIdentifier) {
     }
 
     return inlineQueryResult;
+
+}
+
+function resultExpired() {
+
+    const inlineQueryResult = [];
+
+    const input_message_content = {
+        message_text: "Search expired 🥀"
+    };
+
+    inlineQueryResult.push({
+        type: 'article',
+        id: 'result expired',
+        title: 'OOPS! Search Expired',
+        description: 'Tell me your preferred movie or date/location to watch a movie again! :)',
+        thumb_url: NA_THUMB,
+        input_message_content,
+    });
+
+
+    return inlineQueryResult;
+}
+
+function showtimeNotUp(maxDate) {
+
+    const inlineQueryResult = [];
+
+    const input_message_content = {
+        message_text: 'Schedules not up 🦥'
+    };
+
+    inlineQueryResult.push({
+        type: 'article',
+        id: 'showtime not available',
+        title: 'OOPS! Schedules Not Available ',
+        description: `Showtimes are only updated until ${decideMaxDate.phrase(maxDate)}`,
+        thumb_url: NA_THUMB,
+        input_message_content,
+    });
+
+
+    return inlineQueryResult;
+
+}
+
+function noResult({ type }) { //type = 'movie' or 'showtime'
+
+    const inlineQueryResult = {
+        type: 'article',
+        id: 'no result',
+        thumb_url: NA_THUMB
+    };
+
+    switch (type) {
+        case 'movie':
+            inlineQueryResult.input_message_content = { message_text: 'No movies found 🍃' };
+            inlineQueryResult.title = 'OOPS! No Movies Found';
+            inlineQueryResult.description = 'Try another day / place?';
+            inlineQueryResult.reply_markup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
+            break;
+        case 'showtime':
+            inlineQueryResult.input_message_content = { message_text: 'No showtimes found 🍃' };
+            inlineQueryResult.title = 'OOPS! No Showtimes Found';
+            inlineQueryResult.description = 'Try another movie / day / place?';
+            break;
+        default:
+            throw `Unrecognized type ${type} passed to makeInlineQueryResult.noResult`;
+    }
+
+    return [inlineQueryResult];
 
 }
