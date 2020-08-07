@@ -61,7 +61,7 @@ module.exports = async function operatingHours(chatId, text, extractedInfo) {
         const tempBookingInfo = { movie: { id: null }, cinema: [cinema], dateTime: dateTimeCopy };
         const { showtimes } = await getShowTimes(tempBookingInfo, { projection: { movieId: 1, dateTime: 1 } });
 
-        if (showtimes.length == 0) {
+        if (showtimes.length === 0) {
             if (isYesNo(text)) {
                 reply = 'Nope. ';
             }
@@ -77,7 +77,7 @@ module.exports = async function operatingHours(chatId, text, extractedInfo) {
             const openingTime = subMinutes(showtimes[0].dateTime, 30);
 
             // if time not specified
-            if (dateTime.start.toLocaleTimeString() == "12:00:00 AM" && dateTime.end.toLocaleTimeString() == "11:59:59 PM") {
+            if (dateTime.start.toLocaleTimeString() === "12:00:00 AM" && dateTime.end.toLocaleTimeString() === "11:59:59 PM") {
                 if (askAboutClose(text)) {
                     reply += `Our box office at ${cinema} will be open until ${closingTime.toLocaleTimeString()} ${dateTimePhrase}`;
                 } else if (askAboutOpen(text)) {

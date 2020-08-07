@@ -15,6 +15,7 @@ module.exports = async function invalidDateTime(chat_id, adjustedDateTime) {
         dateTimeStr = `from ${makeDateTimePhrase({ start: startStart, end: startEnd })} to ${format(max, 'd MMMM')}`;
         maxStr = `after ${format(max, 'd MMMM (E)')}`;
     } else {
+        //use case: On Sunday, user query for showtime 'this weekend' > start = max = sat
         dateTimeStr = makeDateTimePhrase(adjustedDateTime);
         maxStr = `past ${format(max, 'EEEE')} midnight and after`;
     }

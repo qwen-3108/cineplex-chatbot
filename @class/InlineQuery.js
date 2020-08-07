@@ -14,7 +14,6 @@ module.exports = class InlineQuery {
         this.queryId = queryId;
 
         const today = new Date();
-        today.setHours(6, 0, 0);
         const todayDay = today.getDay();
         const todayDbDate = new Date(DATES_IN_DB[todayDay]);
         const maxDate = addDays(today, 6);
