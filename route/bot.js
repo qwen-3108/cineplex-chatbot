@@ -78,17 +78,19 @@ bot.post('/', async function (req, res) {
                         break;
                     default:
                         const { intent, extractedInfo } = await queryDialogflow(chat.id.toString(), text);
-                        if (intent !== INTENT.FALLBACK) currentSession.counter.fallbackCount = 0;
                         const intentArr = intent.split('.');
                         switch (intentArr[0]) {
                             case INTENT.WELCOME.SELF:
+                                currentSession.counter.fallbackCount = 0;
                                 await basics.welcome(chat.id);
                                 break;
                             case INTENT.END.SELF:
+                                currentSession.counter.fallbackCount = 0;
                                 await basics.end(chat.id);
                                 currentSession.end({ isComplete: false });
                                 break;
                             case INTENT.CANCEL.SELF:
+                                currentSession.counter.fallbackCount = 0;
                                 await basics.cancel(chat.id);
                                 break;
                             case INTENT.FALLBACK.SELF:
@@ -99,112 +101,19 @@ bot.post('/', async function (req, res) {
                                 await replyToConfirmHandler({ intentArr, text, sessionToMutate: currentSession });
                                 break;
                             case INTENT.SERVICE.SELF:
+                                currentSession.counter.fallbackCount = 0;
                                 await serviceHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                                 break;
                             case INTENT.PRODUCT_QUERY.SELF:
+                                currentSession.counter.fallbackCount = 0;
                                 await productQueryHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                                 break;
                             case INTENT.FAQ.SELF:
+                                currentSession.counter.fallbackCount = 0;
                                 await faqHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
                                 break;
                             case INTENT.SERVICE.BOOK.SELF:
                                 await bookHandler({ text, intentArr, extractedInfo, sessionToMutate: currentSession });
-                            // case INTENT.BOOK:
-                            // case INTENT.ANSWER:
-                            // case INTENT.ASK_OTHER:
-                            //     {
-                            //         currentSession.bookingInfo.ticketing = [];
-                            //         if (currentSession.secondary === SEC_STATUS.CONFIRM_EDIT) {
-                            //             const { daysToDbDate, nextWeekAreDaysLessThan } = currentSession.bookingInfo.dateTime;
-                            //             currentSession.bookingInfo = resetBookingInfo(daysToDbDate, nextWeekAreDaysLessThan);
-                            //         }
-                            //         const { ok } = await validateAndMutateInfo({ extractedInfo, sessionToMutate: currentSession });
-                            //         if (ok) {
-                            //             await slotFilling({ text, sessionToMutate: currentSession });
-                            //         }
-                            //     }
-                            //     break;
-                            // case INTENT.EDIT:
-                            //     {
-                            //         const { ok } = await validateAndMutateInfo({ extractedInfo, sessionToMutate: currentSession });
-                            //         if (ok) {
-                            //             currentSession.status.secondary = SEC_STATUS.CONFIRM_EDIT;
-                            //             currentSession.counter.editInfoCount++;
-                            //             const { chatId, bookingInfo, counter } = currentSession;
-                            //             await confirmEdit(chatId, text, bookingInfo, counter.editInfoCount);
-                            //         }
-                            //     }
-                            //     break;
-                            // case INTENT.CHOOSE_SEAT:
-                            // case INTENT.EDIT_SEAT:
-                            //     {
-                            //         const { ticketing } = currentSession.bookingInfo;
-                            //         if (ticketing.length > 1 && ticketing.every(selection => !selection.isSelected)) {
-                            //             console.log('-----confirming chosen showtime-----');
-                            //             currentSession.payload.seatNumber = extractedInfo['seat-number'];
-                            //             console.log("saved seat number to payload: ", currentSession.payload.seatNumber);
-                            //             await alertMultipleShowtimes(chat.id);
-                            //         } else {
-                            //             const expandedSeatNumObj = await assignAndValidateSeats({ text, extractedInfo, sessionToMutate: currentSession });
-                            //             if (expandedSeatNumObj === undefined) break;
-                            //             await mutateSeatNumbers({ expandedSeatNumObj, sessionToMutate: currentSession });
-                            //         }
-                            //     }
-                            //     break;
-                            // case INTENT.ADD_SEAT:
-                            // case INTENT.CHANGE_SEAT:
-                            // case INTENT.REMOVE_SEAT:
-                            //     {
-                            //         currentSession.status = {
-                            //             main: MAIN_STATUS.CHOOSE_SEAT,
-                            //             secondary: SEC_STATUS.MODIFY_SEAT
-                            //         };
-                            //         await toEditSeatReq(chat.id, text, intent);
-                            //     }
-                            //     break;
-                            // case INTENT.FAQ_TICKET_PRICE:
-                            //     {
-                            //         const ok = await validateAndMutateInfo({ extractedInfo, sessionToMutate: currentSession });
-                            //         if (ok) {
-                            //             await getTicketPrice(chat.id, currentSession, extractedInfo['customer-type']);
-                            //         }
-                            //     }
-                            //     break;
-                            // case INTENT.FAQ_OPERATING_HOURS:
-                            //     {
-                            //         await faqOperatingHours(chat.id, extractedInfo);
-                            //     }
-                            //     break;
-                            // case INTENT.FAQ_MOVIE_AVAILABILITY:
-                            //     {
-                            //         await faqMovieAvailability(chat.id, extractedInfo, currentSession);
-                            //     }
-                            //     break;
-                            // case INTENT.FAQ_NOW_SHOWING:
-                            //     {
-                            //         await faq.faqNowShowing(chat.id, extractedInfo);
-                            //     }
-                            //     break;
-                            // case INTENT.FAQ_CANCEL_BOOKING:
-                            //     {
-                            //         await faq.faqCancelBooking(chat.id);
-                            //     }
-                            //     break;
-                            // case INTENT.FAQ_MODIFY_BOOKING:
-                            //     {
-                            //         await faq.faqModifyBooking(chat.id, extractedInfo);
-                            //     }
-                            //     break;
-                            // case INTENT.FAQ_ADVANCE_BOOKING:
-                            //     {
-                            //         await faq.faqAdvanceBooking(chat.id);
-                            //     }
-                            //     break;
-                            // case INTENT.FAQ_MOVIE_SCHED:
-                            //     {
-                            //         await faq.faqMovieScheduleUpdate(chat.id);
-                            //     }
-                            //     break;
                             default:
                                 throw `Custom error: Unrecognized intent ${intent}`;
                         }

@@ -17,7 +17,7 @@ async function getMovie(chat_id, text) {
 
 async function getDateTime(chat_id, text, maxDate) {
 
-    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Around when? Showtimes are up until ${decideMaxDate.phrase(maxDate)}`;
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Around when? Schedules are updated until ${decideMaxDate.phrase(maxDate)}`;
     await sendMessage(chat_id, reply);
 
 }
