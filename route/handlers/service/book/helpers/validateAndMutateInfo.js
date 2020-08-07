@@ -3,6 +3,7 @@ const { COLLECTIONS } = require('../../../../../@global/COLLECTIONS');
 const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
 const assignDateTime = require('../../../../../@util/assignDateTime');
 const { upcomingMovie, invalidDateTime } = require('../../../../../_telegram/reply');
+const decideMaxTime = require('../../../../../@util/decideMaxTime');
 
 module.exports = async function validateAndMutateInfo({ extractedInfo, sessionToMutate }) {
 
@@ -38,9 +39,8 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                     break;
                 case 'date-time':
                     console.log('Update: Validating date-time...');
-                    const maxDate = addDays(sessionToMutate.sessionInfo.startedAt, 6);
+                    const { maxDate, maxTimePhrase } = decideMaxTime(sessionToMutate.sessionInfo.startedAt);
                     const dateTime = assignDateTime(extractedInfo[param]);
-                    maxDate.setHours(23, 59, 59);
                     console.log(`Update: Parsed dateTime: ${JSON.stringify(dateTime)}`);
                     if (dateTime.start > maxDate) {
                         console.log('Update: dateTime totally exceed schedule');

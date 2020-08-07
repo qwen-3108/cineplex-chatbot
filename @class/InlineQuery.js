@@ -7,6 +7,7 @@ const { INTENT, NO_RESULT_REASON, DATES_IN_DB } = require('../@global/CONSTANTS'
 const assignDateTime = require('../@util/assignDateTime');
 const makeInlineQueryResult = require('../@util/makeInlineQueryResult');
 const answerInlineQuery = require('../_telegram/post/answerInlineQuery');
+const decideMaxTime = require('../@util/decideMaxTime');
 
 
 module.exports = class InlineQuery {
@@ -16,7 +17,7 @@ module.exports = class InlineQuery {
         const today = new Date();
         const todayDay = today.getDay();
         const todayDbDate = new Date(DATES_IN_DB[todayDay]);
-        const maxDate = addDays(today, 6);
+        const { maxDate } = decideMaxTime(today);
         this.queryFilter = {
             dateTime: { start: today, end: maxDate, daysToDbDate: differenceInCalendarDays(today, todayDbDate), nextWeekAreDaysLessThan: todayDay },
             movie: { title: null, id: null },
@@ -36,6 +37,7 @@ module.exports = class InlineQuery {
                         const { start, end } = assignDateTime(extractedInfo['date-time']);
                         this.queryFilter.dateTime.start = start;
                         this.queryFilter.dateTime.end = end;
+                        //showtime not up handler
                         break;
                     case "movie-status":
                         this.queryFilter.movieStatus = extractedInfo[param];

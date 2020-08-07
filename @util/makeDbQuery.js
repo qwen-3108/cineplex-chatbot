@@ -1,5 +1,6 @@
 const { DATES_IN_DB } = require('../@global/CONSTANTS');
 const { differenceInCalendarDays } = require('date-fns');
+const decideMaxTime = require('./decideMaxTime');
 
 module.exports = function makeDbQuery(bookingInfo) {
 
@@ -47,8 +48,8 @@ module.exports = function makeDbQuery(bookingInfo) {
 
         //if end on next week overlapping date, trim time after sessionStartTime
         if (adjustedEnd.getDay() === sessionStartedAt.getDay() && differenceInCalendarDays(adjustedEnd, sessionStartedAt) !== 0) {
-            const sessionStartTime = sessionStartedAt.getHours();
-            adjustedEnd.setHours(sessionStartTime - 1, 59, 59);
+            const { maxDate } = decideMaxTime(sessionStartedAt);
+            adjustedEnd.setHours(maxDate.getHours(), 59, 59);
         }
 
         console.log('adjustedStart: ', adjustedStart);

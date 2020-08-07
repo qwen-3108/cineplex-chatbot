@@ -42,13 +42,13 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                         await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
                         return;
                     }
-                    await fillSlot.getDateTime(chatId, text, addDays(sessionToMutate.sessionInfo.startedAt, 6));
+                    await fillSlot.getDateTime(chatId, text, sessionToMutate.sessionInfo.startedAt);
                     break;
                 }
             case MAIN_STATUS.GET_CINEMA:
                 {
                     console.log('-----Prepare to get cinema-----');
-                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {cinema: 1} });
+                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: { cinema: 1 } });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
                         await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
