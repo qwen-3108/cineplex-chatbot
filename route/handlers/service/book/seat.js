@@ -21,7 +21,7 @@ module.exports = async function seat({ text, intentArr, extractedInfo, sessionTo
                     logInfo(sessionToMutate.chatId, '-----confirming chosen showtime-----');
                     sessionToMutate.payload.seatNumber = extractedInfo['seat-number'];
                     logInfo(sessionToMutate.chatId, `saved seat number to payload: ${sessionToMutate.payload.seatNumber}`);
-                    await alertMultipleShowtimes(chat.id);
+                    await alertMultipleShowtimes(sessionToMutate.chatId);
                 } else {
                     const expandedSeatNumObj = await assignAndValidateSeats({ text, extractedInfo, sessionToMutate });
                     if (expandedSeatNumObj === undefined) break;

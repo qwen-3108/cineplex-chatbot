@@ -93,7 +93,9 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                 logInfo(chatId, '-----View seat plan request received-----');
                 typing(chatId);
                 const [scheduleId, daysToDbDate, nextWeekAreDaysLessThan] = value.split(' ');
-                sessionToMutate.bookingInfo.dateTime = { daysToDbDate: Number(daysToDbDate), nextWeekAreDaysLessThan: Number(nextWeekAreDaysLessThan) };
+                // sessionToMutate.bookingInfo.dateTime = { daysToDbDate: Number(daysToDbDate), nextWeekAreDaysLessThan: Number(nextWeekAreDaysLessThan) };
+                sessionToMutate.bookingInfo.dateTime.daysToDbDate = Number(daysToDbDate);
+                sessionToMutate.bookingInfo.dateTime.nextWeekAreDaysLessThan = Number(nextWeekAreDaysLessThan);
 
                 //#1: if first seat plan sent - send description text
                 if (sessionToMutate.bookingInfo.ticketing.length === 0) {
