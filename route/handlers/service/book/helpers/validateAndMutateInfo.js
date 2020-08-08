@@ -1,6 +1,7 @@
 const { addDays } = require('date-fns');
 const { COLLECTIONS } = require('../../../../../@global/COLLECTIONS');
 const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
+const { logInfo } = require('../../../../../@global/LOGS');
 const assignDateTime = require('../../../../../@util/assignDateTime');
 const { upcomingMovie, invalidDateTime } = require('../../../../../_telegram/reply');
 const decideMaxDate = require('../../../../../@util/decideMaxDate');

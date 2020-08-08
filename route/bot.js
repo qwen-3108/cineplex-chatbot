@@ -5,7 +5,8 @@ const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const { cache, bookTickets } = require('../_database/query');
 
 const { INTENT } = require('../@global/CONSTANTS');
-const { logInfo, logError, } = require('../@global/LOGS');
+const { COLLECTIONS } = require('../@global/COLLECTIONS');
+const { logInfo, logError, logConv, getLogs } = require('../@global/LOGS');
 const printTickets = require('../@util/printTickets');
 const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, sendError } = require('../_telegram/reply');
 
@@ -46,20 +47,21 @@ bot.post('/', async function (req, res) {
                 const { chatId, bookingInfo } = currentSession;
                 logInfo(chatId, 'Payment received');
                 const order_info = req.body.message.successful_payment.order_info;
-                const newTickets = await bookTickets(chatId, bookingInfo.ticketing, bookingInfo.seatNumbers, order_info);
+                const newTickets = await bookTickets(currentSession.chatId, bookingInfo.ticketing, bookingInfo.seatNumbers, order_info);
                 const ticketBuffers = await printTickets(newTickets, bookingInfo);
-                await sendTickets(chatId, ticketBuffers);
-                await finish(chatId, bookingInfo.seatNumbers);
+                await sendTickets(currentSession.chatId, ticketBuffers);
+                await finish(currentSession.chatId, bookingInfo.seatNumbers);
                 currentSession.end({ isComplete: true });
             }
 
             //message via bot
             if (req.body.message.hasOwnProperty('via_bot')) {
-                logInfo(chatId, 'Message via bot');
+                logInfo(currentSession.chatId, 'Message via bot');
+                logConv(currentSession.chatId, text);
                 const text = req.body.message.text;
                 if ((/💬/).test(text)) {
                     typing(currentSession.chatId);
-                    logInfo(chatId, 'Updating cinema');
+                    logInfo(currentSession.chatId, 'Updating cinema');
                     currentSession.bookingInfo.cinema = [text.match(/[A-Za-z]+/g).join(' ')];
                     await slotFilling({ text, extractedInfo: {}, sessionToMutate: currentSession });
                 } else if ((/rating/i).test(text) && !currentSession.counter.seenMovieCard) {
@@ -77,32 +79,33 @@ bot.post('/', async function (req, res) {
             if (req.body.message.hasOwnProperty('text') && !req.body.message.hasOwnProperty('via_bot')) {
                 typing(currentSession.chatId);
                 const { text, chat } = req.body.message;
+                logConv(currentSession.chatId, text);
                 switch (text) {
                     case '/start':
-                        await basics.welcome(chat.id);
+                        await basics.welcome(currentSession.chatId);
                         break;
                     case '/help':
                         break;
                     default:
-                        const { intent, extractedInfo } = await queryDialogflow(chat.id.toString(), text);
+                        const { intent, extractedInfo } = await queryDialogflow(currentSession.chatId, text);
                         const intentArr = intent.split('.');
                         switch (intentArr[0]) {
                             case INTENT.WELCOME.SELF:
                                 currentSession.counter.fallbackCount = 0;
-                                await basics.welcome(chat.id);
+                                await basics.welcome(currentSession.chatId);
                                 break;
                             case INTENT.END.SELF:
                                 currentSession.counter.fallbackCount = 0;
-                                await basics.end(chat.id);
+                                await basics.end(currentSession.chatId);
                                 currentSession.end({ isComplete: false });
                                 break;
                             case INTENT.CANCEL.SELF:
                                 currentSession.counter.fallbackCount = 0;
-                                await basics.cancel(chat.id);
+                                await basics.cancel(currentSession.chatId);
                                 break;
                             case INTENT.FALLBACK.SELF:
                                 currentSession.counter.fallbackCount++;
-                                await toFallback({ chat_id: chat.id, currentSession });
+                                await toFallback({ chat_id: currentSession.chatId, currentSession });
                                 break;
                             case INTENT.REPLY_TO_CONFIRM.SELF:
                                 await replyToConfirmHandler({ intentArr, text, sessionToMutate: currentSession });
@@ -127,7 +130,6 @@ bot.post('/', async function (req, res) {
                 }
             }
 
-
             //save session to db
             await currentSession.saveToDb();
 
@@ -137,7 +139,7 @@ bot.post('/', async function (req, res) {
             if (query !== "") {
                 chatId = from.id.toString();
                 let currentInlineQuery = new InlineQuery(id);
-                await currentInlineQuery.handleInlineQuery(query, offset);
+                await currentInlineQuery.handleInlineQuery(query, offset, chatId);
             }
 
         } else if (req.body.hasOwnProperty('pre_checkout_query')) {
@@ -170,9 +172,22 @@ bot.post('/', async function (req, res) {
         }
 
     } catch (ex) {
-        logInfo(chatId, '-----! Error-----');
+        logError(chatId, '-----! Error-----');
         logError(chatId, ex);
         await sendError(chatId);
+
+    } finally {
+
+        const logs = getLogs(chatId);
+        console.log("logs: ", logs);
+        await COLLECTIONS.logs.updateOne(
+            { _id: chatId },
+            [{
+                $set: {
+                    data: { $concat: ["$data", logs] },
+                }
+            }],
+            function (err) { console.log(`Logs updation error: ${err}`) });
     }
 
 });

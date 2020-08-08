@@ -1,9 +1,10 @@
 const dialogflow = require('dialogflow');
 const { addHours } = require('date-fns');
+const { logInfo } = require('../@global/LOGS');
 
 module.exports = async function queryDialogflow(id, message) {
 
-    console.log('-----detecting intent-----');
+    logInfo(id, '-----detecting intent-----');
 
     const sessionClient = new dialogflow.SessionsClient();
     const sessionPath = sessionClient.sessionPath(process.env.DIALOGFLOW_PROJECT_ID, id);
@@ -20,7 +21,7 @@ module.exports = async function queryDialogflow(id, message) {
     const response = await sessionClient.detectIntent(request);
     //log intent
     const intent = response[0].queryResult.intent.displayName;
-    console.log('Detected intent: ', intent);
+    logInfo(id, `Detected intent: ${intent}`);
     //log parameters
     let extractedInfo;
     extractedInfo = flatten({
@@ -38,7 +39,7 @@ module.exports = async function queryDialogflow(id, message) {
             }
         }
     }
-    console.log('Extracted info: ', JSON.stringify(extractedInfo));
+    logInfo(id, `Extracted info: ${JSON.stringify(extractedInfo)}`);
     //return
     return ({
         intent,
@@ -49,8 +50,8 @@ module.exports = async function queryDialogflow(id, message) {
 /*----Helper functions----*/
 
 function flatten(data, depthStr = '/') {
-    // console.log('depth: ', depthStr);
-    // console.log('data to be flattened: ', data);
+    // logInfo(id, 'depth: ', depthStr);
+    // logInfo(id, 'data to be flattened: ', data);
     const notObject = typeof data !== 'object';
     const notArray = Array.isArray(data);
     const notNull = data !== null;
@@ -62,16 +63,16 @@ function flatten(data, depthStr = '/') {
                 const obj = {};
                 for (const key in data.structValue.fields) {
                     obj[key] = flatten(data.structValue.fields[key], depthStr + `${key}/`);
-                    // console.log(`At ${depthStr}, flattened key (${key}): `, obj[key]);
+                    // logInfo(id, `At ${depthStr}, flattened key (${key}): `, obj[key]);
                 }
-                // console.log(`At ${depthStr}, obj: `, obj);
+                // logInfo(id, `At ${depthStr}, obj: `, obj);
                 return obj;
                 break;
             case 'listValue':
                 const arr = data.listValue.values.map((value, index) => {
                     return flatten(value, depthStr + `index ${index}/`);
                 })
-                // console.log('flattened arr', arr);
+                // logInfo(id, 'flattened arr', arr);
                 return arr;
                 break;
             case 'stringValue':

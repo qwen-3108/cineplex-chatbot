@@ -3,7 +3,7 @@ const makeDateTimePhrase = require("./makeDateTimePhrase");
 
 module.exports = function makeInlineQueryInput(alternativeQuery, bookingInfo) {
 
-    console.log('Making inline query input. alternativeQuery received: ', alternativeQuery);
+    console.log(`Making inline query input. alternativeQuery received: ${alternativeQuery}`);
 
     const alternativeSearchStr = [];
 
@@ -45,7 +45,7 @@ module.exports = function makeInlineQueryInput(alternativeQuery, bookingInfo) {
                 break;
         }
     }
-    console.log('Inline query input: ', alternativeSearchStr);
+    console.log(`Inline query input: ${alternativeSearchStr}`);
     return alternativeSearchStr.join(' ');
 
 }

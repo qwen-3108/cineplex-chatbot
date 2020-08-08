@@ -47,7 +47,7 @@ module.exports = function makeDateTimePhrase(dateTime) {
         } else {
             const endStr = endTime === 23 && end.getMinutes() === 59 ? 'midnight' : format(end, 'h aaaa');
             timeStr = 'from ' + format(start, 'h aaaa') + ' to ' + endStr;
-            console.log('timeStr', timeStr);
+            console.log(`timeStr ${timeStr}`);
         }
     }
 

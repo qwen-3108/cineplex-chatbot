@@ -9,7 +9,7 @@ module.exports = function expandSeatPhrases(seatNumArr) {
         let { startSeat, endSeat } = seatNumStr.match(REGEX.START_END_SEAT).groups;
         const startRowChar = startSeat.match(REGEX.ROW_CHAR)[0].toUpperCase();
         const startNum = Number(startSeat.match(REGEX.NUM)[0]);
-        console.log('startSeat, endSeat: ', startSeat, endSeat);
+        console.log(`startSeat, endSeat: ${startSeat} ${endSeat}`);
 
         if (endSeat !== undefined) {
             const endRowChar = endSeat.match(REGEX.ROW_CHAR)[0].toUpperCase();

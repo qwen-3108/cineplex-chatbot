@@ -1,7 +1,7 @@
 const { differenceInCalendarDays } = require('date-fns');
 const { MAIN_STATUS, DATES_IN_DB } = require('../@global/CONSTANTS');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
-const { initializeLogs, logInfo, logError, getLogs } = require('../@global/LOGS');
+const { initializeLogs, logInfo, logError } = require('../@global/LOGS');
 const logType = require('../@util/logType');
 
 module.exports = class Session {
@@ -104,16 +104,6 @@ module.exports = class Session {
             },
             { upsert: true }, function (err) { logError(docId, `Session saving error: ${err}`) });
         logInfo(this.chatId, '-----done-----');
-
-        const logs = getLogs(this.chatId);
-        await COLLECTIONS.logs.updateOne(
-            { _id: this.chatId },
-            [{
-                $set: {
-                    data: { $concat: ["$data", logs] },
-                }
-            }],
-            { upsert: true }, function (err) { console.log(`Logs updation error: ${err}`) });
 
     }
 

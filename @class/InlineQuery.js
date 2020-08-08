@@ -26,7 +26,7 @@ module.exports = class InlineQuery {
         };
     }
 
-    async handleInlineQuery(query, offset) {
+    async handleInlineQuery(query, offset, chatId) {
         const currentOffset = offset === "" ? 0 : Number(offset);
         const { intent, extractedInfo } = await queryDialogflow(this.queryId, 'INLINE_QUERY ' + query);
 
@@ -90,8 +90,6 @@ module.exports = class InlineQuery {
         if (intent === INTENT.INLINE.MOVIE.SELF) {
 
             const { dateTime, cinema, place, movieStatus } = this.queryFilter;
-            // const userId = this.from.id;
-            console.log(this);
 
             let movies;
             let inlineQueryResult;
@@ -113,14 +111,14 @@ module.exports = class InlineQuery {
                     let filteredMovies = showtimes.map(schedule => schedule.movieId);
                     let filteredMovieSet = new Set(filteredMovies);
                     let filteredMovieArr = Array.from(filteredMovieSet);
-                    logInfo(userId, `filteredMovieArr: ${JSON.stringify(filteredMovieArr)}`);
+                    logInfo(chatId, `filteredMovieArr: ${JSON.stringify(filteredMovieArr)}`);
                     movieCursor = await COLLECTIONS.movies.find({ _id: { $in: filteredMovieArr } });
                 } else {
                     //fill inlineQueryResult with some placeholder
                 }
             }
             movies = await movieCursor.toArray();
-            logInfo(userId, movies.map(movie => movie.title));
+            logInfo(chatId, movies.map(movie => movie.title));
             inlineQueryResult = makeInlineQueryResult.movie(movies, query);
             await answerInlineQuery(this.queryId, inlineQueryResult);
 
@@ -146,7 +144,7 @@ module.exports = class InlineQuery {
                 inlineQueryResult = makeInlineQueryResult.showtime(showtimes, this.queryFilter, query);
             }
 
-            // logInfo(userId, JSON.stringify(inlineQueryResult));
+            logInfo(chatId, JSON.stringify(inlineQueryResult));
             await answerInlineQuery(this.queryId, inlineQueryResult, currentOffset + 10);
 
         } else if (intent === INTENT.INLINE.CACHE.SELF) {

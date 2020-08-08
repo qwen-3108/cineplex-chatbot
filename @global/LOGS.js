@@ -1,4 +1,4 @@
-module.exports = { initializeLogs, logInfo, logError, getLogs }
+module.exports = { initializeLogs, logInfo, logError, logConv, getLogs }
 
 const logs = {}
 
@@ -6,6 +6,11 @@ function initializeLogs(id) {
     const time = (new Date()).toISOString();
     logs[id] = `[${time}]\n`;
     console.log("logs[", id, "] initialized: ", logs[id]);
+}
+
+function logConv(id, logText) {
+    console.log(logText);
+    logs[id] += '[CONV]\t' + logText + '\n';
 }
 
 function logInfo(id, logText) {

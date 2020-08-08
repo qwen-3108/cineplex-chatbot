@@ -1,9 +1,9 @@
 const axios = require('axios');
-const { logInfo } = require('../../@global/LOGS');
+const { logConv } = require('../../@global/LOGS');
 
 module.exports = async function sendMessage(chat_id, text, extraData) {
 
-    logInfo(chat_id, `response: ${text}`);
+    logConv(chat_id, `response: ${text}`);
 
     const data = { chat_id: chat_id, text: text };
     if (extraData !== undefined) {

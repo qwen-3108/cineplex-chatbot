@@ -19,7 +19,6 @@ module.exports = function makeDbQuery(bookingInfo) {
 
     if (dateTime.start !== null) {
 
-        console.log(dateTime, dateTime.sessionStartedAt);
         const { start, end, sessionStartedAt } = dateTime;
 
         let adjustedStart;
@@ -33,7 +32,7 @@ module.exports = function makeDbQuery(bookingInfo) {
             //if day is today, trim away time before ask time
             if (isToday) {
                 console.log('isToday, trimming start time');
-                console.log('Enquiry hour: ', sessionStartedAt.getHours());
+                console.log(`Enquiry hour: ${sessionStartedAt.getHours()}`);
                 const sessionStartTime = sessionStartedAt.getHours();
                 adjustedStart = new Date(start);
                 adjustedStart.setHours(sessionStartTime);
@@ -54,8 +53,8 @@ module.exports = function makeDbQuery(bookingInfo) {
             adjustedEnd.setHours(maxDate.getHours(), 59, 59);
         }
 
-        console.log('adjustedStart: ', adjustedStart);
-        console.log('adjustedEnd: ', adjustedEnd);
+        console.log(`adjustedStart: ${adjustedStart}`);
+        console.log(`adjustedEnd: ${adjustedEnd}`);
 
         //if startDay =/= endDay (e.g. weekend, night, adjusted whole day)
         const startDay = adjustedStart.getDay();
@@ -72,8 +71,8 @@ module.exports = function makeDbQuery(bookingInfo) {
                     thisWeekArr.push(day % 7);
                 }
             }
-            console.log('thisWeekArr', thisWeekArr);
-            console.log('nextWeekArr', nextWeekArr);
+            console.log(`thisWeekArr ${thisWeekArr}`);
+            console.log(`nextWeekArr ${nextWeekArr}`);
             const thisWeekStartDateTime = new Date(DATES_IN_DB[thisWeekArr[0]]);
             thisWeekStartDateTime.setHours(adjustedStart.getHours());
             const thisWeekEndDateTime = new Date(DATES_IN_DB[thisWeekArr[thisWeekArr.length - 1]] + 'T23:59');
@@ -101,7 +100,7 @@ module.exports = function makeDbQuery(bookingInfo) {
     }
     const combinedQuery = { ...movieQuery, ...dateTimeQuery, ...cinemaQuery, ...experienceQuery };
 
-    console.log("Update: Resulting query based on current info - ", JSON.stringify({ ...combinedQuery, ...availabilityQuery }));
+    console.log(`Update: Resulting query based on current info - ${JSON.stringify({ ...combinedQuery, ...availabilityQuery })}`);
 
     return ({ combinedQuery, availabilityQuery });
 }
