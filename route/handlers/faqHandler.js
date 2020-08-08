@@ -1,5 +1,6 @@
 const { INTENT } = require('../../@global/CONSTANTS');
 const FAQ = INTENT.FAQ;
+const { logInfo, } = require('../../@global/LOGS');
 
 const cinema = require('./faq/cinema');
 const operations = require('./faq/operations');
@@ -8,8 +9,8 @@ const specialRates = require('./faq/specialRates');
 
 module.exports = async function faqHandler({ text, intentArr, extractedInfo, sessionToMutate }) {
 
-    console.log('-----faqHandler triggered-----');
-    console.log('faq subintent: ', intentArr[1]);
+    logInfo(sessionToMutate.chatId, '-----faqHandler triggered-----');
+    logInfo(sessionToMutate.chatId, `faq subintent: ${intentArr[1]}`);
 
     switch (intentArr[1]) {
         case FAQ.NORMAL_RATES.SELF:

@@ -2,12 +2,14 @@ const { checkAvailable, updateReservation } = require('../../../../../_database/
 const { alertSeatProblem, confirmSeats, confirmDetails } = require('../../../../../_telegram/reply');
 
 const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
+const { logInfo, } = require('../../../../../@global/LOGS');
 
 module.exports = async function mutateSeatNumbers({ expandedSeatNumObj, sessionToMutate }) {
 
-    console.log('-----Modify booking info-----');
+    const { chatId, bookingInfo } = sessionToMutate; //destructure here to get mutated seatNumbers
+    logInfo(chatId, '-----Modify booking info-----');
     const isEdit = sessionToMutate.bookingInfo.seatNumbers.length !== 0;
-    console.log('expandSeatNumObj received: ', JSON.stringify(expandedSeatNumObj));
+    logInfo(chatId, `expandSeatNumObj received: ${JSON.stringify(expandedSeatNumObj)}`);
     //#4: modify seat numbers in booking info
     const { toPush, toReplace, toRemove } = expandedSeatNumObj;
     if (toReplace.length !== 0) {
@@ -16,14 +18,13 @@ module.exports = async function mutateSeatNumbers({ expandedSeatNumObj, sessionT
         if (toPush.length !== 0) sessionToMutate.bookingInfo.seatNumbers.push(...toPush);
         if (toRemove.length !== 0) sessionToMutate.bookingInfo.seatNumbers = sessionToMutate.bookingInfo.seatNumbers.filter(seatNum => !toRemove.includes(seatNum));
     }
-    console.log('Modified booking info: ', JSON.stringify(sessionToMutate.bookingInfo.seatNumbers));
+    logInfo(chatId, `Modified booking info: ${JSON.stringify(sessionToMutate.bookingInfo.seatNumbers)}`);
 
     //#5: update seat reservation to reflect booking info
-    console.log('-----Update reservation-----');
-    const { chatId, bookingInfo } = sessionToMutate; //destructure here to get mutated seatNumbers
+    logInfo(chatId, '-----Update reservation-----');
     const { movie, ticketing, seatNumbers } = bookingInfo;
     const selected = ticketing.filter(selection => selection.isSelected);
-    console.log('Using this showtime: ', JSON.stringify(selected));
+    logInfo(chatId, `Using this showtime: ${JSON.stringify(selected)}`);
     if (selected.length !== 1) throw `Seating plan selected is not unique in mutateSeatNumber.js`;
     const { takenSeats, justTakenSeats, stillAvailable } = await updateReservation(chatId, selected[0].scheduleId, seatNumbers);
     if (!stillAvailable) {
@@ -35,7 +36,7 @@ module.exports = async function mutateSeatNumbers({ expandedSeatNumObj, sessionT
         await alertSeatProblem.fullyBooked(chatId, bookingInfo, available);
         return;
     }
-    console.log(`> Outcome - takenSeats: ${JSON.stringify(takenSeats)} justTakenSeats: ${JSON.stringify(justTakenSeats)} stillAvailable: ${stillAvailable}`);
+    logInfo(chatId, `> Outcome - takenSeats: ${JSON.stringify(takenSeats)} justTakenSeats: ${JSON.stringify(justTakenSeats)} stillAvailable: ${stillAvailable}`);
 
     sessionToMutate.status = { main: MAIN_STATUS.CHOOSE_SEAT, secondary: SEC_STATUS.SEAT_TAKEN };
     sessionToMutate.bookingInfo.seatNumbers = seatNumbers.filter(seatNum => ![...takenSeats, ...justTakenSeats].includes(seatNum));
@@ -59,11 +60,11 @@ module.exports = async function mutateSeatNumbers({ expandedSeatNumObj, sessionT
     sessionToMutate.counter.justTakenCount = 0;
     //#6: if isEdit, confirmSeats. else confirmDetails
     if (isEdit) {
-        console.log('-----Confirm seats-----');
+        logInfo(chatId, '-----Confirm seats-----');
         sessionToMutate.status = { main: MAIN_STATUS.CHOOSE_SEAT, secondary: SEC_STATUS.CONFIRM_SEAT };
         await confirmSeats(chatId, bookingInfo.seatNumbers);
     } else {
-        console.log('-----Confirm details-----');
+        logInfo(chatId, '-----Confirm details-----');
         sessionToMutate.status = { main: MAIN_STATUS.CONFIRM_DETAILS, secondary: null };
         await confirmDetails(chatId, bookingInfo);
     }

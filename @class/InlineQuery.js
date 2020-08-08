@@ -4,6 +4,7 @@ const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const getShowtimes = require('../_database/query/getShowtimes');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
 const { INTENT, NO_RESULT_REASON, DATES_IN_DB } = require('../@global/CONSTANTS');
+const { logInfo } = require('../@global/LOGS');
 const assignDateTime = require('../@util/assignDateTime');
 const makeInlineQueryResult = require('../@util/makeInlineQueryResult');
 const answerInlineQuery = require('../_telegram/post/answerInlineQuery');
@@ -89,6 +90,8 @@ module.exports = class InlineQuery {
         if (intent === INTENT.INLINE.MOVIE.SELF) {
 
             const { dateTime, cinema, place, movieStatus } = this.queryFilter;
+            // const userId = this.from.id;
+            console.log(this);
 
             let movies;
             let inlineQueryResult;
@@ -110,14 +113,14 @@ module.exports = class InlineQuery {
                     let filteredMovies = showtimes.map(schedule => schedule.movieId);
                     let filteredMovieSet = new Set(filteredMovies);
                     let filteredMovieArr = Array.from(filteredMovieSet);
-                    console.log('filteredMovieArr: ', JSON.stringify(filteredMovieArr));
+                    logInfo(userId, `filteredMovieArr: ${JSON.stringify(filteredMovieArr)}`);
                     movieCursor = await COLLECTIONS.movies.find({ _id: { $in: filteredMovieArr } });
                 } else {
                     //fill inlineQueryResult with some placeholder
                 }
             }
             movies = await movieCursor.toArray();
-            console.log(movies.map(movie => movie.title));
+            logInfo(userId, movies.map(movie => movie.title));
             inlineQueryResult = makeInlineQueryResult.movie(movies, query);
             await answerInlineQuery(this.queryId, inlineQueryResult);
 
@@ -143,7 +146,7 @@ module.exports = class InlineQuery {
                 inlineQueryResult = makeInlineQueryResult.showtime(showtimes, this.queryFilter, query);
             }
 
-            // console.log(JSON.stringify(inlineQueryResult));
+            // logInfo(userId, JSON.stringify(inlineQueryResult));
             await answerInlineQuery(this.queryId, inlineQueryResult, currentOffset + 10);
 
         } else if (intent === INTENT.INLINE.CACHE.SELF) {

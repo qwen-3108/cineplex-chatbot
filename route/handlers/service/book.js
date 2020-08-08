@@ -1,5 +1,6 @@
 const { INTENT, SEC_STATUS } = require('../../../@global/CONSTANTS');
 const BOOK = INTENT.SERVICE.BOOK;
+const { logInfo, } = require('../../../@global/LOGS');
 
 const validateAndMutateInfo = require('./book/helpers/validateAndMutateInfo');
 const slotFilling = require('./book/helpers/slotFilling');
@@ -9,8 +10,8 @@ const seat = require('./book/seat');
 
 module.exports = async function bookHandler({ text, intentArr, extractedInfo, sessionToMutate }) {
 
-    console.log('-----bookHandler triggered-----');
-    console.log('booking subintent: ', intentArr[2]);
+    logInfo(sessionToMutate.chatId, '-----bookHandler triggered-----');
+    logInfo(sessionToMutate.chatId, `booking subintent: ${intentArr[2]}`);
 
     switch (intentArr[2]) {
         case BOOK.START.SELF:

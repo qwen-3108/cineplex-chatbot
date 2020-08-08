@@ -2,6 +2,7 @@ const { confirmDetails, getEditSeats, sendSeatLegend, sendSeatPlan, getPayment }
 const slotFilling = require('../service/book/helpers/slotFilling');
 const mutateSeatNumbers = require('../service/book/helpers/mutateSeatNumbers');
 const { MAIN_STATUS, SEC_STATUS } = require('../../../@global/CONSTANTS');
+const { logInfo } = require('../../../@global/LOGS');
 const expandSeatPhrases = require('../../../@util/expandSeatPhrases');
 const toFallback = require('../../../_telegram/reply/toFallback');
 
@@ -22,18 +23,18 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
         switch (status.main) {
 
             case MAIN_STATUS.PROMPT_DATETIME:
-                console.log('Received user agreement to adjust date time range');
+                logInfo(chatId, 'Received user agreement to adjust date time range');
                 switch (status.secondary) {
                     case SEC_STATUS.EXCEED_SCHEDULE_PARTIAL:
                         const { start, end } = confirmPayload.adjustedDateTime;
                         sessionToMutate.bookingInfo.dateTime.start = start;
                         sessionToMutate.bookingInfo.dateTime.end = end;
                         sessionToMutate.confirmPayload.adjustedDateTime = {};
-                        console.log('Removed confirmPayload.adjustedDateTime: ', JSON.stringify(sessionToMutate));
+                        logInfo(chatId, `Removed confirmPayload.adjustedDateTime: ${JSON.stringify(sessionToMutate)}`);
                         await slotFilling({ text, sessionToMutate });
                         break;
                     case SEC_STATUS.EXCEED_SCHEDULE_TOTAL:
-                        await getDayWithinSchedule(sessionToMutate.chatId);
+                        await getDayWithinSchedule(chatId);
                     default:
                         throw `${__filename} | Nothing to confirm for this state ${JSON.stringify(status)}`;
                 }
@@ -64,7 +65,7 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
             case MAIN_STATUS.CONFIRM_PROCEED:
                 {
                     sessionToMutate.status = { main: MAIN_STATUS.CHOOSE_SEAT, secondary: null };
-                    await sendSeatLegend(sessionToMutate.chatId);
+                    await sendSeatLegend(chatId);
                     const showtime = sessionToMutate.confirmPayload.uniqueSchedule;
                     const { dateTime, cinema, hall, isPlatinum } = showtime;
                     const selection = {
@@ -81,7 +82,7 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
                     };
                     sessionToMutate.bookingInfo.ticketing = [selection];
                     const { seatPlanMsgId, seatPlanFileId, seatPlanCallback } = await sendSeatPlan({
-                        chat_id: sessionToMutate.chatId,
+                        chat_id: chatId,
                         bookingInfo: sessionToMutate.bookingInfo,
                         seatingPlan: showtime.seatingPlan
                     });
@@ -105,7 +106,7 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
                 break;
             default:
                 sessionToMutate.counter.fallbackCount++;
-                await toFallback({ chat_id: sessionToMutate.chatId, currentSession: sessionToMutate });
+                await toFallback({ chat_id: chatId, currentSession: sessionToMutate });
                 return;
         }
 

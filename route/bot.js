@@ -5,6 +5,7 @@ const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const { cache, bookTickets } = require('../_database/query');
 
 const { INTENT } = require('../@global/CONSTANTS');
+const { logInfo, logError, } = require('../@global/LOGS');
 const printTickets = require('../@util/printTickets');
 const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, sendError } = require('../_telegram/reply');
 
@@ -19,17 +20,23 @@ const toFallback = require('../_telegram/reply/toFallback');
 
 bot.post('/', async function (req, res) {
 
-    let chatId = '';
+    let chatId = getChatId(req.body);
+
+    if (chatId === '') {  // not among request to handle
+        console.log('-----Post req received-----');
+        console.log(`Req body: ${JSON.stringify(req.body)}`);
+        console.log('No logic defined to handle such request yet');
+        return;
+    }
 
     try {
-        console.log('-----Post req received-----');
-        console.log('Req body: ', JSON.stringify(req.body));
+        logInfo(chatId, '-----Post req received-----');
+        logInfo(chatId, `Req body: ${JSON.stringify(req.body)}`);
         res.end();
 
         if (req.body.hasOwnProperty('message')) {
 
             //Pull session information from db or instantiate new Session
-            chatId = req.body.message.chat.id.toString();
             const currentSession = new Session(chatId);
             await currentSession.init();
 
@@ -37,7 +44,7 @@ bot.post('/', async function (req, res) {
             if (req.body.message.hasOwnProperty('successful_payment')) {
                 typing(currentSession.chatId);
                 const { chatId, bookingInfo } = currentSession;
-                console.log('Payment received');
+                logInfo(chatId, 'Payment received');
                 const order_info = req.body.message.successful_payment.order_info;
                 const newTickets = await bookTickets(chatId, bookingInfo.ticketing, bookingInfo.seatNumbers, order_info);
                 const ticketBuffers = await printTickets(newTickets, bookingInfo);
@@ -48,11 +55,11 @@ bot.post('/', async function (req, res) {
 
             //message via bot
             if (req.body.message.hasOwnProperty('via_bot')) {
-                console.log('Message via bot');
+                logInfo(chatId, 'Message via bot');
                 const text = req.body.message.text;
                 if ((/💬/).test(text)) {
                     typing(currentSession.chatId);
-                    console.log('Updating cinema');
+                    logInfo(chatId, 'Updating cinema');
                     currentSession.bookingInfo.cinema = [text.match(/[A-Za-z]+/g).join(' ')];
                     await slotFilling({ text, extractedInfo: {}, sessionToMutate: currentSession });
                 } else if ((/rating/i).test(text) && !currentSession.counter.seenMovieCard) {
@@ -128,7 +135,7 @@ bot.post('/', async function (req, res) {
 
             const { id, from, query, offset } = req.body.inline_query;
             if (query !== "") {
-                chatId = from.id;
+                chatId = from.id.toString();
                 let currentInlineQuery = new InlineQuery(id);
                 await currentInlineQuery.handleInlineQuery(query, offset);
             }
@@ -148,28 +155,43 @@ bot.post('/', async function (req, res) {
 
         } else if (req.body.hasOwnProperty('edited_message')) {
 
-            console.log('Ignore message edited update');
+            logInfo(chatId, 'Ignore message edited update');
 
         } else if (req.body.hasOwnProperty('chosen_inline_result')) {
 
             if (req.body.chosen_inline_result.hasOwnProperty('inline_message_id')) {
-                console.log('-----Cache inline_message_id and corresponding query-----');
+                logInfo(chatId, '-----Cache inline_message_id and corresponding query-----');
                 const { inline_message_id, query } = req.body.chosen_inline_result;
                 await cache.chosenInlineResult(inline_message_id, query);
             } else {
-                console.log('Chosen inline result without cb button, no action needed');
+                logInfo(chatId, 'Chosen inline result without cb button, no action needed');
             }
 
-        } else {
-            console.log('No logic defined to handle such request yet');
         }
 
     } catch (ex) {
-        console.log('-----! Error-----');
-        console.log(ex);
+        logInfo(chatId, '-----! Error-----');
+        logError(chatId, ex);
         await sendError(chatId);
     }
 
 });
+
+function getChatId(body) {
+    if (body.hasOwnProperty('message')) {
+        return body.message.chat.id.toString();
+    } else if (body.hasOwnProperty('edited_message')) {
+        return body.edited_message.chat.id.toString();
+    } else if (body.hasOwnProperty('inline_query')) {
+        return body.inline_query.from.id.toString();
+    } else if (body.hasOwnProperty('chosen_inline_result')) {
+        return body.chosen_inline_result.from.id.toString();
+    } else if (body.hasOwnProperty('pre_checkout_query')) {
+        return body.pre_checkout_query.from.id.toString();
+    } else if (body.hasOwnProperty('callback_query')) {
+        return body.callback_query.from.id.toString();
+    }
+    return '';
+}
 
 module.exports = bot;

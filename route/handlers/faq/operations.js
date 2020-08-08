@@ -1,5 +1,6 @@
 const { INTENT } = require("../../../@global/CONSTANTS");
 const OPERATIONS = INTENT.FAQ.OPERATIONS;
+const { logInfo, } = require('../../../@global/LOGS');
 
 const advanceBooking = require('./operations/advanceBooking');
 const cancelBooking = require('./operations/cancelBooking');
@@ -9,8 +10,8 @@ const showtimeUpdating = require('./operations/showtimeUpdating');
 
 module.exports = async function ({ text, intentArr, extractedInfo, sessionToMutate }) {
 
-    console.log('-----operationHandler triggered-----');
-    console.log('operation subintent: ', intentArr[2]);
+    logInfo(sessionToMutate.chatId, '-----operationHandler triggered-----');
+    logInfo(sessionToMutate.chatId, `operation subintent: ${intentArr[2]}`);
 
     const { chatId, sessionInfo } = sessionToMutate;
 

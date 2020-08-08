@@ -4,11 +4,13 @@ const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
 const assignDateTime = require('../../../../../@util/assignDateTime');
 const { upcomingMovie, invalidDateTime } = require('../../../../../_telegram/reply');
 const decideMaxDate = require('../../../../../@util/decideMaxDate');
+const { } = require('../../../../../@global/LOGS');
 
 module.exports = async function validateAndMutateInfo({ extractedInfo, sessionToMutate }) {
 
-    console.log('-----Validating input-----');
-    console.log('BookingInfo before assignment: ', JSON.stringify(sessionToMutate.bookingInfo));
+    const chatId = sessionToMutate.chatId;
+    logInfo(chatId, '-----Validating input-----');
+    logInfo(chatId, `BookingInfo before assignment: ${JSON.stringify(sessionToMutate.bookingInfo)}`);
 
     let output = { ok: true };
     let dateExceeds = null;
@@ -17,18 +19,18 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
         if (extractedInfo[param] !== "") {
             switch (param) {
                 case 'movie':
-                    console.log('Retrieving movie information...');
+                    logInfo(chatId, 'Retrieving movie information...');
                     const movie = await COLLECTIONS.movies.findOne({ title: extractedInfo.movie }, { title: 1, debutDateTime: 1, isBlockBuster: 1 });
                     if (movie === null) throw `${__filename} | movie ${extractedInfo.movie} not found in db`;
                     if (movie.debutDateTime > new Date('2020-05-17T23:59')) {
-                        console.log('Update: Movie is upcoming movie, notifying users...');
-                        await upcomingMovie(sessionToMutate.chatId, movie);
+                        logInfo(chatId, 'Update: Movie is upcoming movie, notifying users...');
+                        await upcomingMovie(chatId, movie);
                         sessionToMutate.status = { main: null, secondary: null };
                         output.ok = false;
                         //? not sure if it's ok to just return here without complete assignment of other parameters
                         return output;
                     } else {
-                        console.log('Update: Movie is currently screening, assigning id to bookingInfo');
+                        logInfo(chatId, 'Update: Movie is currently screening, assigning id to bookingInfo');
                         sessionToMutate.bookingInfo.movie = {
                             title: extractedInfo.movie,
                             id: movie._id,
@@ -38,19 +40,19 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                     }
                     break;
                 case 'date-time':
-                    console.log('Update: Validating date-time...');
+                    logInfo(chatId, 'Update: Validating date-time...');
                     const maxDate = decideMaxDate.date(sessionToMutate.sessionInfo.startedAt);
                     const dateTime = assignDateTime(extractedInfo[param]);
-                    console.log(`Update: Parsed dateTime: ${JSON.stringify(dateTime)}`);
+                    logInfo(chatId, `Update: Parsed dateTime: ${JSON.stringify(dateTime)}`);
                     if (dateTime.start > maxDate) {
-                        console.log('Update: dateTime totally exceed schedule');
+                        logInfo(chatId, 'Update: dateTime totally exceed schedule');
                         dateExceeds = { isTotal: true, maxDate };
                     } else if (dateTime.end > maxDate) {
-                        console.log('Update: dateTime partially exceed schedule');
+                        logInfo(chatId, 'Update: dateTime partially exceed schedule');
                         dateExceeds = { isTotal: false, maxDate };
                         sessionToMutate.confirmPayload.adjustedDateTime = { start: dateTime.start, end: maxDate };
                     } else {
-                        console.log('Update: dateTime within viable range, assigning to bookingInfo, clearing confirmPayload if any');
+                        logInfo(chatId, 'Update: dateTime within viable range, assigning to bookingInfo, clearing confirmPayload if any');
                         sessionToMutate.bookingInfo.dateTime.start = dateTime.start;
                         sessionToMutate.bookingInfo.dateTime.end = dateTime.end;
                         sessionToMutate.confirmPayload.adjustedDateTime = {}; //user provide values themselves at adjusted date time
@@ -96,7 +98,7 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
             }
         }
     }
-    console.log(`BookingInfo after assignment: ${JSON.stringify(sessionToMutate.bookingInfo)}`);
+    logInfo(chatId, `BookingInfo after assignment: ${JSON.stringify(sessionToMutate.bookingInfo)}`);
 
     //handle failed validation (currently only date-time)
     if (dateExceeds) {
@@ -104,10 +106,10 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
         sessionToMutate.status = dateExceeds.isTotal
             ? { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE_TOTAL }
             : { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE_PARTIAL };
-        await invalidDateTime(sessionToMutate.chatId, dateExceeds.isTotal, dateExceeds.maxDate);
+        await invalidDateTime(chatId, dateExceeds.isTotal, dateExceeds.maxDate);
     }
 
     //return whether validation ok
-    console.log('output from validateAndMutateInfo.js: ', JSON.stringify(output));
+    logInfo(chatId, `output from validateAndMutateInfo.js: ${JSON.stringify(output)}`);
     return output;
 };

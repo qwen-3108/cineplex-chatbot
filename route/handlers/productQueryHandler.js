@@ -1,13 +1,14 @@
 const { INTENT } = require('../../@global/CONSTANTS');
 const PRODUCT_QUERY = INTENT.PRODUCT_QUERY;
+const { logInfo, } = require('../../@global/LOGS');
 
 const nowShowing = require('./productQuery/nowShowing');
 const movie = require('./productQuery/movie');
 
 module.exports = async function productQueryHandler({ text, intentArr, extractedInfo, sessionToMutate }) {
 
-    console.log('-----productQueryHandler triggered-----');
-    console.log('product query subintent: ', intentArr[1]);
+    logInfo(sessionToMutate.chatId, '-----productQueryHandler triggered-----');
+    logInfo(sessionToMutate.chatId, `product query subintent: ${intentArr[1]}`);
 
     switch (intentArr[1]) {
         case PRODUCT_QUERY.NOW_SHOWING.SELF:

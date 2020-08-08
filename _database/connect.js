@@ -13,6 +13,7 @@ module.exports = async function connect(uri, dbName) {
         const collections = await db.collections();
         collections.forEach(c => COLLECTIONS[c.collectionName] = c);
         console.log('collections: ', JSON.stringify(Object.keys(COLLECTIONS)));
+        await getLogs("684446423", "./#asset/logs/logs_684446423.txt");
         return client;
     }
 
@@ -22,3 +23,17 @@ module.exports = async function connect(uri, dbName) {
         console.log(ex);
     }
 }
+
+const fs = require('fs');
+async function getLogs(chatId, filepath) {
+
+    console.log('Retrieving logs of ', chatId, ' from mongoDB...');
+
+    const logs = await COLLECTIONS.logs.findOne({ _id: chatId });
+    if (logs !== null) {
+        fs.writeFile(filepath, logs.data, function (err) { console.log("Write logs error: ", err) });
+    } else {
+        console.log("failed to find logs");
+    }
+
+};

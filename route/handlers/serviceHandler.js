@@ -1,12 +1,13 @@
 const { INTENT } = require('../../@global/CONSTANTS');
 const SERVICE = INTENT.SERVICE;
+const { logInfo, } = require('../../@global/LOGS');
 
 const book = require('./service/book');
 
 module.exports = async function serviceHandler({ text, intentArr, extractedInfo, sessionToMutate }) {
 
-    console.log('-----serviceHandler triggered-----');
-    console.log('service subintent: ', intentArr[1]);
+    logInfo(sessionToMutate.chatId, '-----serviceHandler triggered-----');
+    logInfo(sessionToMutate.chatId, `service subintent: ${intentArr[1]}`);
 
     switch (intentArr[1]) {
         case SERVICE.BOOK.SELF:

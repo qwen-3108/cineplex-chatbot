@@ -72,7 +72,7 @@ module.exports = async function onReject({ text, sessionToMutate }) {
                 break;
             default:
                 sessionToMutate.counter.fallbackCount++;
-                await toFallback({ chat_id: sessionToMutate.chatId, currentSession: sessionToMutate });
+                await toFallback({ chat_id: chatId, currentSession: sessionToMutate });
                 return;
         }
 

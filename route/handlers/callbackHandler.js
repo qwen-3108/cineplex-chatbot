@@ -2,7 +2,7 @@ const { ObjectId } = require('mongodb');
 const { typing, toMovieCallback, editSeatPlanButton, deleteRepeatSeatPlan, sendSeatLegend, sendSeatPlan, getSeats } = require('../../_telegram/reply');
 const { MAIN_STATUS } = require('../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
-const populateBookingInfo = require('../../@util/populateBookingInfo');
+const { logInfo, } = require('../../@global/LOGS');
 const assignAndValidateSeats = require('./service/book/helpers/assignAndValidateSeats');
 const mutateSeatNumbers = require('./service/book/helpers/mutateSeatNumbers');
 
@@ -17,6 +17,7 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
 
 
     const { type, value } = extractResult.groups;
+    const chatId = sessionToMutate.chatId;
 
     switch (type) {
         case 'movieId':
@@ -40,7 +41,7 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
             }
         case 'uSId':
             {
-                typing(sessionToMutate.chatId);
+                typing(chatId);
 
                 //#0: if button clicked is already 'Choosing for this plan'
                 if (value === "NA") { break; }
@@ -58,20 +59,20 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                     const selection = ticketing[i];
                     if (selection.isSelected) {
                         selection.isSelected = false;
-                        const { seatPlanCallback } = await editSeatPlanButton(sessionToMutate.chatId, selection, sessionToMutate.bookingInfo.dateTime);
+                        const { seatPlanCallback } = await editSeatPlanButton(chatId, selection, sessionToMutate.bookingInfo.dateTime);
                         sessionToMutate.bookingInfo.ticketing[i].seatPlanCallback = seatPlanCallback;
                     }
                     //#2b: found the selected entry, update isSelected, edit seat plan button
                     if (selection.scheduleId === scheduleId) {
                         selection.isSelected = true;
-                        const { seatPlanCallback } = await editSeatPlanButton(sessionToMutate.chatId, selection, sessionToMutate.bookingInfo.dateTime);
+                        const { seatPlanCallback } = await editSeatPlanButton(chatId, selection, sessionToMutate.bookingInfo.dateTime);
                         sessionToMutate.bookingInfo.ticketing[i].seatPlanCallback = seatPlanCallback;
                     }
                 }
                 //#3a: if seat number exists in payload, use that directly
-                console.log("payload: ", sessionToMutate.payload);
+                logInfo(chatId, `payload: ${sessionToMutate.payload}`);
                 if (sessionToMutate.payload.seatNumber.length != 0) {
-                    console.log("payload contains seatNumber, using ", sessionToMutate.payload.seatNumber, " as seat-number");
+                    logInfo(chatId, `payload contains seatNumber, using ${sessionToMutate.payload.seatNumber} as seat number`);
                     const text = '';
                     const extractedInfo = {};
                     extractedInfo['seat-number'] = sessionToMutate.payload.seatNumber;
@@ -83,38 +84,38 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                 }
 
                 //#3b: Repeat showtime and cue for seat numbers
-                const { chatId, bookingInfo } = sessionToMutate;
+                const { bookingInfo } = sessionToMutate;
                 await getSeats(chatId, bookingInfo);
                 break;
             }
         case 'sId':
             {
-                console.log('-----View seat plan request received-----');
-                typing(sessionToMutate.chatId);
+                logInfo(chatId, '-----View seat plan request received-----');
+                typing(chatId);
                 const [scheduleId, daysToDbDate, nextWeekAreDaysLessThan] = value.split(' ');
                 sessionToMutate.bookingInfo.dateTime = { daysToDbDate: Number(daysToDbDate), nextWeekAreDaysLessThan: Number(nextWeekAreDaysLessThan) };
 
                 //#1: if first seat plan sent - send description text
                 if (sessionToMutate.bookingInfo.ticketing.length === 0) {
-                    console.log('First seating plan sent in current session, sending legend');
-                    await sendSeatLegend(sessionToMutate.chatId);
+                    logInfo(chatId, 'First seating plan sent in current session, sending legend');
+                    await sendSeatLegend(chatId);
                 }
 
                 //#2: populate booking info with details from showtime
                 const showtime = await COLLECTIONS.showtimes.findOne({ _id: ObjectId(scheduleId) });
                 if (showtime === null) { throw `scheduleId in callback not found in db`; }
-                console.log('Retrieved showtime');
+                logInfo(chatId, 'Retrieved showtime');
 
                 //#3: check if ticketing already has an element with same scheduleid
                 let toDeleteMsgId;
                 const { ticketing } = sessionToMutate.bookingInfo;
                 const sameSeatingPlan = ticketing.filter(selection => selection.scheduleId === scheduleId);
                 if (sameSeatingPlan.length !== 0) {
-                    console.log('Same plan was viewed previously');
+                    logInfo(chatId, 'Same plan was viewed previously');
                     toDeleteMsgId = sameSeatingPlan[0].seatPlanMsgId;
-                    console.log('To delete plan msg id: ', toDeleteMsgId);
+                    logInfo(chatId, `To delete plan msg id: ${toDeleteMsgId}`);
                 } else {
-                    console.log('Is new seat plan viewed, adding showtime info to ticketing');
+                    logInfo(chatId, 'Is new seat plan viewed, adding showtime info to ticketing');
                     const { movieId, dateTime, cinema, hall, isPlatinum } = showtime;
                     const selection = {
                         isSelected: false,
@@ -140,19 +141,19 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                         };
 
                     }
-                    console.log('Showtime info: ', JSON.stringify(selection));
+                    logInfo(chatId, `Showtime info: ${JSON.stringify(selection)}`);
                     sessionToMutate.bookingInfo.ticketing.push(selection);
                 }
 
-                const { chatId, bookingInfo } = sessionToMutate;
+                const { bookingInfo } = sessionToMutate;
                 //#4: if is the only plan sent - set isSelected to true
                 if (bookingInfo.ticketing.length === 1) {
-                    console.log('Set isSelected to true for only plan viewed');
+                    logInfo(chatId, 'Set isSelected to true for only plan viewed');
                     sessionToMutate.bookingInfo.ticketing[0].isSelected = true;
                 }
                 //#5: if second seat plan sent - set isSelected of first to be false, add pick seat button to first seat plan
                 if (bookingInfo.ticketing.length === 2) {
-                    console.log('Second plan viewed, set first plan isSelected to false');
+                    logInfo(chatId, 'Second plan viewed, set first plan isSelected to false');
                     sessionToMutate.bookingInfo.ticketing[0].isSelected = false;
                     const { seatPlanCallback } = await editSeatPlanButton(chatId, bookingInfo.ticketing[0], bookingInfo.dateTime);
                     sessionToMutate.bookingInfo.ticketing[0].seatPlanCallback = seatPlanCallback;
@@ -160,11 +161,11 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                 }
 
                 // else {
-                //     console.log('Not first nor second plan viewed, current ticketing length: ', bookingInfo.ticketing.length);
-                //     console.log('Current ticketing data: ', bookingInfo.ticketing);
+                //     logInfo(chatId, 'Not first nor second plan viewed, current ticketing length: ', bookingInfo.ticketing.length);
+                //     logInfo(chatId, 'Current ticketing data: ', bookingInfo.ticketing);
                 // }
                 //#6: send seat plan with button except for first seat plan sent
-                console.log('Sending seat plan');
+                logInfo(chatId, 'Sending seat plan');
                 const { seatPlanMsgId, seatPlanFileId, seatPlanCallback } = await sendSeatPlan({
                     chat_id: chatId,
                     bookingInfo,

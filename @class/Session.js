@@ -1,6 +1,7 @@
 const { differenceInCalendarDays } = require('date-fns');
 const { MAIN_STATUS, DATES_IN_DB } = require('../@global/CONSTANTS');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
+const { initializeLogs, logInfo, logError, getLogs } = require('../@global/LOGS');
 const logType = require('../@util/logType');
 
 module.exports = class Session {
@@ -55,29 +56,41 @@ module.exports = class Session {
 
             this.confirmPayload = { adjustedDateTime: {}, uniqueSchedule: {}, seatPhraseGuess: {} };
             this.payload = { seatNumber: [], movie: { title: null, id: null, debutDateTime: null, isBlockBuster: null } };
-            console.log('-----Instantiating new session-----');
-            console.log('New session: ', JSON.stringify(this));
+            initializeLogs(this.chatId);
+            logInfo(this.chatId, '-----Instantiating new session-----');
+            logInfo(this.chatId, `New session: ${JSON.stringify(this)}`);
 
         } else {
-            console.log('-----Reconstructing existing session-----');
+            initializeLogs(this.chatId);
+            logInfo(this.chatId, '-----Reconstructing existing session-----');
             const { sessionInfo, status, bookingInfo, counter, confirmPayload, payload } = sessionInDb;
             this.sessionInfo = sessionInfo;
             this.status = status;
             this.bookingInfo = bookingInfo;
-            this.bookingInfo.dateTime.sessionStartedAt = this.sessionInfo.startedAt;
             this.counter = counter;
             this.confirmPayload = confirmPayload;
             this.payload = payload;
-            console.log('Existing: ', JSON.stringify(this));
+            logInfo(this.chatId, `Existing: ${JSON.stringify(this)}`);
+        }
+
+        const logs = await COLLECTIONS.logs.findOne({ _id: this.chatId });
+        if (logs === null) {
+            await COLLECTIONS.logs.insertOne(
+                {
+                    _id: this.chatId,
+                    data: "",
+                },
+                function (err) { console.log(`Logs creation error: ${err}`) });
         }
 
     }
 
     async saveToDb() {
-        console.log('-----saving session-----');
+        logInfo(this.chatId, '-----saving session-----');
         this.sessionInfo.lastUpdated = new Date();
-        console.log('Session to save: ', JSON.stringify(this));
-        // console.log('Session object with type: ', logType(this, 0));
+        logInfo(this.chatId, `Session to save: ${JSON.stringify(this)}`);
+        const docId = this.chatId;
+        // logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
         await COLLECTIONS.sessions.replaceOne(
             { _id: this.chatId },
             {
@@ -89,14 +102,37 @@ module.exports = class Session {
                 confirmPayload: this.confirmPayload,
                 payload: this.payload,
             },
-            { upsert: true }, function (err) { console.log('Session saving error:', err) });
-        console.log('-----done-----');
+            { upsert: true }, function (err) { logError(docId, `Session saving error: ${err}`) });
+        logInfo(this.chatId, '-----done-----');
+
+        const logs = getLogs(this.chatId);
+        await COLLECTIONS.logs.updateOne(
+            { _id: this.chatId },
+            [{
+                $set: {
+                    data: { $concat: ["$data", logs] },
+                }
+            }],
+            { upsert: true }, function (err) { console.log(`Logs updation error: ${err}`) });
+
     }
 
     end({ isComplete }) {
         this.sessionInfo.endedAt = new Date();
         this.status = isComplete ? { main: MAIN_STATUS.COMPLETE, secondary: null } : { main: MAIN_STATUS.CANCELLED, secondary: null };
-        this.bookingInfo = {};
+        this.bookingInfo = {
+            movie: { title: null, id: null, debutDateTime: null, isBlockBuster: null },
+            dateTime: {
+                start: null, end: null,
+                daysToDbDate: differenceInCalendarDays(this.sessionInfo.startedAt, todayDbDate),
+                nextWeekAreDaysLessThan: todayDay,
+                sessionStartedAt: this.sessionInfo.startedAt
+            },
+            place: null,
+            cinema: [],
+            ticketing: [],
+            seatNumbers: []
+        };
         this.counter = {
             invalidSeatCount: 0,
             invalidSeatPhraseCount: 0,
@@ -108,6 +144,6 @@ module.exports = class Session {
         };
         this.confirmPayload = {};
         this.payload = {};
-        console.log('marked session as end');
+        logInfo(this.chatId, 'marked session as end');
     }
 }
