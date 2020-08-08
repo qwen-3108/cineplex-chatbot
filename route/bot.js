@@ -8,7 +8,7 @@ const { INTENT } = require('../@global/CONSTANTS');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
 const { logInfo, logError, logConv, getLogs } = require('../@global/LOGS');
 const printTickets = require('../@util/printTickets');
-const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, sendError } = require('../_telegram/reply');
+const { basics, typing, sendTickets, answerPreCheckoutQuery, finish, sendError, firstTimes } = require('../_telegram/reply');
 
 const slotFilling = require('./handlers/service/book/helpers/slotFilling');
 const replyToConfirmHandler = require('./handlers/replyToConfirmHandler');
@@ -161,8 +161,9 @@ bot.post('/', async function (req, res) {
 
         } else if (req.body.hasOwnProperty('chosen_inline_result')) {
 
-            if (req.body.chosen_inline_result.hasOwnProperty('inline_message_id')) {
-                logInfo(chatId, '-----Cache inline_message_id and corresponding query-----');
+            const toExcludeRegex = /(?:^No movies found)/;
+            if (req.body.chosen_inline_result.hasOwnProperty('inline_message_id') && !toExcludeRegex.test(req.body.chosen_inline_result.query)) {
+                console.log('-----Cache inline_message_id and corresponding query-----');
                 const { inline_message_id, query } = req.body.chosen_inline_result;
                 await cache.chosenInlineResult(inline_message_id, query);
             } else {

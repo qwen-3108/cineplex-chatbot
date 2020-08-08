@@ -9,6 +9,7 @@ const assignDateTime = require('../@util/assignDateTime');
 const makeInlineQueryResult = require('../@util/makeInlineQueryResult');
 const answerInlineQuery = require('../_telegram/post/answerInlineQuery');
 const decideMaxDate = require('../@util/decideMaxDate');
+const { ca } = require('date-fns/locale');
 
 
 module.exports = class InlineQuery {
@@ -35,10 +36,18 @@ module.exports = class InlineQuery {
             if (extractedInfo[param] !== "") {
                 switch (param) {
                     case "date-time":
+                        const maxDate = decideMaxDate.date(this.queryFilter.dateTime.sessionStartedAt);
                         const { start, end } = assignDateTime(extractedInfo['date-time']);
-                        this.queryFilter.dateTime.start = start;
-                        this.queryFilter.dateTime.end = end;
-                        //showtime not up handler
+                        if (start > maxDate) {
+                            console.log('dateTime totally exceed schedule');
+                            const inlineQueryResult = makeInlineQueryResult.showtimeNotUp(maxDate);
+                            await answerInlineQuery(this.queryId, inlineQueryResult);
+                            return;
+                        } else {
+                            console.log('dateTime within viable range, assigning to queryFilter');
+                            this.queryFilter.dateTime.start = start;
+                            this.queryFilter.dateTime.end = end;
+                        }
                         break;
                     case "movie-status":
                         this.queryFilter.movieStatus = extractedInfo[param];
@@ -89,9 +98,9 @@ module.exports = class InlineQuery {
 
         if (intent === INTENT.INLINE.MOVIE.SELF) {
 
-            const { dateTime, cinema, place, movieStatus } = this.queryFilter;
+            const { movieStatus } = this.queryFilter;
 
-            let movies;
+            let movies = [];
             let inlineQueryResult;
             let movieCursor;
 
@@ -113,13 +122,18 @@ module.exports = class InlineQuery {
                     let filteredMovieArr = Array.from(filteredMovieSet);
                     logInfo(chatId, `filteredMovieArr: ${JSON.stringify(filteredMovieArr)}`);
                     movieCursor = await COLLECTIONS.movies.find({ _id: { $in: filteredMovieArr } });
-                } else {
-                    //fill inlineQueryResult with some placeholder
                 }
             }
-            movies = await movieCursor.toArray();
-            logInfo(chatId, movies.map(movie => movie.title));
-            inlineQueryResult = makeInlineQueryResult.movie(movies, query);
+
+            if (movieCursor !== undefined) {
+                movies = await movieCursor.toArray();
+                console.log(movies.map(movie => movie.title));
+                inlineQueryResult = makeInlineQueryResult.movie(movies, query);
+            } else {
+                console.log('no movies found');
+                inlineQueryResult = makeInlineQueryResult.noResult({ type: 'movie' });
+            }
+
             await answerInlineQuery(this.queryId, inlineQueryResult);
 
         } else if (intent === INTENT.INLINE.SHOWTIME.SELF) {
@@ -139,7 +153,7 @@ module.exports = class InlineQuery {
             if (!success && noResultReason === NO_RESULT_REASON.END_PAGINATION) {
                 //do nth
             } else if (!success) {
-                //inlineQueryResult = some place holder
+                inlineQueryResult = makeInlineQueryResult.noResult({ type: 'showtime' });
             } else {
                 inlineQueryResult = makeInlineQueryResult.showtime(showtimes, this.queryFilter, query);
             }
@@ -149,10 +163,19 @@ module.exports = class InlineQuery {
 
         } else if (intent === INTENT.INLINE.CACHE.SELF) {
 
+            let inlineQueryResult;
+
             const cacheId = query.match(/\d+/)[0];
             const cachedResult = await COLLECTIONS.inlineQueryResultCache.findOne({ _id: cacheId });
-            if (cachedResult === null) throw `${__filename} | No cached result found`;
-            await answerInlineQuery(this.queryId, cachedResult.inlineQueryResult);
+            if (cachedResult === null) {
+                console.log('cache expired');
+                inlineQueryResult = makeInlineQueryResult.resultExpired();
+            } else {
+                console.log('found cached result');
+                inlineQueryResult = cachedResult.inlineQueryResult;
+            }
+
+            await answerInlineQuery(this.queryId, inlineQueryResult);
 
         } else {
             throw `Unrecognized inline query intent ${intent} in ${__filename}`;

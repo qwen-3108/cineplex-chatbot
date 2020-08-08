@@ -44,6 +44,7 @@ module.exports = {
         "The Cathay Cineplex": 'https://imgur.com/M3HoSCg.png',
         "Cathay Cineplex West Mall": 'https://imgur.com/E9jZGAl.png'
     },
+    NA_THUMB: "https://i.imgur.com/2wZkHHL.png",
     DATES_IN_DB: {
         0: "2020-05-24",
         1: "2020-05-25",

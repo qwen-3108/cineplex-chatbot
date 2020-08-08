@@ -4,6 +4,7 @@ const decideMaxDate = require('./decideMaxDate');
 
 module.exports = function makeDbQuery(bookingInfo) {
 
+    console.log('making dbQuery');
     const { movie, dateTime, cinema } = bookingInfo;
 
     //make query
@@ -19,6 +20,8 @@ module.exports = function makeDbQuery(bookingInfo) {
 
     if (dateTime.start !== null) {
 
+        console.log('bookingInfo/queryFiler has dateTime');
+        console.log('dateTime: ', JSON.stringify(dateTime));
         const { start, end, sessionStartedAt } = dateTime;
 
         let adjustedStart;
