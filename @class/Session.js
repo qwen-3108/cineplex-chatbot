@@ -110,6 +110,8 @@ module.exports = class Session {
     end({ isComplete }) {
         this.sessionInfo.endedAt = new Date();
         this.status = isComplete ? { main: MAIN_STATUS.COMPLETE, secondary: null } : { main: MAIN_STATUS.CANCELLED, secondary: null };
+        const todayDay = this.sessionInfo.startedAt.getDay();
+        const todayDbDate = new Date(DATES_IN_DB[todayDay]);
         this.bookingInfo = {
             movie: { title: null, id: null, debutDateTime: null, isBlockBuster: null },
             dateTime: {

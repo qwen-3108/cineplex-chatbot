@@ -57,8 +57,8 @@ bot.post('/', async function (req, res) {
             //message via bot
             if (req.body.message.hasOwnProperty('via_bot')) {
                 logInfo(currentSession.chatId, 'Message via bot');
-                logConv(currentSession.chatId, text);
                 const text = req.body.message.text;
+                logConv(currentSession.chatId, text);
                 if ((/💬/).test(text)) {
                     typing(currentSession.chatId);
                     logInfo(currentSession.chatId, 'Updating cinema');
@@ -180,7 +180,6 @@ bot.post('/', async function (req, res) {
     } finally {
 
         const logs = getLogs(chatId);
-        console.log("logs: ", logs);
         await COLLECTIONS.logs.updateOne(
             { _id: chatId },
             [{

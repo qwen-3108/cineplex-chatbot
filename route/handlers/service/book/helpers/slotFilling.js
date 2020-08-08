@@ -7,12 +7,10 @@ const decideMaxDate = require('../../../../../@util/decideMaxDate');
 
 module.exports = async function slotFilling({ text, sessionToMutate }) {
 
-    logInfo(chatId, '-----slot filling-----');
+    logInfo(sessionToMutate.chatId, '-----slot filling-----');
+    const { movie, cinema, place, dateTime } = sessionToMutate.bookingInfo;
 
     //decide status
-    const { chatId, status, bookingInfo } = sessionToMutate;
-    const { movie, cinema, place, dateTime } = bookingInfo;
-
     if (movie.title === null) {
         sessionToMutate.status = { main: MAIN_STATUS.PROMPT_MOVIE, secondary: null };
     } else if (dateTime.start === null) {
@@ -26,7 +24,9 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
     } else {
         sessionToMutate.status = { main: MAIN_STATUS.CONFIRM_PROCEED, secondary: null };
     }
-    logInfo(chatId, 'Evaluated status: ', JSON.stringify(sessionToMutate.status));
+    logInfo(sessionToMutate.chatId, `Evaluated status: ${JSON.stringify(sessionToMutate.status)}`);
+
+    const { chatId, status, bookingInfo } = sessionToMutate;
 
     //take appropriate action
     if (status.main === MAIN_STATUS.PROMPT_MOVIE) {

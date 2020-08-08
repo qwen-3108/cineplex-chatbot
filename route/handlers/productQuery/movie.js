@@ -6,7 +6,7 @@ const { COLLECTIONS } = require('../../../@global/COLLECTIONS');
 const { logInfo, } = require('../../../@global/LOGS');
 const sendMessage = require('../../../_telegram/post/sendMessage');
 
-module.exports = async function movieAvailability(extractedInfo, currentSession) {
+module.exports = async function movieAvailability(extractedInfo, sessionToMutate) {
     logInfo(sessionToMutate.chatId, '-----checking movie availability-----');
     const movie = await COLLECTIONS.movies.findOne({ title: extractedInfo.movie }, { projection: { title: 1, debutDateTime: 1, isBlockBuster: 1 } });
     const latestDate = addDays(new Date('2020-05-17T23:59'), 7);
@@ -14,7 +14,7 @@ module.exports = async function movieAvailability(extractedInfo, currentSession)
     let text = '';
     if (movie === null) throw `${__filename} | movie ${extractedInfo.movie} not found in db`;
     if (movie.debutDateTime > latestDate) {
-        const { daysToDbDate, nextWeekAreDaysLessThan } = currentSession.bookingInfo.dateTime;
+        const { daysToDbDate, nextWeekAreDaysLessThan } = sessionToMutate.bookingInfo.dateTime;
         const debutDate = mapDateTime(movie.debutDateTime, daysToDbDate, nextWeekAreDaysLessThan);
         const ticketAvailableDate = addDays(debutDate, -7);
         logInfo(sessionToMutate.chatId, `requested movie is upcoming. Debut date: ${debutDate.toLocaleDateString()}`);
@@ -30,15 +30,15 @@ module.exports = async function movieAvailability(extractedInfo, currentSession)
     } else {
         logInfo(sessionToMutate.chatId, 'requested movie is available');
         text = `Yup. Would you like to purchase tickets for ${movie.title} now?`;
-        currentSession.status.main = null;
-        currentSession.status.secondary = SEC_STATUS.CONFIRM_MOVIE;
-        currentSession.payload.movie = {};
-        currentSession.payload.movie.id = movie._id;
-        currentSession.payload.movie.title = movie.title;
-        currentSession.payload.movie.debutDateTime = movie.debutDateTime;
-        currentSession.payload.movie.isBlockBuster = movie.isBlockBuster;
+        sessionToMutate.status.main = null;
+        sessionToMutate.status.secondary = SEC_STATUS.CONFIRM_MOVIE;
+        sessionToMutate.payload.movie = {};
+        sessionToMutate.payload.movie.id = movie._id;
+        sessionToMutate.payload.movie.title = movie.title;
+        sessionToMutate.payload.movie.debutDateTime = movie.debutDateTime;
+        sessionToMutate.payload.movie.isBlockBuster = movie.isBlockBuster;
     }
 
-    await sendMessage(currentSession.chatId, text);
+    await sendMessage(sessionToMutate.chatId, text);
 
 }
