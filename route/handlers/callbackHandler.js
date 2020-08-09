@@ -47,7 +47,9 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                 if (value === "NA") { break; }
 
                 const [scheduleId, daysToDbDate, nextWeekAreDaysLessThan] = value.split(' ');
-                sessionToMutate.bookingInfo.dateTime = { daysToDbDate: Number(daysToDbDate), nextWeekAreDaysLessThan: Number(nextWeekAreDaysLessThan) };
+                // sessionToMutate.bookingInfo.dateTime = { daysToDbDate: Number(daysToDbDate), nextWeekAreDaysLessThan: Number(nextWeekAreDaysLessThan) };
+                sessionToMutate.bookingInfo.dateTime.daysToDbDate = Number(daysToDbDate);
+                sessionToMutate.bookingInfo.dateTime.nextWeekAreDaysLessThan = Number(nextWeekAreDaysLessThan);
 
                 //#1: populate booking info with details from showtime
                 const showtime = await COLLECTIONS.showtimes.findOne({ _id: ObjectId(scheduleId) });

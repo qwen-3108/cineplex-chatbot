@@ -60,8 +60,14 @@ module.exports = async function onReject({ text, sessionToMutate }) {
             // ??? 'is this the showtime you want? ', 'no'
             case MAIN_STATUS.CONFIRM_PROCEED:
                 {
-                    sessionToMutate.confirmPayload.uniqueSchedule = {};
-                    await askForMoreInfo(chatId);
+                    if (status.secondary === SEC_STATUS.WARN_PLATINUM) {
+                        status.secondary = null;
+                        await acknowledgeReject(chatId);
+                        break;
+                    } else {
+                        sessionToMutate.confirmPayload.uniqueSchedule = {};
+                        await askForMoreInfo(chatId);
+                    }
                 }
                 break;
             // 'is these the tickets you want?', 'no'

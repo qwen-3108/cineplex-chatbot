@@ -1,4 +1,4 @@
-const { MAIN_STATUS } = require('../../../../../@global/CONSTANTS');
+const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
 const { logInfo, } = require('../../../../../@global/LOGS');
 const { fillSlot, noResult, warnPlatinum } = require('../../../../../_telegram/reply');
 const { checkAvailable, getShowtimes, getCinemas, cache } = require('../../../../../_database/query');
@@ -105,6 +105,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                     } else {
                         sessionToMutate.confirmPayload.uniqueSchedule = showtimes[0];
                         if (sessionToMutate.bookingInfo.experience === undefined && showtimes[0].isPlatinum) {
+                            sessionToMutate.status.secondary = SEC_STATUS.WARN_PLATINUM;
                             await warnPlatinum(chatId, text, bookingInfo, showtimes[0]);
                         } else {
                             await fillSlot.confirmProceed(chatId, bookingInfo);

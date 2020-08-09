@@ -58,11 +58,14 @@ module.exports = function makeDbQuery(bookingInfo) {
 
         console.log(`adjustedStart: ${adjustedStart}`);
         console.log(`adjustedEnd: ${adjustedEnd}`);
+        const dayDiff = differenceInCalendarDays(adjustedEnd, adjustedStart);
 
         //if startDay =/= endDay (e.g. weekend, night, adjusted whole day)
         const startDay = adjustedStart.getDay();
         const endDay = adjustedEnd.getDay();
-        if (startDay !== endDay && startDay > endDay) {
+        if (dayDiff !== 0 && startDay > endDay) {
+            console.log("startDay > endDay, spliting query..");
+            // if (startDay !== endDay && startDay > endDay) {
             let day = startDay;
             const thisWeekArr = [day];
             const nextWeekArr = [];
@@ -88,7 +91,14 @@ module.exports = function makeDbQuery(bookingInfo) {
                     { dateTime: { $gte: nextWeekStartDateTime, $lte: nextWeekEndDateTime } }
                 ]
             };
+
+        } else if (dayDiff >= 7) {
+            console.log("dayDiff >= 7, no filter for dateTime");
+            // get the whole week
+            dateTimeQuery = {};
+
         } else {
+            console.log("forming dateTime filter as usual");
             const dbStart = new Date(DATES_IN_DB[startDay]); dbStart.setHours(adjustedStart.getHours());
             const dbEnd = new Date(DATES_IN_DB[endDay]); dbEnd.setHours(adjustedEnd.getHours());
             dateTimeQuery = { dateTime: { $gte: dbStart, $lte: dbEnd } };
