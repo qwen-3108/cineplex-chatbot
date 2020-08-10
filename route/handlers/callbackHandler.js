@@ -4,9 +4,9 @@ const post = require('../../_telegram/post');
 const { MAIN_STATUS } = require('../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const { logInfo, } = require('../../@global/LOGS');
+const populateBookingInfo = require('../../@util/populateBookingInfo');
 const assignAndValidateSeats = require('./service/book/helpers/assignAndValidateSeats');
 const mutateSeatNumbers = require('./service/book/helpers/mutateSeatNumbers');
-const populateBookingInfo = require('../../@util/populateBookingInfo');
 
 module.exports = async function onCallback({ data, inline_message_id, sessionToMutate }) {
 
@@ -79,7 +79,7 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                     const expandedSeatNumObj = await assignAndValidateSeats({ text, extractedInfo, sessionToMutate: sessionToMutate });
                     if (expandedSeatNumObj === undefined) break;
                     await mutateSeatNumbers({ expandedSeatNumObj, sessionToMutate: sessionToMutate });
-                    sessionToMutate.payload.seatNumber = null;
+                    sessionToMutate.payload.seatNumber = [];
                     break;
                 }
 
