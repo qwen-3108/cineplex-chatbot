@@ -49,7 +49,7 @@ module.exports = async function sendSeatPlan({ chat_id, bookingInfo, seatingPlan
             //return msg id, file id, and callback butons (if applicable)
             return { seatPlanMsgId: message_id, seatPlanFileId: photo[0].file_id, seatPlanCallback };
         }, err => {
-            console.log(JSON.stringify(err.response.data));
+            console.log(err);
             return { seatPlanMsgId: "", seatPlanFileId: "", seatPlanCallback: [] };
         });
 };

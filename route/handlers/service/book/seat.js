@@ -1,4 +1,4 @@
-const { INTENT } = require('../../../../@global/CONSTANTS');
+const { INTENT, MAIN_STATUS, SEC_STATUS } = require('../../../../@global/CONSTANTS');
 const SEAT = INTENT.SERVICE.BOOK.SEAT;
 const { logInfo, } = require('../../../../@global/LOGS');
 
