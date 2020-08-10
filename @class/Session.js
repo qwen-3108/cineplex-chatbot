@@ -63,6 +63,7 @@ module.exports = class Session {
             this.sessionInfo = sessionInfo;
             this.status = status;
             this.bookingInfo = bookingInfo;
+            this.bookingInfo.dateTime.sessionStartedAt = this.sessionInfo.startedAt;
             this.counter = counter;
             this.confirmPayload = confirmPayload;
             this.payload = payload;

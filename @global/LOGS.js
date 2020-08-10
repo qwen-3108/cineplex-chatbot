@@ -5,7 +5,6 @@ const logs = {}
 function initializeLogs(id) {
     const time = (new Date()).toISOString();
     logs[id] = `[${time}]\n`;
-    console.log("logs[", id, "] initialized: ", logs[id]);
 }
 
 function logConv(id, logText) {

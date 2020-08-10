@@ -18,8 +18,7 @@ async function showMovieDetail(inline_message_id, movie) {
     const parseMode = 'Markdown';
 
     await post.editMessageText(inline_message_id, text, { replyMarkup, parseMode });
-    const updatedCache = await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id }, { $set: { state: "show" } });
-    console.log("updatedCache in toMovieCallback: ", updatedCache);
+    await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id }, { $set: { state: "show" } });
 }
 
 async function hideMovieDetail(inline_message_id, movie) {
@@ -41,8 +40,7 @@ async function hideMovieDetail(inline_message_id, movie) {
     await post.editMessageText(inline_message_id, text, { parseMode: 'Markdown', replyMarkup: replyMarkup, disableWebPagePreview: true });
 
     // await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id, state: "hide" });
-    const updatedCache = await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id }, { $set: { state: "hide" } });
-    console.log("updatedCache in toMovieCallback: ", updatedCache);
+    await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id }, { $set: { state: "hide" } });
 }
 
 async function howToFilter(inline_message_id, movieId, movieTitle) {
