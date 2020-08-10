@@ -1,4 +1,5 @@
 const { addDays } = require('date-fns');
+const mapDateTime = require("./mapDateTime");
 const makeDateTimePhrase = require("./makeDateTimePhrase");
 
 module.exports = function makeInlineQueryInput(alternativeQuery, bookingInfo) {
@@ -22,10 +23,9 @@ module.exports = function makeInlineQueryInput(alternativeQuery, bookingInfo) {
                 alternativeSearchStr.push(makeDateTimePhrase(date));
             }
             case 'dateTime': {
-                const { daysToDbDate, nextWeekAreDaysLessThan } = bookingInfo.dateTime;
                 const { $gte, $lte } = alternativeQuery.dateTime;
-                const start = $gte.getDay() < nextWeekAreDaysLessThan ? addDays($gte, daysToDbDate + 7) : addDays($gte, daysToDbDate);
-                const end = $lte.getDay() < nextWeekAreDaysLessThan ? addDays($lte, daysToDbDate + 7) : addDays($lte, daysToDbDate);
+                const start = mapDateTime($gte, bookingInfo.dateTime.sessionStartedAt);
+                const end = mapDateTime($lte, bookingInfo.dateTime.sessionStartedAt);
                 const dateTimeSearchStr = makeDateTimePhrase({ start, end });
                 alternativeSearchStr.push(dateTimeSearchStr);
             }

@@ -1,4 +1,4 @@
-const sendMessage = require("../../../../_telegram/post/sendMessage");
+const post = require("../../../../_telegram/post");
 
 module.exports = async function changeBooking(chatId, extractedInfo) {
 
@@ -13,6 +13,6 @@ module.exports = async function changeBooking(chatId, extractedInfo) {
             'Currently that can only be done at our box office counter, not later than 2 hours before the movie. ' +
             'But work is underway so you’ll be able to modify your bookings through me very soon! :)';
     }
-    await sendMessage(chatId, text);
+    await post.sendMessage(chatId, text);
 
 }

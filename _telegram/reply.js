@@ -1,6 +1,5 @@
 module.exports = {
     basics: require('./reply/basics'),
-    typing: require('./reply/typing'),
     //fill slot
     fillSlot: require('./reply/fillSlot'),
     invalidDateTime: require('./reply/invalidDateTime'),
@@ -33,7 +32,6 @@ module.exports = {
     //fallback
     toFallback: require('./reply/toFallback'),
     //others
-    answerPreCheckoutQuery: require('./reply/answerPreCheckoutQuery'),
     toMovieCallback: require('./reply/toMovieCallback'),
     //FAQ
     faq: require('./reply/faq'),

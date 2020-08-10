@@ -1,20 +1,19 @@
 const { addDays } = require('date-fns');
-const mapDateTime = require('../../@util/mapDateTime');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
+const mapDateTime = require('../../@util/mapDateTime');
 const { SEC_STATUS } = require('../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
-const sendMessage = require('../post/sendMessage');
+const post = require('../post');
 
-module.exports = async function faqMovieAvailability(chat_id, extractedInfo, currentSession){
+module.exports = async function faqMovieAvailability(chat_id, extractedInfo, currentSession) {
     console.log('-----checking movie availability-----');
-    const movie = await COLLECTIONS.movies.findOne({ title: extractedInfo.movie }, {projection: { title: 1, debutDateTime: 1, isBlockBuster: 1 }});
+    const movie = await COLLECTIONS.movies.findOne({ title: extractedInfo.movie }, { projection: { title: 1, debutDateTime: 1, isBlockBuster: 1 } });
     const latestDate = addDays(new Date('2020-05-17T23:59'), 7);
 
     let text = '';
     if (movie === null) throw `${__filename} | movie ${extractedInfo.movie} not found in db`;
     if (movie.debutDateTime > latestDate) {
-        const { daysToDbDate, nextWeekAreDaysLessThan } = currentSession.bookingInfo.dateTime;
-        const debutDate = mapDateTime(movie.debutDateTime, daysToDbDate, nextWeekAreDaysLessThan);
+        const debutDate = mapDateTime(movie.debutDateTime, currentSession.bookingInfo.dateTime.sessionStartedAt);
         const ticketAvailableDate = addDays(debutDate, -7);
         console.log('requested movie is upcoming. Debut date: ', debutDate.getLocaleDateString());
 
@@ -34,6 +33,6 @@ module.exports = async function faqMovieAvailability(chat_id, extractedInfo, cur
         currentSession.payload.movie.isBlockBuster = movie.isBlockBuster;
     }
 
-    await sendMessage(chat_id, text);
+    await post.sendMessage(chat_id, text);
 
 }

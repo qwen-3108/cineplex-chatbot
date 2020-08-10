@@ -1,9 +1,9 @@
 const { INLINE_KEYBOARD } = require('../../@global/CONSTANTS');
 const Phrases = require('../../@global/PHRASES');
-const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 const calculatePrice = require('../../@util/calculatePrice');
-const sendMessage = require('../post/sendMessage');
-const decideMaxDate = require('../../@util/decideMaxDate');
+const post = require('../post');
+const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
+const decideMaxDatePhrase = require('../../@util/decideMaxDatePhrase');
 
 module.exports = { getMovie, getDateTime, getCinema, getExactSlot, getExperienceOnly, confirmProceed };
 
@@ -11,14 +11,14 @@ async function getMovie(chat_id, text) {
 
     const reply = Phrases.ACKNOWLEDGEMENT(text) + 'For which movie?';
     const replyMarkup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
-    await sendMessage(chat_id, reply, { replyMarkup });
+    await post.sendMessage(chat_id, reply, { replyMarkup });
 
 }
 
 async function getDateTime(chat_id, text, maxDate) {
 
-    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Around when? Schedules are updated until ${decideMaxDate.phrase(maxDate)}`;
-    await sendMessage(chat_id, reply);
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Around when? Schedules are updated until ${decideMaxDatePhrase(maxDate)}`;
+    await post.sendMessage(chat_id, reply);
 
 }
 
@@ -28,7 +28,7 @@ async function getCinema(chat_id, text, bookingInfo, cacheIdentifier) {
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Cinemas', switch_inline_query_current_chat: cacheIdentifier }]]
     };
-    await sendMessage(chat_id, reply, { replyMarkup });
+    await post.sendMessage(chat_id, reply, { replyMarkup });
 
 }
 
@@ -54,7 +54,7 @@ async function getExactSlot(chat_id, text, bookingInfo, cacheIdentifier) {
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Showtimes', switch_inline_query_current_chat: cacheIdentifier }]]
     };
-    await sendMessage(chat_id, reply, { replyMarkup });
+    await post.sendMessage(chat_id, reply, { replyMarkup });
 
 }
 
@@ -78,7 +78,7 @@ async function getExperienceOnly(chat_id, text, bookingInfo, showtimes, cacheIde
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Experiences', switch_inline_query_current_chat: cacheIdentifier }]]
     };
-    await sendMessage(chat_id, reply, { replyMarkup });
+    await post.sendMessage(chat_id, reply, { replyMarkup });
 }
 
 async function confirmProceed(chat_id, bookingInfo) {
@@ -90,6 +90,6 @@ async function confirmProceed(chat_id, bookingInfo) {
     if (experience === 'Regular') experienceStr = '(regular) ';
 
     const text = Phrases.POSITIVE() + `So I'll proceed to get tickets ${experienceStr}for ${movie.title} ${makeDateTimePhrase(dateTime)} at ${cinema}?`;
-    await sendMessage(chat_id, text);
+    await post.sendMessage(chat_id, text);
 
 }

@@ -1,10 +1,10 @@
-const sendMessage = require("../../../../_telegram/post/sendMessage");
+const post = require("../../../../_telegram/post");
 const getShowTimes = require('../../../../_database/query/getShowtimes');
+const makeDateTimePhrase = require('../../../../@util/makeDateTimePhrase');
 const assignDateTime = require('../../../../@util/assignDateTime');
-const CONSTANTS = require('../../../../@global/CONSTANTS');
 const { logInfo, } = require('../../../../@global/LOGS');
-const makeDateTimePhrase = require("../../../../@util/makeDateTimePhrase");
 const isTimeLessThan = require('../../../../@util/isTimeLessThan');
+const CONSTANTS = require('../../../../@global/CONSTANTS');
 const { addDays, addMinutes, subMinutes } = require("date-fns");
 
 const isYesNo = function (text) {
@@ -82,6 +82,6 @@ module.exports = async function operatingHours(chatId, text, extractedInfo, sess
         }
     }
 
-    await sendMessage(chatId, reply);
+    await post.sendMessage(chatId, reply);
 
 }

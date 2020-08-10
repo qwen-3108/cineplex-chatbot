@@ -1,7 +1,12 @@
-const { addDays } = require('date-fns');
+const { addDays, differenceInCalendarDays } = require('date-fns');
+const { DATES_IN_DB } = require('../@global/CONSTANTS');
 const isTimeLessThan = require('./isTimeLessThan');
 
-module.exports = function mapDateTime(date, sessionStartedAt, daysToDbDate, nextWeekAreDaysLessThan) {
+module.exports = function mapDateTime(date, sessionStartedAt) {
+
+    const todayDbDate = new Date(DATES_IN_DB[sessionStartedAt.getDay()]);
+    const daysToDbDate = differenceInCalendarDays(sessionStartedAt, todayDbDate);
+    const nextWeekAreDaysLessThan = sessionStartedAt.getDay();
 
     if (date.getDay() === nextWeekAreDaysLessThan) {
         if (isTimeLessThan(date, sessionStartedAt)) {

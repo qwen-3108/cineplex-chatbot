@@ -1,6 +1,6 @@
 const { MAIN_STATUS } = require('../../@global/CONSTANTS');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
-const sendMessage = require('../post/sendMessage');
+const post = require('../post');
 
 module.exports = async function toFallback({ chat_id, currentSession }) {
 
@@ -53,6 +53,6 @@ module.exports = async function toFallback({ chat_id, currentSession }) {
         }
     }
 
-    await sendMessage(chat_id, text, {parseMode: 'Markdown'});
+    await post.sendMessage(chat_id, text, { parseMode: 'Markdown' });
 
 }

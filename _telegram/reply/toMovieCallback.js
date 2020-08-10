@@ -1,6 +1,5 @@
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
-const sendMessage = require('../post/sendMessage');
-const editMessageText = require('../post/editMessageText');
+const post = require('../post');
 
 module.exports = { showMovieDetail, hideMovieDetail, howToFilter };
 
@@ -18,10 +17,9 @@ async function showMovieDetail(inline_message_id, movie) {
     };
     const parseMode = 'Markdown';
 
-    await editMessageText(inline_message_id, text, { replyMarkup, parseMode });
+    await post.editMessageText(inline_message_id, text, { replyMarkup, parseMode });
     const updatedCache = await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id }, { $set: { state: "show" } });
     console.log("updatedCache in toMovieCallback: ", updatedCache);
-
 }
 
 async function hideMovieDetail(inline_message_id, movie) {
@@ -40,7 +38,7 @@ async function hideMovieDetail(inline_message_id, movie) {
             { text: 'More Info', callback_data: `movieId =${_id} show=` },
             { text: 'Showtime', callback_data: `movieId =${_id} showtime=` }]]
     };
-    await editMessageText(inline_message_id, text, { parseMode: 'Markdown', replyMarkup: replyMarkup, disableWebPagePreview: true });
+    await post.editMessageText(inline_message_id, text, { parseMode: 'Markdown', replyMarkup: replyMarkup, disableWebPagePreview: true });
 
     // await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id, state: "hide" });
     const updatedCache = await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id }, { $set: { state: "hide" } });
@@ -59,6 +57,6 @@ async function howToFilter(inline_message_id, movieId, movieTitle) {
             { text: optionText, callback_data: `movieId =${movieId} ${state}=` },
             { text: 'Showtime', switch_inline_query_current_chat: movieTitle }]]
     };
-    await editMessageText(inline_message_id, text, { replyMarkup });
+    await post.editMessageText(inline_message_id, text, { replyMarkup });
 
 }

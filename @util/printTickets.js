@@ -6,7 +6,6 @@ const mapDateTime = require('./mapDateTime');
 
 module.exports = async function printTickets(savedTickets, bookingInfo) {
     const { WIDTH, HEIGHT, LABEL_TEXTS, DETAIL_TEXTS, DISCLAIMER_LINE_1, DISCLAIMER_LINE_2 } = TICKET;
-    const { daysToDbDate, nextWeekAreDaysLessThan } = bookingInfo.dateTime;
     const selected = bookingInfo.ticketing.filter(selection => selection.isSelected);
     if (selected.length !== 1) throw `Seating plan selected not unique in printTickets.js ${JSON.stringify(selected)}`;
     const { movie, cinema, isPlatinum, hall, dateTime } = selected[0];
@@ -14,7 +13,7 @@ module.exports = async function printTickets(savedTickets, bookingInfo) {
     const detailTexts = {};
     detailTexts[movie.title] = DETAIL_TEXTS.movie;
     //>>>
-    const mappedDate = mapDateTime(dateTime, daysToDbDate, nextWeekAreDaysLessThan);
+    const mappedDate = mapDateTime(dateTime, bookingInfo.dateTime.sessionStartedAt);
     const dateStr = format(mappedDate, 'd MMMM yyyy');
     const timeStr = format(mappedDate, 'h : mm aa');
     detailTexts[dateStr] = DETAIL_TEXTS.date;

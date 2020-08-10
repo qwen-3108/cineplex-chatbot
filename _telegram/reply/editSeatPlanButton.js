@@ -1,20 +1,19 @@
-const editMessageReplyMarkup = require('../post/editMessageReplyMarkup');
+const post = require('../post');
 
-module.exports = async function editSeatPlanButton(chat_id, ticketingEntry, dateTime) {
+module.exports = async function editSeatPlanButton(chat_id, ticketingEntry, sessionStartedAt) {
 
     const { isSelected, scheduleId, seatPlanMsgId } = ticketingEntry;
-    const { daysToDbDate, nextWeekAreDaysLessThan } = dateTime;
 
     let callbackButton;
     if (isSelected) {
         callbackButton = { text: '✅ Choosing for this plan', callback_data: "uSId =NA=" };
     } else {
-        callbackButton = { text: '📍 Choose seats', callback_data: `uSId =${scheduleId} ${daysToDbDate} ${nextWeekAreDaysLessThan}=` };
+        callbackButton = { text: '📍 Choose seats', callback_data: `uSId =${scheduleId}=` };
     }
 
-    return await editMessageReplyMarkup(
-        chat_id, 
-        seatPlanMsgId, 
+    return await post.editMessageReplyMarkup(
+        chat_id,
+        seatPlanMsgId,
         { inline_keyboard: [[callbackButton]] }
     )
         .then(res => {

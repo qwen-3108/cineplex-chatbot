@@ -1,8 +1,8 @@
-const sendMessage = require('../post/sendMessage');
+const post = require('../post');
 
 module.exports = async function faqNowShowing(chat_id) {
 
     const text = "Server error 👾";
-    await sendMessage(chat_id, text);
+    await post.sendMessage(chat_id, text);
 
 }

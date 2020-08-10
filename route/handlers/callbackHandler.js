@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongodb');
-const { typing, toMovieCallback, editSeatPlanButton, deleteRepeatSeatPlan, sendSeatLegend, sendSeatPlan, getSeats } = require('../../_telegram/reply');
+const { toMovieCallback, editSeatPlanButton, deleteRepeatSeatPlan, sendSeatLegend, sendSeatPlan, getSeats } = require('../../_telegram/reply');
+const post = require('../../_telegram/post');
 const { MAIN_STATUS } = require('../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const { logInfo, } = require('../../@global/LOGS');
@@ -41,19 +42,15 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
             }
         case 'uSId':
             {
-                typing(chatId);
+                post.sendTypingAction(chatId);
 
                 //#0: if button clicked is already 'Choosing for this plan'
                 if (value === "NA") { break; }
-
-                const [scheduleId, daysToDbDate, nextWeekAreDaysLessThan] = value.split(' ');
-                // sessionToMutate.bookingInfo.dateTime = { daysToDbDate: Number(daysToDbDate), nextWeekAreDaysLessThan: Number(nextWeekAreDaysLessThan) };
-                sessionToMutate.bookingInfo.dateTime.daysToDbDate = Number(daysToDbDate);
-                sessionToMutate.bookingInfo.dateTime.nextWeekAreDaysLessThan = Number(nextWeekAreDaysLessThan);
+                const scheduleId = value;
 
                 //#1: populate booking info with details from showtime
                 const showtime = await COLLECTIONS.showtimes.findOne({ _id: ObjectId(scheduleId) });
-                // await populateBookingInfo({ showtime, sessionToMutate });
+                await populateBookingInfo({ showtime, sessionToMutate });
 
                 const { ticketing } = sessionToMutate.bookingInfo;
                 for (let i = 0; i < ticketing.length; i++) {
@@ -93,11 +90,8 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
         case 'sId':
             {
                 logInfo(chatId, '-----View seat plan request received-----');
-                typing(chatId);
-                const [scheduleId, daysToDbDate, nextWeekAreDaysLessThan] = value.split(' ');
-                // sessionToMutate.bookingInfo.dateTime = { daysToDbDate: Number(daysToDbDate), nextWeekAreDaysLessThan: Number(nextWeekAreDaysLessThan) };
-                sessionToMutate.bookingInfo.dateTime.daysToDbDate = Number(daysToDbDate);
-                sessionToMutate.bookingInfo.dateTime.nextWeekAreDaysLessThan = Number(nextWeekAreDaysLessThan);
+                post.sendTypingAction(sessionToMutate.chatId);
+                const scheduleId = value;
 
                 //#1: if first seat plan sent - send description text
                 if (sessionToMutate.bookingInfo.ticketing.length === 0) {

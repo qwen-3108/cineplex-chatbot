@@ -1,8 +1,6 @@
-const { addDays, format, subDays } = require('date-fns');
+const { addDays } = require('date-fns');
 
-module.exports = { date, phrase };
-
-function date(startedAt) {
+module.exports = function decideMaxDate(startedAt) {
 
     let maxDate;
 
@@ -31,22 +29,4 @@ function date(startedAt) {
     }
 
     return maxDate;
-}
-
-function phrase(maxDate) {
-
-    switch (maxDate.getHours()) {
-        case 5:
-            const showDate = subDays(maxDate, 1);
-            return `${format(showDate, 'EEEE (d/M)')} (inclusive of times past midnight before dawn)`;
-        case 11:
-            return `next ${format(maxDate, 'EEEE (d/M)')} noon`;
-        case 17:
-            return `next ${format(maxDate, 'EEEE (d/M)')} afternoon`;
-        case 23:
-            return `${format(maxDate, 'EEEE (d/M)')} night`;
-        default:
-            throw `Not valid max date`;
-    }
-
-}
+};

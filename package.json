@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles dateHandling.test.js",
     "start": "node gcpCredGen.js && node server.js",
     "start_local": "nodemon server.js"
   },
@@ -29,7 +29,6 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
     "jest": "^26.0.1",
-    "nodemon": "^2.0.4",
-    "supertest": "^4.0.2"
+    "nodemon": "^2.0.4"
   }
 }

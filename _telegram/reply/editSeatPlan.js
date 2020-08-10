@@ -3,11 +3,10 @@ const FormData = require('form-data');
 const { format } = require('date-fns');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const mapDateTime = require('../../@util/mapDateTime');
-const editMessageMedia = require('../post/editMessageMedia');
+const post = require('../post');
 
 module.exports = async function editSeatPlan(chat_id, scheduleId, bookingInfo) {
 
-    const { daysToDbDate, nextWeekAreDaysLessThan } = bookingInfo.dateTime;
     const toEdit = bookingInfo.ticketing.filter(selection => selection.scheduleId === scheduleId);
     const { movie, dateTime, cinema, isPlatinum, seatPlanMsgId, seatPlanCallback } = toEdit[0];
 
@@ -17,7 +16,7 @@ module.exports = async function editSeatPlan(chat_id, scheduleId, bookingInfo) {
     formData.append('message_id', seatPlanMsgId);
     //#2 form field: input media photo
     const experienceStr = isPlatinum ? '\n💎 (Platinum Movie Suites)' : '';
-    const mappedDate = mapDateTime(dateTime, daysToDbDate, nextWeekAreDaysLessThan);
+    const mappedDate = mapDateTime(dateTime, bookingInfo.dateTime.sessionStartedAt);
     const caption = `*${movie.title}*\n☁️ ${format(mappedDate, 'd MMMM yyyy (E)')}, ${format(mappedDate, 'h aa')}\n🎥 ${cinema}${experienceStr}\n\`last updated: ${format(new Date(), 'yyyy-MM-dd HH:mm')}\``;
     const inputMediaPhoto = {
         type: 'photo',
@@ -34,7 +33,7 @@ module.exports = async function editSeatPlan(chat_id, scheduleId, bookingInfo) {
     }));
 
     let file_id;
-    return await editMessageMedia(formData)
+    return await post.editMessageMedia(formData)
         .then(res => {
             file_id = res.data.result.photo[0].file_id;
             console.log(`Edit seat plan successfully. New file id: ${file_id}`);

@@ -84,9 +84,7 @@ const session = {
                         end: {
                             anyOf: [
                                 { bsonType: "date" }, { bsonType: "null" }]
-                        },
-                        daysToDbDate: { bsonType: "int" },
-                        nextWeekAreDaysLessThan: { bsonType: "int" }
+                        }
                     }
                 },
                 cinema: {
@@ -149,7 +147,7 @@ const session = {
             properties: {
                 seatNumbers: {
                     bsonType: "array",
-                    items: {bsonType: "string"}
+                    items: { bsonType: "string" }
                 },
                 movie: {
                     bsonType: "object",

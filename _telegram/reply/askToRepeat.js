@@ -1,8 +1,8 @@
-const sendMessage = require('../post/sendMessage');
+const post = require('../post');
 
 module.exports = async function askForMoreInfo(chat_id) {
 
     const text = "Perhaps I get it wrongly. Could you please say it again? ";
-    await sendMessage(chat_id, text);
+    await post.sendMessage(chat_id, text);
 
 }

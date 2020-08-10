@@ -1,15 +1,12 @@
-const { differenceInCalendarDays, addDays } = require('date-fns');
-
 const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const getShowtimes = require('../_database/query/getShowtimes');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
 const { INTENT, NO_RESULT_REASON, DATES_IN_DB } = require('../@global/CONSTANTS');
 const { logInfo } = require('../@global/LOGS');
+const decideMaxDate = require('../@util/decideMaxDate');
 const assignDateTime = require('../@util/assignDateTime');
 const makeInlineQueryResult = require('../@util/makeInlineQueryResult');
-const answerInlineQuery = require('../_telegram/post/answerInlineQuery');
-const decideMaxDate = require('../@util/decideMaxDate');
-const { ca } = require('date-fns/locale');
+const post = require('../_telegram/post');
 
 
 module.exports = class InlineQuery {
@@ -17,11 +14,9 @@ module.exports = class InlineQuery {
         this.queryId = queryId;
 
         const today = new Date();
-        const todayDay = today.getDay();
-        const todayDbDate = new Date(DATES_IN_DB[todayDay]);
-        const maxDate = decideMaxDate.date(today);
+        const maxDate = decideMaxDate(today);
         this.queryFilter = {
-            dateTime: { start: today, end: maxDate, sessionStartedAt: today, daysToDbDate: differenceInCalendarDays(today, todayDbDate), nextWeekAreDaysLessThan: todayDay },
+            dateTime: { start: today, end: maxDate, sessionStartedAt: today },
             movie: { title: null, id: null },
             cinema: []
         };
@@ -36,13 +31,16 @@ module.exports = class InlineQuery {
             if (extractedInfo[param] !== "") {
                 switch (param) {
                     case "date-time":
-                        const maxDate = decideMaxDate.date(this.queryFilter.dateTime.sessionStartedAt);
+                        const maxDate = decideMaxDate(this.queryFilter.dateTime.sessionStartedAt);
                         const { start, end } = assignDateTime(extractedInfo['date-time']);
                         if (start > maxDate) {
                             console.log('dateTime totally exceed schedule');
                             const inlineQueryResult = makeInlineQueryResult.showtimeNotUp(maxDate);
-                            await answerInlineQuery(this.queryId, inlineQueryResult);
+                            await post.answerInlineQuery(this.queryId, inlineQueryResult);
                             return;
+                        } else if (end > maxDate) {
+                            console.log('dateTime partilaly exceed schedule');
+                            this.queryFilter.dateTime.start = start;
                         } else {
                             console.log('dateTime within viable range, assigning to queryFilter');
                             this.queryFilter.dateTime.start = start;
@@ -134,7 +132,7 @@ module.exports = class InlineQuery {
                 inlineQueryResult = makeInlineQueryResult.noResult({ type: 'movie' });
             }
 
-            await answerInlineQuery(this.queryId, inlineQueryResult);
+            await post.answerInlineQuery(this.queryId, inlineQueryResult);
 
         } else if (intent === INTENT.INLINE.SHOWTIME.SELF) {
 
@@ -159,7 +157,7 @@ module.exports = class InlineQuery {
             }
 
             logInfo(chatId, JSON.stringify(inlineQueryResult));
-            await answerInlineQuery(this.queryId, inlineQueryResult, currentOffset + 10);
+            await post.answerInlineQuery(this.queryId, inlineQueryResult, currentOffset + 10);
 
         } else if (intent === INTENT.INLINE.CACHE.SELF) {
 
@@ -175,7 +173,7 @@ module.exports = class InlineQuery {
                 inlineQueryResult = cachedResult.inlineQueryResult;
             }
 
-            await answerInlineQuery(this.queryId, inlineQueryResult);
+            await post.answerInlineQuery(this.queryId, inlineQueryResult);
 
         } else {
             throw `Unrecognized inline query intent ${intent} in ${__filename}`;

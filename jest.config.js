@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 module.exports = {
-    verbose: true,
-    globalSetup: "./#test/setup.js",
-    globalTeardown: "./#test/teardown.js",
+    testEnvironment: "node",
+    testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/development_aid/"]
 };
+

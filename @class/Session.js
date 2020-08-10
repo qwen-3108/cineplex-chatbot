@@ -27,14 +27,10 @@ module.exports = class Session {
             };
             this.status = { main: null, secondary: null };
 
-            const todayDay = this.sessionInfo.startedAt.getDay();
-            const todayDbDate = new Date(DATES_IN_DB[todayDay]);
             this.bookingInfo = {
                 movie: { title: null, id: null, debutDateTime: null, isBlockBuster: null },
                 dateTime: {
                     start: null, end: null,
-                    daysToDbDate: differenceInCalendarDays(this.sessionInfo.startedAt, todayDbDate),
-                    nextWeekAreDaysLessThan: todayDay,
                     sessionStartedAt: this.sessionInfo.startedAt
                 },
                 place: null,
@@ -91,6 +87,8 @@ module.exports = class Session {
         logInfo(this.chatId, `Session to save: ${JSON.stringify(this)}`);
         const docId = this.chatId;
         // logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
+        delete this.bookingInfo.dateTime.sessionStartedAt;
+        // console.log('Session object with type: ', logType(this, 0));
         await COLLECTIONS.sessions.replaceOne(
             { _id: this.chatId },
             {

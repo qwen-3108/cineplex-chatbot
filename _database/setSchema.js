@@ -7,14 +7,17 @@ module.exports = async function setSchema(collectionName, jsonSchema) {
 
     try {
         await client.connect();
-        const db = client.db("cinemaDB");
-        console.log(`Connected to database ${db.databaseName}`);
-        await db.command({
-            collMod: collectionName,
-            validator: {
-                $jsonSchema: jsonSchema
-            }
-        });
+        const dbs = ["cinemaDB", "testDB"];
+        for (let i = 0; i < dbs.length; i++) {
+            const db = client.db(dbs[i]);
+            console.log(`Connected to database ${db.databaseName}`);
+            await db.command({
+                collMod: collectionName,
+                validator: {
+                    $jsonSchema: jsonSchema
+                }
+            });
+        }
     }
 
     catch (ex) {

@@ -5,7 +5,6 @@ const { logInfo } = require('../../../../../@global/LOGS');
 const assignDateTime = require('../../../../../@util/assignDateTime');
 const { upcomingMovie, invalidDateTime } = require('../../../../../_telegram/reply');
 const decideMaxDate = require('../../../../../@util/decideMaxDate');
-const { } = require('../../../../../@global/LOGS');
 
 module.exports = async function validateAndMutateInfo({ extractedInfo, sessionToMutate }) {
 
@@ -42,7 +41,7 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                     break;
                 case 'date-time':
                     logInfo(chatId, 'Update: Validating date-time...');
-                    const maxDate = decideMaxDate.date(sessionToMutate.sessionInfo.startedAt);
+                    const maxDate = decideMaxDate(sessionToMutate.sessionInfo.startedAt);
                     const dateTime = assignDateTime(extractedInfo[param]);
                     logInfo(chatId, `Update: Parsed dateTime: ${JSON.stringify(dateTime)}`);
                     if (dateTime.start > maxDate) {

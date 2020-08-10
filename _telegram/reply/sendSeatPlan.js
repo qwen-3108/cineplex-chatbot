@@ -3,12 +3,11 @@ const FormData = require('form-data');
 const { format } = require('date-fns');
 const drawSeatPlan = require('../../@util/drawSeatPlan');
 const mapDateTime = require('../../@util/mapDateTime');
-const sendPhoto = require('../post/sendPhoto');
+const post = require('../post');
 
 module.exports = async function sendSeatPlan({ chat_id, bookingInfo, seatingPlan }) {
 
     const { scheduleId, movie, dateTime, cinema, isPlatinum } = bookingInfo.ticketing[bookingInfo.ticketing.length - 1];
-    const { daysToDbDate, nextWeekAreDaysLessThan } = bookingInfo.dateTime;
 
     const formData = new FormData();
 
@@ -19,7 +18,7 @@ module.exports = async function sendSeatPlan({ chat_id, bookingInfo, seatingPlan
     //#2: form field: reply_markup, add button if not the first seat plan sent
     if (bookingInfo.ticketing.length > 1) {
         console.log('Seating plan has button');
-        const reply_markup = { inline_keyboard: [[{ text: '📍 Choose seats', callback_data: `uSId =${scheduleId} ${daysToDbDate} ${nextWeekAreDaysLessThan}=` }]] };
+        const reply_markup = { inline_keyboard: [[{ text: '📍 Choose seats', callback_data: `uSId =${scheduleId}=` }]] };
         formData.append('reply_markup', JSON.stringify(reply_markup));
     }
 
@@ -29,14 +28,14 @@ module.exports = async function sendSeatPlan({ chat_id, bookingInfo, seatingPlan
     formData.append('photo', fs.createReadStream(`#asset/image/seat_snapshot/${chat_id}.jpeg`));
 
     //#4 form field: caption
-    const mappedDate = mapDateTime(dateTime, daysToDbDate, nextWeekAreDaysLessThan);
+    const mappedDate = mapDateTime(dateTime, bookingInfo.dateTime.sessionStartedAt);
     const experienceStr = isPlatinum ? '\n💎 (Platinum Movie Suites)' : '';
     const caption = `*${movie.title}*\n☁️ ${format(mappedDate, 'd MMMM yyyy (E)')}, ${format(mappedDate, 'h aa')}\n🎥 ${cinema}${experienceStr}\n\`last updated: ${format(new Date(), 'yyyy-MM-dd HH:mm')}\``;
     console.log('caption: ', caption.split('\n').join(' '));
     formData.append('caption', caption);
 
     //posting
-    return await sendPhoto(formData)
+    return await post.sendPhoto(formData)
         .then(res => {
             const { message_id, photo } = res.data.result;
             let seatPlanCallback = [];

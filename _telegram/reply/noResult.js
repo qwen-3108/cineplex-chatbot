@@ -1,7 +1,7 @@
 const { NO_RESULT_REASON, INLINE_KEYBOARD } = require('../../@global/CONSTANTS');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 const makeInlineQueryInput = require('../../@util/makeInlineQueryInput');
-const sendMessage = require('../post/sendMessage');
+const post = require('../post');
 
 module.exports = async function noResult(chat_id, bookingInfo, noResultReason, alternativeQuery) {
 
@@ -53,6 +53,6 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
             throw `${__filename} | Unrecognized no result reason during slot filling ${noResultReason}`;
     }
 
-    await sendMessage(chat_id, text, {replyMarkup});
+    await post.sendMessage(chat_id, text, { replyMarkup });
 
 }

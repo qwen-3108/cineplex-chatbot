@@ -51,9 +51,9 @@ module.exports = function makeDbQuery(bookingInfo) {
         }
 
         //if end on next week overlapping date, trim time after sessionStartTime
-        if (adjustedEnd.getDay() === sessionStartedAt.getDay() && differenceInCalendarDays(adjustedEnd, sessionStartedAt) !== 0) {
-            const maxDate = decideMaxDate.date(sessionStartedAt);
-            adjustedEnd.setHours(maxDate.getHours(), 59, 59);
+        const maxDate = decideMaxDate(sessionStartedAt);
+        if (adjustedEnd > maxDate) {
+            adjustedEnd = maxDate;
         }
 
         console.log(`adjustedStart: ${adjustedStart}`);

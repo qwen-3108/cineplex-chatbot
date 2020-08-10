@@ -2,7 +2,8 @@ const { format, addDays } = require('date-fns');
 
 const { INLINE_KEYBOARD, CINEMA_THUMB, NA_THUMB } = require('../@global/CONSTANTS');
 const calculatePrice = require('./calculatePrice');
-const decideMaxDate = require('./decideMaxDate');
+const mapDateTime = require('../@util/mapDateTime');
+const decideMaxDatePhrase = require('../@util/decideMaxDatePhrase');
 
 module.exports = { movie, cinema, showtime, resultExpired, showtimeNotUp, noResult };
 
@@ -32,7 +33,7 @@ function movie(movieArr, queryIdentifier) { //queryIdentifier can be query text 
 
         return ({
             type: 'article',
-            id: _id,
+            id: 'movieId:' + _id,
             thumb_url: poster,
             title,
             description: `${language} · ${formatGenreStr} · ${ratingStr}`,
@@ -81,8 +82,7 @@ function showtime(showtimeArr, bookingInfo, queryIdentifier) {
         const { _id, cinema, dateTime, isPlatinum, totalSeats, sold } = showtime;
 
         const date = new Date(dateTime);
-        const { daysToDbDate, nextWeekAreDaysLessThan } = bookingInfo.dateTime; // determine whether date has span to next week
-        const mappedDate = date.getDay() < nextWeekAreDaysLessThan ? addDays(date, daysToDbDate + 7) : addDays(date, daysToDbDate);
+        const mappedDate = mapDateTime(dateTime, bookingInfo.dateTime.sessionStartedAt);
 
         const ticketLeft = totalSeats - sold;
         const ticketStr = ticketLeft === 1 ? '1 seat left' : `${ticketLeft} seats left`;
@@ -95,16 +95,16 @@ function showtime(showtimeArr, bookingInfo, queryIdentifier) {
             parse_mode: 'Markdown',
             disable_web_page_preview: false
         }
-        console.log(`scheduleId =${_id} ${daysToDbDate} ${nextWeekAreDaysLessThan}=`);
+        console.log(`scheduleId =${_id}=`);
         const reply_markup = {
             inline_keyboard: [[
                 { text: 'Back to List', switch_inline_query_current_chat: queryIdentifier },
-                { text: 'Seating Plan', callback_data: `sId =${_id} ${daysToDbDate} ${nextWeekAreDaysLessThan}=` }]]
+                { text: 'Seating Plan', callback_data: `sId =${_id}=` }]]
         };
 
         inlineQueryResult.push({
             type: 'article',
-            id: _id.toString(),
+            id: 'scheduleId:' + _id.toString(),
             title: `${format(mappedDate, 'd MMMM yyyy (E)')} · ${format(mappedDate, 'h aa')}`,
             description: `${cinema} ${experienceStr ? '· Platinum Movie Suites' : ''}· ${ticketStr}`,
             thumb_url: CINEMA_THUMB[cinema],
@@ -150,7 +150,7 @@ function showtimeNotUp(maxDate) {
         type: 'article',
         id: 'showtime not available',
         title: 'Oops! Schedules Not Available ',
-        description: `Showtimes are updated until ${decideMaxDate.phrase(maxDate)} :)`,
+        description: `Showtimes are updated until ${decideMaxDatePhrase(maxDate)} :)`,
         thumb_url: NA_THUMB,
         input_message_content,
     });

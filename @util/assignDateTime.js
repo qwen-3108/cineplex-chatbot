@@ -1,6 +1,3 @@
-const { differenceInCalendarDays } = require('date-fns');
-const { DATES_IN_DB } = require('../@global/CONSTANTS');
-
 module.exports = function assignDateTime(dateTimeObj) {
 
     let date = {

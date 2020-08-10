@@ -1,4 +1,4 @@
-const sendMessage = require('../post/sendMessage');
+const post = require('../post');
 const makeSeatNumPhrase = require('../../@util/makeSeatNumPhrase');
 const listInEnglish = require('../../@util/listInEnglish');
 
@@ -28,7 +28,7 @@ async function invalidSeats(chat_id, invalidSeats, seatNumbers, invalidSeatCount
             return;
     }
 
-    await sendMessage(chat_id, text, {parseMode: 'Markdown'});
+    await post.sendMessage(chat_id, text, { parseMode: 'Markdown' });
 
 }
 
@@ -68,7 +68,7 @@ async function invalidSeatPhrases(chat_id, expandProgressObj, invalidSeatPhraseC
 
     }
 
-    await sendMessage(chat_id, text);
+    await post.sendMessage(chat_id, text);
 
 }
 
@@ -81,7 +81,7 @@ async function takenSeats(chat_id, takenSeats, seatTakenCount) {
         `It seems like your seat selections are still unavailable. If you are facing any issue, please contact our human assistants at 1111 1111. They will do their best to help`
     ]
 
-    await sendMessage(chat_id, textArr[seatTakenCount - 1]);
+    await post.sendMessage(chat_id, textArr[seatTakenCount - 1]);
 
 }
 
@@ -96,7 +96,7 @@ async function justTakenSeats(chat_id, justTakenSeats, justTakenCount) {
         `Unfortunately we didn't get it. Let me know your preferred seats again?`,
     ];
 
-    await sendMessage(chat_id, textArr[justTakenCount - 1]);
+    await post.sendMessage(chat_id, textArr[justTakenCount - 1]);
 
 }
 
@@ -104,7 +104,7 @@ async function mixedTakenSeats(chat_id, takenSeats, justTakenSeats) {
 
     text = `I'm afraid ${makeSeatStr(takenSeats)} ${makeSeatNumPhrase(takenSeats)} ${makeBeStr(takenSeats)} taken. Unfortunately, ${makeSeatStr(justTakenSeats)} ${makeSeatNumPhrase(justTakenSeats)} ${makeHaveStr(justTakenSeats)} also just been reserved. Could you tell me your preferred seats again, please?`
 
-    await sendMessage(chat_id, text);
+    await post.sendMessage(chat_id, text);
 
 }
 
@@ -118,11 +118,11 @@ async function fullyBooked(chat_id, movieTitle, hasAlternative) {
                 switch_inline_query_current_chat: `${movieTitle}`
             }]]
         };
-        await sendMessage(chat_id, text, {replyMarkup});
+        await post.sendMessage(chat_id, text, { replyMarkup });
 
     } else {
         const text = `Tickets for that showtime have just been sold out, and it seems like other showtimes are fully booked as well. I'm really sorry about that :/ Is there anything else I can help?`;
-        await sendMessage(chat_id, text);
+        await post.sendMessage(chat_id, text);
     }
 
 }

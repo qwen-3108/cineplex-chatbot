@@ -20,8 +20,7 @@ module.exports = async function bookHandler({ text, intentArr, extractedInfo, se
             {
                 sessionToMutate.bookingInfo.ticketing = [];
                 if (sessionToMutate.secondary === SEC_STATUS.CONFIRM_EDIT) {
-                    const { daysToDbDate, nextWeekAreDaysLessThan } = sessionToMutate.bookingInfo.dateTime;
-                    sessionToMutate.bookingInfo = resetBookingInfo(daysToDbDate, nextWeekAreDaysLessThan);
+                    sessionToMutate.bookingInfo = resetBookingInfo();
                 }
                 const { ok } = await validateAndMutateInfo({ extractedInfo, sessionToMutate });
                 if (ok) {

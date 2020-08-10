@@ -43,7 +43,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                         await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
                         return;
                     }
-                    await fillSlot.getDateTime(chatId, text, decideMaxDate.date(sessionToMutate.sessionInfo.startedAt));
+                    await fillSlot.getDateTime(chatId, text, decideMaxDate(sessionToMutate.sessionInfo.startedAt));
                     break;
                 }
             case MAIN_STATUS.GET_CINEMA:
