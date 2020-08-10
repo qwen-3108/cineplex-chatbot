@@ -1,4 +1,5 @@
 const axios = require('axios');
+const FormData = require('form-data');
 const { logConv } = require('../@global/LOGS');
 
 module.exports = { sendMessage, sendTypingAction, answerInlineQuery, answerPreCheckoutQuery, deleteMessage, editMessageMedia, editMessageMedia, editMessageReplyMarkup, editMessageText, sendInvoice, sendPhoto };
