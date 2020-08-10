@@ -6,6 +6,7 @@ const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const { logInfo, } = require('../../@global/LOGS');
 const assignAndValidateSeats = require('./service/book/helpers/assignAndValidateSeats');
 const mutateSeatNumbers = require('./service/book/helpers/mutateSeatNumbers');
+const populateBookingInfo = require('../../@util/populateBookingInfo');
 
 module.exports = async function onCallback({ data, inline_message_id, sessionToMutate }) {
 
