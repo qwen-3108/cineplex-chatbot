@@ -2,7 +2,7 @@ const queryDialogflow = require('../_dialogflow/queryDialogflow');
 const getShowtimes = require('../_database/query/getShowtimes');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
 const { INTENT, NO_RESULT_REASON, DATES_IN_DB } = require('../@global/CONSTANTS');
-const { logInfo } = require('../@global/LOGS');
+const LOGS = require('../@global/LOGS');
 const decideMaxDate = require('../@util/decideMaxDate');
 const assignDateTime = require('../@util/assignDateTime');
 const makeInlineQueryResult = require('../@util/makeInlineQueryResult');
@@ -118,7 +118,7 @@ module.exports = class InlineQuery {
                     let filteredMovies = showtimes.map(schedule => schedule.movieId);
                     let filteredMovieSet = new Set(filteredMovies);
                     let filteredMovieArr = Array.from(filteredMovieSet);
-                    logInfo(chatId, `filteredMovieArr: ${JSON.stringify(filteredMovieArr)}`);
+                    LOGS.logInfo(chatId, `filteredMovieArr: ${JSON.stringify(filteredMovieArr)}`);
                     movieCursor = await COLLECTIONS.movies.find({ _id: { $in: filteredMovieArr } });
                 }
             }
@@ -156,7 +156,7 @@ module.exports = class InlineQuery {
                 inlineQueryResult = makeInlineQueryResult.showtime(showtimes, this.queryFilter, query);
             }
 
-            logInfo(chatId, JSON.stringify(inlineQueryResult));
+            LOGS.logInfo(chatId, JSON.stringify(inlineQueryResult));
             await post.answerInlineQuery(this.queryId, inlineQueryResult, currentOffset + 10);
 
         } else if (intent === INTENT.INLINE.CACHE.SELF) {

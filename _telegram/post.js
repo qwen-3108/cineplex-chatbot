@@ -1,12 +1,12 @@
 const axios = require('axios');
 const FormData = require('form-data');
-const { logConv } = require('../@global/LOGS');
+const LOGS = require('../@global/LOGS');
 
 module.exports = { sendMessage, sendTypingAction, answerInlineQuery, answerPreCheckoutQuery, deleteMessage, editMessageMedia, editMessageMedia, editMessageReplyMarkup, editMessageText, sendInvoice, sendPhoto };
 
 async function sendMessage(chat_id, text, extraData) {
 
-    logConv(chat_id, `response: ${text}`);
+    LOGS.logConv(chat_id, `response: ${text}`);
 
     const data = { chat_id: chat_id, text: text };
     if (extraData !== undefined) {

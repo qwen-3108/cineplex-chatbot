@@ -1,7 +1,7 @@
 const { differenceInCalendarDays } = require('date-fns');
 const { MAIN_STATUS, DATES_IN_DB } = require('../@global/CONSTANTS');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
-const { logInfo, logError } = require('../@global/LOGS');
+const LOGS = require('../@global/LOGS');
 const logType = require('../@util/logType');
 
 module.exports = class Session {
@@ -52,11 +52,11 @@ module.exports = class Session {
 
             this.confirmPayload = { adjustedDateTime: {}, uniqueSchedule: {}, seatPhraseGuess: {} };
             this.payload = { seatNumber: [], movie: { title: null, id: null, debutDateTime: null, isBlockBuster: null } };
-            logInfo(this.chatId, '-----Instantiating new session-----');
-            logInfo(this.chatId, `New session: ${JSON.stringify(this)}`);
+            LOGS.logInfo(this.chatId, '-----Instantiating new session-----');
+            LOGS.logInfo(this.chatId, `New session: ${JSON.stringify(this)}`);
 
         } else {
-            logInfo(this.chatId, '-----Reconstructing existing session-----');
+            LOGS.logInfo(this.chatId, '-----Reconstructing existing session-----');
             const { sessionInfo, status, bookingInfo, counter, confirmPayload, payload } = sessionInDb;
             this.sessionInfo = sessionInfo;
             this.status = status;
@@ -65,7 +65,7 @@ module.exports = class Session {
             this.counter = counter;
             this.confirmPayload = confirmPayload;
             this.payload = payload;
-            logInfo(this.chatId, `Existing: ${JSON.stringify(this)}`);
+            LOGS.logInfo(this.chatId, `Existing: ${JSON.stringify(this)}`);
         }
 
         const docId = this.chatId;
@@ -82,12 +82,12 @@ module.exports = class Session {
     }
 
     async saveToDb() {
-        logInfo(this.chatId, '-----saving session-----');
+        LOGS.logInfo(this.chatId, '-----saving session-----');
         this.sessionInfo.lastUpdated = new Date();
-        logInfo(this.chatId, `Session to save: ${JSON.stringify(this)}`);
+        LOGS.logInfo(this.chatId, `Session to save: ${JSON.stringify(this)}`);
         const docId = this.chatId;
         delete this.bookingInfo.dateTime.sessionStartedAt;
-        // logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
+        // LOGS.logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
         await COLLECTIONS.sessions.replaceOne(
             { _id: this.chatId },
             {
@@ -99,8 +99,8 @@ module.exports = class Session {
                 confirmPayload: this.confirmPayload,
                 payload: this.payload,
             },
-            { upsert: true }, function (err) { logError(docId, `Session saving error: ${err}`) });
-        logInfo(this.chatId, '-----done-----');
+            { upsert: true }, function (err) { LOGS.logError(docId, `Session saving error: ${err}`) });
+        LOGS.logInfo(this.chatId, '-----done-----');
 
     }
 
@@ -133,6 +133,6 @@ module.exports = class Session {
         };
         this.confirmPayload = {};
         this.payload = {};
-        logInfo(this.chatId, 'marked session as end');
+        LOGS.logInfo(this.chatId, 'marked session as end');
     }
 }

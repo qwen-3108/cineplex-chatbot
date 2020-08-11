@@ -2,7 +2,7 @@ const fs = require('fs');
 const { MongoClient } = require('mongodb');
 const MONGODB_URI = require('./connection_string');
 
-async function getLogs(chatId) {
+async function retrieveLogs(chatId) {
 
     const client = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -31,4 +31,4 @@ async function getLogs(chatId) {
     }
 };
 
-getLogs("750594803");
+retrieveLogs("750594803");

@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --detectOpenHandles dateHandling.test.js",
+    "test": "jest --detectOpenHandles /noBreak/",
     "start": "node gcpCredGen.js && node server.js",
     "start_local": "nodemon server.js"
   },

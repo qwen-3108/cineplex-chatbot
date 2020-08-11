@@ -1,5 +1,5 @@
 const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
-const { logInfo, } = require('../../../../../@global/LOGS');
+const LOGS = require('../../../../../@global/LOGS');
 const { fillSlot, noResult, warnPlatinum } = require('../../../../../_telegram/reply');
 const { checkAvailable, getShowtimes, getCinemas, cache } = require('../../../../../_database/query');
 const makeInlineQueryResult = require('../../../../../@util/makeInlineQueryResult');
@@ -7,7 +7,7 @@ const decideMaxDate = require('../../../../../@util/decideMaxDate');
 
 module.exports = async function slotFilling({ text, sessionToMutate }) {
 
-    logInfo(sessionToMutate.chatId, '-----slot filling-----');
+    LOGS.logInfo(sessionToMutate.chatId, '-----slot filling-----');
     const { movie, cinema, place, dateTime } = sessionToMutate.bookingInfo;
 
     //decide status
@@ -24,7 +24,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
     } else {
         sessionToMutate.status = { main: MAIN_STATUS.CONFIRM_PROCEED, secondary: null };
     }
-    logInfo(sessionToMutate.chatId, `Evaluated status: ${JSON.stringify(sessionToMutate.status)}`);
+    LOGS.logInfo(sessionToMutate.chatId, `Evaluated status: ${JSON.stringify(sessionToMutate.status)}`);
 
     const { chatId, status, bookingInfo } = sessionToMutate;
 
@@ -36,7 +36,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
         switch (status.main) {
             case MAIN_STATUS.PROMPT_DATETIME:
                 {
-                    logInfo(chatId, '-----Prepare to get date time-----');
+                    LOGS.logInfo(chatId, '-----Prepare to get date time-----');
                     const { available, noResultReason, alternativeQuery } = await checkAvailable(bookingInfo);
                     if (!available) {
                         sessionToMutate.status = { main: null, secondary: null };
@@ -48,7 +48,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                 }
             case MAIN_STATUS.GET_CINEMA:
                 {
-                    logInfo(chatId, '-----Prepare to get cinema-----');
+                    LOGS.logInfo(chatId, '-----Prepare to get cinema-----');
                     const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: { cinema: 1 } });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
@@ -59,7 +59,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                     const cinemaList = Array.from(cinemaSet);
                     const cinemaArr = await getCinemas(cinemaList);
                     const cacheId = new Date().getTime().toString() + chatId;
-                    logInfo(chatId, `Generated id for caching cinemas result: ${cacheId}`);
+                    LOGS.logInfo(chatId, `Generated id for caching cinemas result: ${cacheId}`);
                     const cacheIdentifier = 'unique result ❤️ ' + cacheId;
                     const inlineQueryResult = makeInlineQueryResult.cinema(cinemaArr);
                     await cache.inlineQueryResult(cacheId, inlineQueryResult);
@@ -69,7 +69,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
             case MAIN_STATUS.GET_CINEMA_TIME_EXP:
             case MAIN_STATUS.GET_TIME_EXP:
                 {
-                    logInfo(chatId, '-----Prepare to get exact showtime-----');
+                    LOGS.logInfo(chatId, '-----Prepare to get exact showtime-----');
                     const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {} });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
@@ -77,7 +77,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                         return;
                     }
                     const cacheId = new Date().getTime().toString() + chatId;
-                    logInfo(chatId, `Generated id for caching showtimes result: ${cacheId}`);
+                    LOGS.logInfo(chatId, `Generated id for caching showtimes result: ${cacheId}`);
                     const cacheIdentifier = 'unique result ❤️ ' + cacheId;
                     const inlineQueryResult = makeInlineQueryResult.showtime(showtimes, bookingInfo, cacheIdentifier);
                     await cache.inlineQueryResult(cacheId, inlineQueryResult);
@@ -86,7 +86,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                 }
             case MAIN_STATUS.CONFIRM_PROCEED:
                 {
-                    logInfo(chatId, '-----Prepare to get final confirmation-----')
+                    LOGS.logInfo(chatId, '-----Prepare to get final confirmation-----')
                     const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {} });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
@@ -94,10 +94,10 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                         return;
                     }
                     if (showtimes.length > 1) {
-                        logInfo(chatId, 'Need to choose experience')
+                        LOGS.logInfo(chatId, 'Need to choose experience')
                         sessionToMutate.status = { main: MAIN_STATUS.GET_EXP, secondary: null };
                         const cacheId = new Date().getTime().toString() + chatId;
-                        logInfo(chatId, `id for caching showtimes (experiences) result: ${cacheId}`);
+                        LOGS.logInfo(chatId, `id for caching showtimes (experiences) result: ${cacheId}`);
                         const cacheIdentifier = 'unique result ❤️ ' + cacheId;
                         const inlineQueryResult = makeInlineQueryResult.showtime(showtimes, bookingInfo, cacheIdentifier);
                         await cache.inlineQueryResult(cacheId, inlineQueryResult);

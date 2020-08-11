@@ -5,9 +5,10 @@ const { cache, bookTickets } = require('../_database/query');
 
 const { INTENT } = require('../@global/CONSTANTS');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
-const { logInfo, logError, logConv, getLogs, initializeLogs } = require('../@global/LOGS');
+const LOGS = require('../@global/LOGS');
 const printTickets = require('../@util/printTickets');
-const { basics, sendTickets, finish, sendError, firstTimes } = require('../_telegram/reply');
+const reply = require('../_telegram/reply');
+const { basics, sendTickets, finish, sendError } = require('../_telegram/reply');
 const post = require('../_telegram/post');
 
 const slotFilling = require('./handlers/service/book/helpers/slotFilling');
@@ -35,8 +36,8 @@ module.exports = async function botHandler(req, res) {
 
     try {
         initializeLogs(chatId);
-        logInfo(chatId, '-----Post req received-----');
-        logInfo(chatId, `Req body: ${JSON.stringify(req.body)}`);
+        LOGS.logInfo(chatId, '-----Post req received-----');
+        LOGS.logInfo(chatId, `Req body: ${JSON.stringify(req.body)}`);
         res.end();
 
         if (req.body.hasOwnProperty('message')) {
@@ -49,7 +50,7 @@ module.exports = async function botHandler(req, res) {
             if (req.body.message.hasOwnProperty('successful_payment')) {
                 post.sendTypingAction(currentSession.chatId);
                 const { chatId, bookingInfo } = currentSession;
-                logInfo(chatId, 'Payment received');
+                LOGS.logInfo(chatId, 'Payment received');
                 const order_info = req.body.message.successful_payment.order_info;
                 const newTickets = await bookTickets(currentSession.chatId, bookingInfo.ticketing, bookingInfo.seatNumbers, order_info);
                 const ticketBuffers = await printTickets(newTickets, bookingInfo);
@@ -60,21 +61,21 @@ module.exports = async function botHandler(req, res) {
 
             //message via bot
             if (req.body.message.hasOwnProperty('via_bot')) {
-                logInfo(currentSession.chatId, 'Message via bot');
+                LOGS.logInfo(currentSession.chatId, 'Message via bot');
                 const text = req.body.message.text;
-                logConv(currentSession.chatId, text);
+                LOGS.logConv(currentSession.chatId, text);
                 if ((/💬/).test(text)) {
                     post.sendTypingAction(currentSession.chatId);
-                    logInfo(currentSession.chatId, 'Updating cinema');
+                    LOGS.logInfo(currentSession.chatId, 'Updating cinema');
                     currentSession.bookingInfo.cinema = [text.match(/[A-Za-z]+/g).join(' ')];
                     await slotFilling({ text, extractedInfo: {}, sessionToMutate: currentSession });
                 } else if ((/rating/i).test(text) && !currentSession.counter.seenMovieCard) {
                     post.sendTypingAction(currentSession.chatId);
-                    await firstTimes.movieCard(currentSession.chatId);
+                    await reply.firstMovieCard(currentSession.chatId);
                     currentSession.counter.seenMovieCard++;
                 } else if ((/ticket price/i).test(text) && !currentSession.counter.seenShowtimeCard) {
                     post.sendTypingAction(currentSession.chatId);
-                    await firstTimes.showtimeCard(currentSession.chatId);
+                    await reply.firstShowtimeCard(currentSession.chatId);
                     currentSession.counter.seenShowtimeCard++;
                 }
             }
@@ -82,8 +83,8 @@ module.exports = async function botHandler(req, res) {
             //ordinary message
             if (req.body.message.hasOwnProperty('text') && !req.body.message.hasOwnProperty('via_bot')) {
                 post.sendTypingAction(currentSession.chatId);
-                const { text, chat } = req.body.message;
-                logConv(currentSession.chatId, text);
+                const { text } = req.body.message;
+                LOGS.logConv(currentSession.chatId, text);
                 switch (text) {
                     case '/start':
                         await basics.welcome(currentSession.chatId);
@@ -161,7 +162,7 @@ module.exports = async function botHandler(req, res) {
 
         } else if (req.body.hasOwnProperty('edited_message')) {
 
-            logInfo(chatId, 'Ignore message edited update');
+            LOGS.logInfo(chatId, 'Ignore message edited update');
 
         } else if (req.body.hasOwnProperty('chosen_inline_result')) {
 
@@ -177,23 +178,23 @@ module.exports = async function botHandler(req, res) {
                 await cache.chosenInlineResult(inline_message_id, query);
 
             } else {
-                logInfo(chatId, 'Chosen inline result without cb button, no action needed');
+                LOGS.logInfo(chatId, 'Chosen inline result without cb button, no action needed');
             }
 
         }
 
     } catch (ex) {
-        logError(chatId, '-----! Error-----');
+        LOGS.logError(chatId, '-----! Error-----');
         if (ex.isAxiosError) {
             axiosErrorCallback(chatId, ex);
         } else {
-            logError(chatId, ex);
+            LOGS.logError(chatId, ex);
         }
         await sendError(chatId);
 
     } finally {
 
-        const logs = getLogs(chatId);
+        const logs = LOGS.getLogs(chatId);
         await COLLECTIONS.logs.updateOne(
             { _id: chatId },
             [{

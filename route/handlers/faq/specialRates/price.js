@@ -1,19 +1,19 @@
 const { format } = require('date-fns');
 const { PARAMETERS } = require('../../../../@global/CONSTANTS');
-const { logInfo, } = require('../../../../@global/LOGS');
+const LOGS = require('../../../../@global/LOGS');
 const CUSTOMER_TYPE = PARAMETERS.CUSTOMER_TYPE;
 const assignDateTime = require('../../../../@util/assignDateTime');
 const sendMessage = require('../../../../_telegram/post/sendMessage');
 
 module.exports = async function price({ extractedInfo, sessionToMutate }) {
 
-    logInfo(sessionToMutate.chatId, '-----price triggered-----');
+    LOGS.logInfo(sessionToMutate.chatId, '-----price triggered-----');
     const customerType = extractedInfo["customer-type"];
     let dateTime = { start: null, end: null };
     if (extractedInfo["date-time"] !== "") {
         dateTime = assignDateTime(extractedInfo["date-time"]);
     }
-    logInfo(sessionToMutate.chatId, `customer type: ${customerType}, date time: ${dateTime}`);
+    LOGS.logInfo(sessionToMutate.chatId, `customer type: ${customerType}, date time: ${dateTime}`);
 
     let reply;
 
@@ -103,7 +103,7 @@ module.exports = async function price({ extractedInfo, sessionToMutate }) {
         default:
             throw `Unrecognized customer type ${customerType}`;
     }
-    logInfo(sessionToMutate.chatId, `reply: ${reply}`);
+    LOGS.logInfo(sessionToMutate.chatId, `reply: ${reply}`);
     await sendMessage(sessionToMutate.chatId, reply, { parseMode: 'Markdown' });
 
 };

@@ -1,6 +1,6 @@
 const { format } = require('date-fns');
 const { PARAMETERS } = require('../../../../@global/CONSTANTS');
-const { logInfo, } = require('../../../../@global/LOGS');
+const LOGS = require('../../../../@global/LOGS');
 const CUSTOMER_TYPE = PARAMETERS.CUSTOMER_TYPE;
 const assignDateTime = require('../../../../@util/assignDateTime');
 const post = require('../../../../_telegram/post');
@@ -9,13 +9,13 @@ module.exports = {
 
     price: async function price({ extractedInfo, sessionToMutate }) {
 
-        logInfo(sessionToMutate.chatId, '-----price triggered-----');
+        LOGS.logInfo(sessionToMutate.chatId, '-----price triggered-----');
         const customerType = extractedInfo["customer-type"];
         let dateTime = { start: null, end: null };
         if (extractedInfo["date-time"] !== "") {
             dateTime = assignDateTime(extractedInfo["date-time"]);
         }
-        logInfo(sessionToMutate.chatId, `customer type: ${customerType}, date time: ${dateTime}`);
+        LOGS.logInfo(sessionToMutate.chatId, `customer type: ${customerType}, date time: ${dateTime}`);
 
         let reply;
         let responseInvoke;
@@ -118,7 +118,7 @@ module.exports = {
             default:
                 throw `Unrecognized customer type ${customerType}`;
         }
-        logInfo(sessionToMutate.chatId, `reply: ${reply}`);
+        LOGS.logInfo(sessionToMutate.chatId, `reply: ${reply}`);
         await post.sendMessage(sessionToMutate.chatId, reply, { parseMode: 'Markdown' });
         return responseInvoke;
 
@@ -126,9 +126,9 @@ module.exports = {
 
     general: async function general({ text, extractedInfo, sessionToMutate }) {
 
-        logInfo(sessionToMutate.chatId, '-----general triggered-----');
+        LOGS.logInfo(sessionToMutate.chatId, '-----general triggered-----');
         const customerType = extractedInfo["customer-type"];
-        logInfo(sessionToMutate.chatId, `customer type: ${customerType}`);
+        LOGS.logInfo(sessionToMutate.chatId, `customer type: ${customerType}`);
 
         let reply;
 

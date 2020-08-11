@@ -2,13 +2,14 @@ module.exports = {
     basics: require('./reply/basics'),
     //fill slot
     fillSlot: require('./reply/fillSlot'),
+    upcomingMovie: require('./reply/upcomingMovie'),
     invalidDateTime: require('./reply/invalidDateTime'),
     getDayWithinSchedule: require('./reply/getDayWithinSchedule'),
     noResult: require('./reply/noResult'),
-    upcomingMovie: require('./reply/upcomingMovie'),
     warnPlatinum: require('./reply/warnPlatinum'),
     confirmEdit: require('./reply/confirmEdit'),
-    firstTimes: require('./reply/firstTimes'),
+    firstMovieCard: require('./reply/firstMovieCard'),
+    firstShowtimeCard: require('./reply/firstShowtimeCard'),
     //everything about seating plans
     sendSeatLegend: require('./reply/sendSeatLegend'),
     sendSeatPlan: require('./reply/sendSeatPlan'),

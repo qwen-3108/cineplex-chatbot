@@ -5,16 +5,16 @@ const expandSeatPhrases = require('../../../../../@util/expandSeatPhrases');
 const { alertSeatProblem } = require('../../../../../_telegram/reply');
 
 const { SEC_STATUS, MAIN_STATUS } = require('../../../../../@global/CONSTANTS');
-const { logInfo, } = require('../../../../../@global/LOGS');
+const LOGS = require('../../../../../@global/LOGS');
 
 module.exports = async function assignAndValidateSeats({ text, extractedInfo, sessionToMutate }) {
 
     const seatPhraseArr = extractedInfo['seat-number'];
     const { chatId, status, bookingInfo } = sessionToMutate;
-    logInfo(chatId, extractedInfo);
+    LOGS.logInfo(chatId, extractedInfo);
 
     //#1: assign and post-assignment based on status
-    logInfo(chatId, '-----Assign seat phrases-----');
+    LOGS.logInfo(chatId, '-----Assign seat phrases-----');
     let assignedSeatPhrases = { toPush: [], toRemove: [], toReplace: [] };
 
     if (status.main === MAIN_STATUS.CONFIRM_DETAILS || status.main === MAIN_STATUS.AWAIT_PAYMENT || status.secondary === SEC_STATUS.CONFIRM_SEAT) {
@@ -36,10 +36,10 @@ module.exports = async function assignAndValidateSeats({ text, extractedInfo, se
         assignedSeatPhrases.toReplace = seatPhraseArr;
     }
 
-    logInfo(chatId, `assignedSeatPhrases: ${JSON.stringify(assignedSeatPhrases)}`);
+    LOGS.logInfo(chatId, `assignedSeatPhrases: ${JSON.stringify(assignedSeatPhrases)}`);
 
     //#2: validate
-    logInfo(chatId, '-----Validate seat phrases-----');
+    LOGS.logInfo(chatId, '-----Validate seat phrases-----');
     const validatedSeatPhrases = { toPush: [], toReplace: [], toRemove: [] };
     const collatedInvalidSeats = [];
     for (const type in assignedSeatPhrases) {
@@ -53,17 +53,17 @@ module.exports = async function assignAndValidateSeats({ text, extractedInfo, se
         }
     }
     if (collatedInvalidSeats.length !== 0) {
-        logInfo(chatId, `invalidSeats ${collatedInvalidSeats}`);
+        LOGS.logInfo(chatId, `invalidSeats ${collatedInvalidSeats}`);
         sessionToMutate.status = { main: MAIN_STATUS.CHOOSE_SEAT, secondary: SEC_STATUS.INVALID_SEAT };
         sessionToMutate.counter.invalidSeatCount++;
         await alertSeatProblem.invalidSeats(chatId, collatedInvalidSeats, bookingInfo.seatNumbers, sessionToMutate.counter.invalidSeatCount);
         return;
     }
     sessionToMutate.counter.invalidSeatCount = 0;
-    logInfo(chatId, `validatedSeatPhrases: ${validatedSeatPhrases}`);
+    LOGS.logInfo(chatId, `validatedSeatPhrases: ${validatedSeatPhrases}`);
 
     //#3: expand
-    logInfo(chatId, '-----Expanding seat phrases-----');
+    LOGS.logInfo(chatId, '-----Expanding seat phrases-----');
     let canExpand = true;
     const expandProgressObj = {
         expandedSeatNumbers: { toPush: [], toReplace: [], toRemove: [] },
@@ -73,7 +73,7 @@ module.exports = async function assignAndValidateSeats({ text, extractedInfo, se
     for (const type in validatedSeatPhrases) {
         if (validatedSeatPhrases[type].length !== 0) {
             const { expandedSeatNumbers, invalidSeatPhrases, correctedSeatPhrases } = expandSeatPhrases(validatedSeatPhrases[type]);
-            logInfo(chatId, `expansion result: ${expandedSeatNumbers} ${invalidSeatPhrases} ${correctedSeatPhrases}`);
+            LOGS.logInfo(chatId, `expansion result: ${expandedSeatNumbers} ${invalidSeatPhrases} ${correctedSeatPhrases}`);
             expandProgressObj.expandedSeatNumbers[type] = expandedSeatNumbers;
             if (invalidSeatPhrases.length !== 0) {
                 canExpand = false;
@@ -91,7 +91,7 @@ module.exports = async function assignAndValidateSeats({ text, extractedInfo, se
         return;
     }
     sessionToMutate.counter.invalidSeatPhraseCount = 0;
-    logInfo(chatId, `expandProgressObj: ${JSON.stringify(expandProgressObj)}`);
+    LOGS.logInfo(chatId, `expandProgressObj: ${JSON.stringify(expandProgressObj)}`);
     return expandProgressObj.expandedSeatNumbers;
 
 };

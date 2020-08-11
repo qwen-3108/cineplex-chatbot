@@ -1,13 +1,13 @@
 const { PARAMETERS } = require('../../../../@global/CONSTANTS');
-const { logInfo, } = require('../../../../@global/LOGS');
+const LOGS = require('../../../../@global/LOGS');
 const sendMessage = require('../../../../_telegram/post/sendMessage');
 const CUSTOMER_TYPE = PARAMETERS.CUSTOMER_TYPE;
 
 module.exports = async function general({ text, extractedInfo, sessionToMutate }) {
 
-    logInfo(sessionToMutate.chatId, '-----general triggered-----');
+    LOGS.logInfo(sessionToMutate.chatId, '-----general triggered-----');
     const customerType = extractedInfo["customer-type"];
-    logInfo(sessionToMutate.chatId, `customer type: ${customerType}`);
+    LOGS.logInfo(sessionToMutate.chatId, `customer type: ${customerType}`);
 
     let reply;
 

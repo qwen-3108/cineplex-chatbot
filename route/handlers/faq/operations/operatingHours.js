@@ -2,7 +2,7 @@ const post = require("../../../../_telegram/post");
 const getShowTimes = require('../../../../_database/query/getShowtimes');
 const makeDateTimePhrase = require('../../../../@util/makeDateTimePhrase');
 const assignDateTime = require('../../../../@util/assignDateTime');
-const { logInfo, } = require('../../../../@global/LOGS');
+const LOGS = require('../../../../@global/LOGS');
 const isTimeLessThan = require('../../../../@util/isTimeLessThan');
 const CONSTANTS = require('../../../../@global/CONSTANTS');
 const { addDays, addMinutes, subMinutes } = require("date-fns");
@@ -23,7 +23,7 @@ const askAboutClose = function (text) {
 
 module.exports = async function operatingHours(chatId, text, extractedInfo, sessionInfo) {
 
-    logInfo(chatId, '-----Getting operating hours-----')
+    LOGS.logInfo(chatId, '-----Getting operating hours-----')
     const cinema = extractedInfo['cinema'];
     let dateTime = { start: null, end: null, sessionStartedAt: sessionInfo.startedAt };
     if (extractedInfo['date-time'] != '') {
@@ -52,8 +52,8 @@ module.exports = async function operatingHours(chatId, text, extractedInfo, sess
             const lastShowtime = showtimes[showtimes.length - 1].dateTime;
             const movieDuration = 120;  // minutes
 
-            logInfo(chatId, `lastShowTime: ${lastShowtime}`);
-            logInfo(chatId, `firstShowTime: ${showtimes[0].dateTime}`);
+            LOGS.logInfo(chatId, `lastShowTime: ${lastShowtime}`);
+            LOGS.logInfo(chatId, `firstShowTime: ${showtimes[0].dateTime}`);
             const closingTime = addMinutes(lastShowtime, movieDuration + 30);
             const openingTime = subMinutes(showtimes[0].dateTime, 30);
 

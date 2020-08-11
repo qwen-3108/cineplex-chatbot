@@ -1,8 +1,8 @@
-const { confirmDetails, getEditSeats, sendSeatLegend, sendSeatPlan, getPayment } = require('../../../_telegram/reply');
+const reply = require('../../../_telegram/reply');
 const slotFilling = require('../service/book/helpers/slotFilling');
 const mutateSeatNumbers = require('../service/book/helpers/mutateSeatNumbers');
 const { MAIN_STATUS, SEC_STATUS } = require('../../../@global/CONSTANTS');
-const { logInfo } = require('../../../@global/LOGS');
+const LOGS = require('../../../@global/LOGS');
 const expandSeatPhrases = require('../../../@util/expandSeatPhrases');
 const toFallback = require('../../../_telegram/reply/toFallback');
 
@@ -23,14 +23,14 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
         switch (status.main) {
 
             case MAIN_STATUS.PROMPT_DATETIME:
-                logInfo(chatId, 'Received user agreement to adjust date time range');
+                LOGS.logInfo(chatId, 'Received user agreement to adjust date time range');
                 switch (status.secondary) {
                     case SEC_STATUS.EXCEED_SCHEDULE_PARTIAL:
                         const { start, end } = confirmPayload.adjustedDateTime;
                         sessionToMutate.bookingInfo.dateTime.start = start;
                         sessionToMutate.bookingInfo.dateTime.end = end;
                         sessionToMutate.confirmPayload.adjustedDateTime = {};
-                        logInfo(chatId, `Removed confirmPayload.adjustedDateTime: ${JSON.stringify(sessionToMutate)}`);
+                        LOGS.logInfo(chatId, `Removed confirmPayload.adjustedDateTime: ${JSON.stringify(sessionToMutate)}`);
                         await slotFilling({ text, sessionToMutate });
                         break;
                     case SEC_STATUS.EXCEED_SCHEDULE_TOTAL:
@@ -44,7 +44,7 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
                     switch (status.secondary) {
                         case SEC_STATUS.CONFIRM_SEAT:
                             sessionToMutate.status = { main: MAIN_STATUS.CONFIRM_DETAILS, secondary: null };
-                            await confirmDetails(chatId, bookingInfo);
+                            await reply.confirmDetails(chatId, bookingInfo);
                             break;
                         case SEC_STATUS.INVALID_SEAT_PHRASE:
                             const { expandedSeatNumbers, correctedSeatPhrases } = confirmPayload.seatPhraseGuess;
@@ -58,14 +58,14 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
                             await mutateSeatNumbers({ expandedSeatNumObj: expandedSeatNumbers, sessionToMutate });
                             break;
                         case SEC_STATUS.MODIFY_SEAT:
-                            await getEditSeats(chatId);
+                            await reply.getEditSeats(chatId);
                     }
                     break;
                 }
             case MAIN_STATUS.CONFIRM_PROCEED:
                 {
                     sessionToMutate.status = { main: MAIN_STATUS.CHOOSE_SEAT, secondary: null };
-                    await sendSeatLegend(chatId);
+                    await reply.sendSeatLegend(chatId);
                     const showtime = sessionToMutate.confirmPayload.uniqueSchedule;
                     const { dateTime, cinema, hall, isPlatinum } = showtime;
                     const selection = {
@@ -81,7 +81,7 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
                         seatPlanCallback: []
                     };
                     sessionToMutate.bookingInfo.ticketing = [selection];
-                    const { seatPlanMsgId, seatPlanFileId, seatPlanCallback } = await sendSeatPlan({
+                    const { seatPlanMsgId, seatPlanFileId, seatPlanCallback } = await reply.sendSeatPlan({
                         chat_id: chatId,
                         bookingInfo: sessionToMutate.bookingInfo,
                         seatingPlan: showtime.seatingPlan
@@ -101,7 +101,7 @@ module.exports = async function onConfirm({ text, sessionToMutate }) {
             case MAIN_STATUS.CONFIRM_DETAILS:
                 {
                     sessionToMutate.status = { main: MAIN_STATUS.AWAIT_PAYMENT, secondary: null };
-                    await getPayment(chatId, bookingInfo);
+                    await reply.getPayment(chatId, bookingInfo);
                 }
                 break;
             default:

@@ -1,15 +1,14 @@
 const { INTENT } = require('../../@global/CONSTANTS');
 const REPLY_TO_CONFIRM = INTENT.REPLY_TO_CONFIRM;
-const { logInfo, } = require('../../@global/LOGS');
+const LOGS = require('../../@global/LOGS');
 
 const onConfirm = require('./replyToConfirm/onConfirm');
 const reject = require('./replyToConfirm/onReject');
-const toFallback = require('../../_telegram/reply/toFallback');
 
 module.exports = async function replyToConfirmHandler({ intentArr, text, sessionToMutate }) {
 
-    logInfo(sessionToMutate.chatId, '-----replyToConfirmHandler triggered-----');
-    logInfo(sessionToMutate.chatId, `reply to confirm subintent: ${intentArr[1]}`);
+    LOGS.logInfo(sessionToMutate.chatId, '-----replyToConfirmHandler triggered-----');
+    LOGS.logInfo(sessionToMutate.chatId, `reply to confirm subintent: ${intentArr[1]}`);
 
     switch (intentArr[1]) {
         case REPLY_TO_CONFIRM.YES.SELF:
