@@ -1,7 +1,7 @@
 const { differenceInCalendarDays } = require('date-fns');
 const { MAIN_STATUS, DATES_IN_DB } = require('../@global/CONSTANTS');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
-const { initializeLogs, logInfo, logError } = require('../@global/LOGS');
+const { logInfo, logError } = require('../@global/LOGS');
 const logType = require('../@util/logType');
 
 module.exports = class Session {
@@ -52,7 +52,6 @@ module.exports = class Session {
 
             this.confirmPayload = { adjustedDateTime: {}, uniqueSchedule: {}, seatPhraseGuess: {} };
             this.payload = { seatNumber: [], movie: { title: null, id: null, debutDateTime: null, isBlockBuster: null } };
-            initializeLogs(this.chatId);
             logInfo(this.chatId, '-----Instantiating new session-----');
             logInfo(this.chatId, `New session: ${JSON.stringify(this)}`);
 
@@ -70,6 +69,7 @@ module.exports = class Session {
             logInfo(this.chatId, `Existing: ${JSON.stringify(this)}`);
         }
 
+        // const docId = this.chatId;
         const logs = await COLLECTIONS.logs.findOne({ _id: this.chatId });
         if (logs === null) {
             await COLLECTIONS.logs.insertOne(
@@ -77,7 +77,7 @@ module.exports = class Session {
                     _id: this.chatId,
                     data: "",
                 },
-                function (err) { console.log(`Logs creation error: ${err}`) });
+                function (err) { logError(this.chatId, `Logs creation error: ${err}`) });
         }
 
     }
@@ -86,10 +86,9 @@ module.exports = class Session {
         logInfo(this.chatId, '-----saving session-----');
         this.sessionInfo.lastUpdated = new Date();
         logInfo(this.chatId, `Session to save: ${JSON.stringify(this)}`);
-        const docId = this.chatId;
-        // logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
+        // const docId = this.chatId;
         delete this.bookingInfo.dateTime.sessionStartedAt;
-        // console.log('Session object with type: ', logType(this, 0));
+        // logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
         await COLLECTIONS.sessions.replaceOne(
             { _id: this.chatId },
             {
@@ -101,7 +100,7 @@ module.exports = class Session {
                 confirmPayload: this.confirmPayload,
                 payload: this.payload,
             },
-            { upsert: true }, function (err) { logError(docId, `Session saving error: ${err}`) });
+            { upsert: true }, function (err) { logError(this.chatId, `Session saving error: ${err}`) });
         logInfo(this.chatId, '-----done-----');
 
     }

@@ -4,9 +4,10 @@ const mapDateTime = require('../../@util/mapDateTime');
 const { SEC_STATUS } = require('../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const post = require('../post');
+const { logInfo } = require('../../@global/LOGS');
 
 module.exports = async function faqMovieAvailability(chat_id, extractedInfo, currentSession) {
-    console.log('-----checking movie availability-----');
+    logInfo('-----checking movie availability-----');
     const movie = await COLLECTIONS.movies.findOne({ title: extractedInfo.movie }, { projection: { title: 1, debutDateTime: 1, isBlockBuster: 1 } });
     const latestDate = addDays(new Date('2020-05-17T23:59'), 7);
 
@@ -15,14 +16,14 @@ module.exports = async function faqMovieAvailability(chat_id, extractedInfo, cur
     if (movie.debutDateTime > latestDate) {
         const debutDate = mapDateTime(movie.debutDateTime, currentSession.bookingInfo.dateTime.sessionStartedAt);
         const ticketAvailableDate = addDays(debutDate, -7);
-        console.log('requested movie is upcoming. Debut date: ', debutDate.getLocaleDateString());
+        logInfo('requested movie is upcoming. Debut date: ', debutDate.getLocaleDateString());
 
         const debutDatePhrased = makeDateTimePhrase(debutDate);
         const ticketDatePhrased = makeDateTimePhrase(ticketAvailableDate);
         text = `Sorry not yet. ${movie.title} will be released on ${debutDatePhrased} and ticket will be available for sales from ${ticketDatePhrased}. Do check back again :) `;
 
     } else {
-        console.log('requested movie is available');
+        logInfo('requested movie is available');
         text = `Yup. Would you like to purchase tickets for ${movie.title} now?`;
         currentSession.status.main = null;
         currentSession.status.secondary = SEC_STATUS.CONFIRM_MOVIE;

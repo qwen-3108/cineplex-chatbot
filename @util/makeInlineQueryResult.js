@@ -1,4 +1,4 @@
-const { format, addDays } = require('date-fns');
+const { format, addDays, isBefore } = require('date-fns');
 
 const { INLINE_KEYBOARD, CINEMA_THUMB, NA_THUMB } = require('../@global/CONSTANTS');
 const calculatePrice = require('./calculatePrice');
@@ -75,14 +75,25 @@ function cinema(cinemaArr) {
 function showtime(showtimeArr, bookingInfo, queryIdentifier) {
 
     const inlineQueryResult = [];
+    // add mappedDate property to each showtime for sorting
+    showtimeArr.forEach(function (showtime) {
+        showtime.mappedDate = mapDateTime(showtime.dateTime, bookingInfo.dateTime.sessionStartedAt);
+    });
+    showtimeArr.sort(function (a, b) {
+        const bBeforeA = isBefore(b.mappedDate, a.mappedDate);
+        if (bBeforeA) {
+            return 1;
+        } else if (b.mappedDate.getTime() == a.mappedDate.getTime()) {
+            return 0;
+        } else {
+            return -1;
+        }
+    });
 
     for (let i = 0; i < showtimeArr.length; i++) {
         const showtime = showtimeArr[i];
 
-        const { _id, cinema, dateTime, isPlatinum, totalSeats, sold } = showtime;
-
-        const date = new Date(dateTime);
-        const mappedDate = mapDateTime(dateTime, bookingInfo.dateTime.sessionStartedAt);
+        const { _id, cinema, mappedDate, isPlatinum, totalSeats, sold } = showtime;
 
         const ticketLeft = totalSeats - sold;
         const ticketStr = ticketLeft === 1 ? '1 seat left' : `${ticketLeft} seats left`;

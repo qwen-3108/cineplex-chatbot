@@ -1,4 +1,6 @@
 const post = require('../post');
+const axiosErrorCallback = require('../axiosErrorCallback');
+const { logInfo } = require('../../@global/LOGS');
 
 module.exports = async function editSeatPlanButton(chat_id, ticketingEntry, sessionStartedAt) {
 
@@ -11,19 +13,21 @@ module.exports = async function editSeatPlanButton(chat_id, ticketingEntry, sess
         callbackButton = { text: '📍 Choose seats', callback_data: `uSId =${scheduleId}=` };
     }
 
-    return await post.editMessageReplyMarkup(
-        chat_id,
-        seatPlanMsgId,
-        { inline_keyboard: [[callbackButton]] }
-    )
-        .then(res => {
-            let seatPlanCallback = res.data.result.reply_markup.inline_keyboard;
-            console.log(`Edit seat plan button successfully. reply_markup: ${JSON.stringify(seatPlanCallback)}`);
-            //return edited callback buttons
-            return { seatPlanCallback };
-        }, err => {
-            console.log(JSON.stringify(err.response.data));
-            return { seatPlanCallback: [] };
-        });
+    try {
+        const res = await post.editMessageReplyMarkup(
+            chat_id,
+            seatPlanMsgId,
+            { inline_keyboard: [[callbackButton]] }
+        );
+        let seatPlanCallback = res.data.result.reply_markup.inline_keyboard;
+        logInfo(chat_id, `Edit seat plan button successfully. reply_markup: ${JSON.stringify(seatPlanCallback)}`);
+        //return edited callback buttons
+        return { seatPlanCallback };
+
+    } catch (err) {
+        axiosErrorCallback(chat_id, err);
+        return { seatPlanCallback: [] };
+
+    }
 
 };

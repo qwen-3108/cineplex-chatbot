@@ -4,6 +4,8 @@ const { format } = require('date-fns');
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const mapDateTime = require('../../@util/mapDateTime');
 const post = require('../post');
+const axiosErrorCallback = require('../axiosErrorCallback');
+const { logInfo } = require('../../@global/LOGS');
 
 module.exports = async function editSeatPlan(chat_id, scheduleId, bookingInfo) {
 
@@ -33,17 +35,17 @@ module.exports = async function editSeatPlan(chat_id, scheduleId, bookingInfo) {
     }));
 
     let file_id;
-    return await post.editMessageMedia(formData)
-        .then(res => {
-            file_id = res.data.result.photo[0].file_id;
-            console.log(`Edit seat plan successfully. New file id: ${file_id}`);
-            return COLLECTIONS.sessions.updateOne(
-                { _id: chat_id },
-                { $set: { "bookingInfo.ticketing.$[editedPlan].seatPlanFileId": file_id } },
-                { arrayFilters: [{ editedPlan: { scheduleId: scheduleId } }] }
-            );
-        })
-        .then(res => {
-            return ({ session: chat_id, scheduleId, newFileId: file_id });
-        });
+    try {
+        const res = await post.editMessageMedia(formData);
+        file_id = res.data.result.photo[0].file_id;
+        logInfo(chat_id, `Edit seat plan successfully. New file id: ${file_id}`);
+        return COLLECTIONS.sessions.updateOne(
+            { _id: chat_id },
+            { $set: { "bookingInfo.ticketing.$[editedPlan].seatPlanFileId": file_id } },
+            { arrayFilters: [{ editedPlan: { scheduleId: scheduleId } }] }
+        );
+    } catch (err) {
+        axiosErrorCallback(chat_id, err);
+        return ({ session: chat_id, scheduleId, newFileId: file_id });
+    }
 }

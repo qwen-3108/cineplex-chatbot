@@ -5,7 +5,7 @@ const { cache, bookTickets } = require('../_database/query');
 
 const { INTENT } = require('../@global/CONSTANTS');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
-const { logInfo, logError, logConv, getLogs } = require('../@global/LOGS');
+const { logInfo, logError, logConv, getLogs, initializeLogs } = require('../@global/LOGS');
 const printTickets = require('../@util/printTickets');
 const { basics, sendTickets, finish, sendError, firstTimes } = require('../_telegram/reply');
 const post = require('../_telegram/post');
@@ -20,6 +20,7 @@ const productQueryHandler = require('./handlers/productQueryHandler');
 const chosenInlineResultHandler = require('./handlers/chosenInlineResultHandler');
 const toFallback = require('../_telegram/reply/toFallback');
 const populateBookingInfo = require('../@util/populateBookingInfo');
+const axiosErrorCallback = require('../_telegram/axiosErrorCallback');
 
 module.exports = async function botHandler(req, res) {
 
@@ -33,6 +34,7 @@ module.exports = async function botHandler(req, res) {
     }
 
     try {
+        initializeLogs(chatId);
         logInfo(chatId, '-----Post req received-----');
         logInfo(chatId, `Req body: ${JSON.stringify(req.body)}`);
         res.end();
@@ -182,7 +184,11 @@ module.exports = async function botHandler(req, res) {
 
     } catch (ex) {
         logError(chatId, '-----! Error-----');
-        logError(chatId, ex);
+        if (ex.isAxiosError) {
+            axiosErrorCallback(chatId, ex);
+        } else {
+            logError(chatId, ex);
+        }
         await sendError(chatId);
 
     } finally {

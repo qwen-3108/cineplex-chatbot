@@ -42,12 +42,12 @@ module.exports = async function onReject({ text, sessionToMutate }) {
                     switch (status.secondary) {
                         // 'is these the seat you want? ', 'no'
                         case SEC_STATUS.CONFIRM_SEAT:
-                            await askToRepeat(chatId);
+                            await askToRepeat(chatId, "Okay sure. Could you please say your preferred seat again? ");
                             break;
                         // 'do you mean these? (guess)', 'no'
                         case SEC_STATUS.INVALID_SEAT_PHRASE:
                             // discard the guess
-                            await askForMoreInfo(chatId);
+                            await askForMoreInfo(chatId, "Ooooh. Seems like I get it wrongly. Could you kindly tell me your preferred seat again? ");
                             break;
                         // ??? 'you want to change seat?', 'no'
                         case SEC_STATUS.MODIFY_SEAT:

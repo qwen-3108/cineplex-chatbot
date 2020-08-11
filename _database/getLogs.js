@@ -17,7 +17,7 @@ async function getLogs(chatId) {
 
         const logs = await logCollection.findOne({ _id: chatId });
         if (logs !== null) {
-            await fs.writeFile(`../#asset/logs/logs_${chatId}.txt`, logs.data, function (err) { console.log("Write logs error: ", err) });
+            fs.writeFile(`../#asset/logs/logs_${chatId}.txt`, logs.data, function (err) { console.log("Write logs error: ", err) });
         } else {
             console.log("failed to find logs");
         }

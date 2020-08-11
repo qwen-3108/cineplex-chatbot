@@ -5,7 +5,7 @@ const post = require('../post');
 
 module.exports = async function faqTicketPrice(chat_id, currentSession, customerType) {
 
-    console.log('-----Getting ticket price-----')
+    logInfo('-----Getting ticket price-----')
     const formData = new FormData();
     formData.append('chat_id', chat_id);
     formData.append('photo', fs.createReadStream('#asset/image/faq/ticketPrice.png'));
@@ -65,7 +65,7 @@ module.exports = async function faqTicketPrice(chat_id, currentSession, customer
         caption += `**We currently do not support special price for ${customerType}**`
     }
     formData.append('caption', caption);
-    console.log("Ticket price respond: ", caption);
+    logInfo("Ticket price respond: ", caption);
 
     await post.sendPhoto(formData);
 
