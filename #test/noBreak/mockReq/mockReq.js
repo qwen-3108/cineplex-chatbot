@@ -1,4 +1,4 @@
-module.exports = { chosen_inline_result, message_via_bot, callback_sId };
+module.exports = { chosen_inline_result, message_via_bot, callback_sId, callback_uSId, non_existing_seat, weird_seat_phase, taken_seats, just_taken_seats, valid_seats };
 
 function chosen_inline_result(scheduleId) {
 
@@ -77,4 +77,83 @@ function callback_sId(chatId, showtime) { //"sat" "sun"
         }
     });
 
+}
+
+function callback_uSId(chatId, showtime) { //"sat" "sun"
+
+    let scheduleId;
+
+    switch (showtime) {
+        case "sat":
+            scheduleId = "5f1fbb80b21f8bd3567c532b";
+            break;
+        case "sun":
+            scheduleId = "5f1fbb3ab21f8bd3567c522b";
+            break;
+        default:
+            throw `Wrong value passed. Please pass only 'sat' or 'sun'`;
+    }
+
+    return ({
+        body: {
+            "update_id": 414892257,
+            "callback_query": {
+                "id": "3223780131628589681",
+                "from": {
+                    "id": Number(chatId),
+                    "is_bot": false,
+                    "first_name": "Qwen",
+                    "language_code": "en"
+                },
+                "inline_message_id": "BQAAAFwRAADzKr0sZgzTYzf0pz0",
+                "chat_instance": "5140223267136962557",
+                "data": `uSId =${scheduleId}=`
+            }
+        }
+    });
+
+}
+
+function plain_text(chatId, text) {
+    return ({
+        body: {
+            "update_id": 502253052,
+            "message": {
+                "message_id": 1263,
+                "from": {
+                    "id": Number(chatId),
+                    "is_bot": false,
+                    "first_name": "Loh_QY",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "id": Number(chatId),
+                    "first_name": "Loh_QY",
+                    "type": "private"
+                },
+                "date": 1596185584,
+                "text": text
+            }
+        }
+    });
+}
+
+function non_existing_seat(chatId) {
+    return plain_text(chatId, "F7 to G88");
+}
+
+function weird_seat_phase(chatId) {
+    return plain_text(chatId, "F7 to D3");
+}
+
+function taken_seats(chatId) {
+    return plain_text(chatId, "A13");
+}
+
+function just_taken_seats(chatId) {
+    return plain_text(chatId, "A14");
+}
+
+function valid_seats(chatId) {
+    return plain_text(chatId, "Q1, Q2");
 }
