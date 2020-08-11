@@ -56,7 +56,6 @@ module.exports = class Session {
             logInfo(this.chatId, `New session: ${JSON.stringify(this)}`);
 
         } else {
-            initializeLogs(this.chatId);
             logInfo(this.chatId, '-----Reconstructing existing session-----');
             const { sessionInfo, status, bookingInfo, counter, confirmPayload, payload } = sessionInDb;
             this.sessionInfo = sessionInfo;
@@ -69,7 +68,7 @@ module.exports = class Session {
             logInfo(this.chatId, `Existing: ${JSON.stringify(this)}`);
         }
 
-        // const docId = this.chatId;
+        const docId = this.chatId;
         const logs = await COLLECTIONS.logs.findOne({ _id: this.chatId });
         if (logs === null) {
             await COLLECTIONS.logs.insertOne(
@@ -77,7 +76,7 @@ module.exports = class Session {
                     _id: this.chatId,
                     data: "",
                 },
-                function (err) { logError(this.chatId, `Logs creation error: ${err}`) });
+                function (err) { logError(docId, `Logs creation error: ${err}`) });
         }
 
     }
@@ -86,7 +85,7 @@ module.exports = class Session {
         logInfo(this.chatId, '-----saving session-----');
         this.sessionInfo.lastUpdated = new Date();
         logInfo(this.chatId, `Session to save: ${JSON.stringify(this)}`);
-        // const docId = this.chatId;
+        const docId = this.chatId;
         delete this.bookingInfo.dateTime.sessionStartedAt;
         // logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
         await COLLECTIONS.sessions.replaceOne(
@@ -100,7 +99,7 @@ module.exports = class Session {
                 confirmPayload: this.confirmPayload,
                 payload: this.payload,
             },
-            { upsert: true }, function (err) { logError(this.chatId, `Session saving error: ${err}`) });
+            { upsert: true }, function (err) { logError(docId, `Session saving error: ${err}`) });
         logInfo(this.chatId, '-----done-----');
 
     }
