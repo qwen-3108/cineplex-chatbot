@@ -2,7 +2,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const LOGS = require('../@global/LOGS');
 
-module.exports = { sendMessage, sendTypingAction, answerInlineQuery, answerPreCheckoutQuery, deleteMessage, editMessageMedia, editMessageMedia, editMessageReplyMarkup, editMessageText, sendInvoice, sendPhoto };
+module.exports = { sendMessage, sendTypingAction, answerInlineQuery, answerPreCheckoutQuery, deleteMessage, editMessageMedia, editMessageReplyMarkup, editMessageText, sendInvoice, sendPhoto };
 
 async function sendMessage(chat_id, text, extraData) {
 

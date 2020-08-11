@@ -76,7 +76,7 @@ module.exports = class Session {
                     _id: this.chatId,
                     data: "",
                 },
-                function (err) { logError(docId, `Logs creation error: ${err}`) });
+                function (err) { LOGS.logError(docId, `Logs creation error: ${err}`) });
         }
 
     }
