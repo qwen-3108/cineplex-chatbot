@@ -35,7 +35,7 @@ module.exports = async function botHandler(req, res) {
     }
 
     try {
-        initializeLogs(chatId);
+        LOGS.initializeLogs(chatId);
         LOGS.logInfo(chatId, '-----Post req received-----');
         LOGS.logInfo(chatId, `Req body: ${JSON.stringify(req.body)}`);
         res.end();
