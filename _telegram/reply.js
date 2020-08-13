@@ -40,4 +40,8 @@ module.exports = {
     faqMovieAvailability: require('./reply/faqMovieAvailability'),
     //send error
     sendError: require('./reply/sendError'),
+    //rejectedConfirm
+    acknowledgeReject: require('./reply/acknowledgeReject'),
+    askForMoreInfo: require('./reply/askForMoreInfo'),
+    askToRepeat: require('./reply/askToRepeat')
 }

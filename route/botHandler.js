@@ -8,7 +8,7 @@ const { COLLECTIONS } = require('../@global/COLLECTIONS');
 const LOGS = require('../@global/LOGS');
 const printTickets = require('../@util/printTickets');
 const reply = require('../_telegram/reply');
-const { basics, sendTickets, finish, sendError } = require('../_telegram/reply');
+const { sendError } = require('../_telegram/reply');
 const post = require('../_telegram/post');
 
 const slotFilling = require('./handlers/service/book/helpers/slotFilling');
@@ -54,8 +54,8 @@ module.exports = async function botHandler(req, res) {
                 const order_info = req.body.message.successful_payment.order_info;
                 const newTickets = await bookTickets(currentSession.chatId, bookingInfo.ticketing, bookingInfo.seatNumbers, order_info);
                 const ticketBuffers = await printTickets(newTickets, bookingInfo);
-                await sendTickets(currentSession.chatId, ticketBuffers);
-                await finish(currentSession.chatId, bookingInfo.seatNumbers);
+                await reply.sendTickets(currentSession.chatId, ticketBuffers);
+                await reply.finish(currentSession.chatId, bookingInfo.seatNumbers);
                 currentSession.end({ isComplete: true });
             }
 
@@ -87,7 +87,7 @@ module.exports = async function botHandler(req, res) {
                 LOGS.logConv(currentSession.chatId, text);
                 switch (text) {
                     case '/start':
-                        await basics.welcome(currentSession.chatId);
+                        await reply.basics.welcome(currentSession.chatId);
                         break;
                     case '/help':
                         break;
@@ -97,16 +97,16 @@ module.exports = async function botHandler(req, res) {
                         switch (intentArr[0]) {
                             case INTENT.WELCOME.SELF:
                                 currentSession.counter.fallbackCount = 0;
-                                await basics.welcome(currentSession.chatId);
+                                await reply.basics.welcome(currentSession.chatId);
                                 break;
                             case INTENT.END.SELF:
                                 currentSession.counter.fallbackCount = 0;
-                                await basics.end(currentSession.chatId);
+                                await reply.basics.end(currentSession.chatId);
                                 currentSession.end({ isComplete: false });
                                 break;
                             case INTENT.CANCEL.SELF:
                                 currentSession.counter.fallbackCount = 0;
-                                await basics.cancel(currentSession.chatId);
+                                await reply.basics.cancel(currentSession.chatId);
                                 break;
                             case INTENT.FALLBACK.SELF:
                                 currentSession.counter.fallbackCount++;

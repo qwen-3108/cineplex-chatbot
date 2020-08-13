@@ -12,7 +12,7 @@ function makeBeStr(seatArr) { return seatArr.length > 1 ? 'are' : 'is'; }
 
 async function invalidSeats(chat_id, invalidSeats, seatNumbers, invalidSeatCount) {
 
-    if (invalidSeatCount > 3) return;
+    if (invalidSeatCount > 2) return;
 
     let text;
 

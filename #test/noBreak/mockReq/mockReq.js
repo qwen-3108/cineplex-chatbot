@@ -1,8 +1,4 @@
-module.exports = { chosen_inline_result, message_via_bot_cinema, message_via_bot_showtime, callback_sId, callback_uSId, plain_text, non_existing_seat, weird_seat_phase, taken_seats, just_taken_seats, valid_seats };
-
-function chosen_inline_result(scheduleId) {
-
-}
+module.exports = { message_via_bot_cinema, message_via_bot_showtime, callback_sId, callback_uSId, plain_text, non_existing_seat, weird_seat_phase, taken_seats, just_taken_seats, valid_seats, successful_payment };
 
 function message_via_bot_cinema(chatId, cinema) {
     return ({
@@ -109,7 +105,7 @@ function callback_sId(chatId, showtime) { //"sat" "sun"
 
 }
 
-function callback_uSId(chatId, showtime) { //"sat" "sun"
+function callback_uSId(chatId, showtime) { //"sat" "sun" "selected"
 
     let scheduleId;
 
@@ -120,8 +116,11 @@ function callback_uSId(chatId, showtime) { //"sat" "sun"
         case "sun":
             scheduleId = "5f1fbb3ab21f8bd3567c522b";
             break;
+        case "selected":
+            scheduleId = "NA";
+            break;
         default:
-            throw `Wrong value passed. Please pass only 'sat' or 'sun'`;
+            throw `Wrong value passed. Please pass only 'sat', 'sun' or 'selected'`;
     }
 
     return ({
@@ -186,4 +185,40 @@ function just_taken_seats(chatId) {
 
 function valid_seats(chatId) {
     return plain_text(chatId, "Q1, Q2");
+}
+
+function successful_payment(chatId) {
+    return ({
+        body: {
+
+            "update_id": 502253150,
+            "message": {
+                "message_id": 627,
+                "from": {
+                    "id": Number(chatId),
+                    "is_bot": false,
+                    "first_name": "Qwen",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "id": Number(chatId),
+                    "first_name": "Qwen",
+                    "type": "private"
+                },
+                "date": 1593524063,
+                "successful_payment": {
+                    "currency": "SGD",
+                    "total_amount": 1900,
+                    "invoice_payload": "123",
+                    "order_info": {
+                        "name": "LOH QIAO WEN",
+                        "phone_number": "6583886548"
+                    },
+                    "telegram_payment_charge_id": "_",
+                    "provider_payment_charge_id": "ch_1GzjbOGSFvAD62iWzAsiwdo2"
+
+                }
+            }
+        }
+    });
 }

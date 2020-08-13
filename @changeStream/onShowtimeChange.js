@@ -3,8 +3,7 @@ const fs = require('fs');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
 const { MAIN_STATUS } = require('../@global/CONSTANTS');
 const drawSeatPlan = require('../@util/drawSeatPlan');
-const editSeatPlan = require('../_telegram/reply/editSeatPlan');
-const { SessionEntityTypesClient } = require('dialogflow');
+const reply = require('../_telegram/reply');
 
 module.exports = async function onShowtimeChange(data) {
 
@@ -27,9 +26,14 @@ module.exports = async function onShowtimeChange(data) {
             const relevantSessions = await searchCursor.toArray();
             console.log('relevantSessions', JSON.stringify(relevantSessions));
 
+            //#3: add sessionStartedAt to bookingInfo.dateTime
+            relevantSessions.forEach(session => {
+                session.bookingInfo.dateTime.sessionStartedAt = session.sessionInfo.startedAt;
+            });
+
             //#3: for each session, edit seat plan, update new file id
             console.log('Sending edit requests');
-            const requests = relevantSessions.map(session => editSeatPlan(session._id, _id.toString(), session.bookingInfo));
+            const requests = relevantSessions.map(session => reply.editSeatPlan(session._id, _id.toString(), session.bookingInfo));
             const outcome = await Promise.all(requests);
             console.log(outcome);
 

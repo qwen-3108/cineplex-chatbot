@@ -1,6 +1,5 @@
 const { checkAvailable, updateReservation } = require('../../../../../_database/query');
-const { alertSeatProblem, confirmSeats, confirmDetails } = require('../../../../../_telegram/reply');
-
+const reply = require('../../../../../_telegram/reply');
 const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
 const LOGS = require('../../../../../@global/LOGS');
 
@@ -33,7 +32,7 @@ module.exports = async function mutateSeatNumbers({ expandedSeatNumObj, sessionT
             main: available ? MAIN_STATUS.GET_CINEMA_TIME_EXP : null,
             secondary: null
         };
-        await alertSeatProblem.fullyBooked(chatId, bookingInfo, available);
+        await reply.alertSeatProblem.fullyBooked(chatId, bookingInfo, available);
         return;
     }
     LOGS.logInfo(chatId, `> Outcome - takenSeats: ${JSON.stringify(takenSeats)} justTakenSeats: ${JSON.stringify(justTakenSeats)} stillAvailable: ${stillAvailable}`);
@@ -43,17 +42,17 @@ module.exports = async function mutateSeatNumbers({ expandedSeatNumObj, sessionT
     if (takenSeats.length !== 0 && justTakenSeats.length !== 0) {
         sessionToMutate.counter.seatTakenCount++;
         sessionToMutate.counter.justTakenCount++;
-        await alertSeatProblem.mixedTakenSeats(chatId, takenSeats, justTakenSeats);
+        await reply.alertSeatProblem.mixedTakenSeats(chatId, takenSeats, justTakenSeats);
         return;
     } else if (takenSeats.length !== 0) {
         sessionToMutate.counter.seatTakenCount++;
         const seatTakenCount = sessionToMutate.counter.seatTakenCount;
-        await alertSeatProblem.takenSeats(chatId, takenSeats, seatTakenCount);
+        await reply.alertSeatProblem.takenSeats(chatId, takenSeats, seatTakenCount);
         return;
     } else if (justTakenSeats.length !== 0) {
         sessionToMutate.counter.justTakenCount++;
         const justTakenCount = sessionToMutate.counter.justTakenCount;
-        await alertSeatProblem.justTakenSeats(chatId, justTakenSeats, justTakenCount);
+        await reply.alertSeatProblem.justTakenSeats(chatId, justTakenSeats, justTakenCount);
         return;
     }
     sessionToMutate.counter.seatTakenCount = 0;
@@ -62,11 +61,11 @@ module.exports = async function mutateSeatNumbers({ expandedSeatNumObj, sessionT
     if (isEdit) {
         LOGS.logInfo(chatId, '-----Confirm seats-----');
         sessionToMutate.status = { main: MAIN_STATUS.CHOOSE_SEAT, secondary: SEC_STATUS.CONFIRM_SEAT };
-        await confirmSeats(chatId, bookingInfo.seatNumbers);
+        await reply.confirmSeats(chatId, bookingInfo.seatNumbers);
     } else {
         LOGS.logInfo(chatId, '-----Confirm details-----');
         sessionToMutate.status = { main: MAIN_STATUS.CONFIRM_DETAILS, secondary: null };
-        await confirmDetails(chatId, bookingInfo);
+        await reply.confirmDetails(chatId, bookingInfo);
     }
     return;
 

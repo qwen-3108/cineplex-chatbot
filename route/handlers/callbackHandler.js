@@ -44,9 +44,12 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
         case 'uSId':
             {
                 post.sendTypingAction(chatId);
-
+                console.log('value: ', value);
                 //#0: if button clicked is already 'Choosing for this plan'
-                if (value === "NA") { break; }
+                if (value === "NA") {
+                    LOGS.logInfo(chatId, 'Button is already chosen, no action required');
+                    break;
+                }
                 const scheduleId = value;
 
                 //#1: populate booking info with details from showtime
@@ -112,37 +115,40 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                 if (sameSeatingPlan.length !== 0) {
                     LOGS.logInfo(chatId, 'Same plan was viewed previously');
                     toDeleteMsgId = sameSeatingPlan[0].seatPlanMsgId;
-                    LOGS.logInfo(chatId, `To delete plan msg id: ${toDeleteMsgId}`);
+                    LOGS.logInfo(chatId, `To delete plan msg id: ${toDeleteMsgId}, removing seat plan info from ticketing array`);
+                    sessionToMutate.bookingInfo.ticketing = ticketing.filter(selection => selection.scheduleId !== scheduleId);
                 } else {
-                    LOGS.logInfo(chatId, 'Is new seat plan viewed, adding showtime info to ticketing');
-                    const { movieId, dateTime, cinema, hall, isPlatinum } = showtime;
-                    const selection = {
-                        isSelected: false,
-                        scheduleId: showtime._id.toString(),
-                        movie: {},
-                        dateTime,
-                        cinema,
-                        hall,
-                        isPlatinum,
-                        seatPlanMsgId: null,
-                        seatPlanFileId: null,
-                        seatPlanCallback: []
-                    };
-                    if (movieId === sessionToMutate.bookingInfo.movie.id) {
-                        selection.movie = sessionToMutate.bookingInfo.movie;
-                    } else {
-                        const movie = await COLLECTIONS.movies.findOne({ _id: movieId }, { title: 1, isBlockBuster: 1, debutDateTime: 1 });
-                        if (movie === null) { throw `movie not found when creating ticketing entry`; }
-                        const { _id, title, isBlockBuster, debutDateTime } = movie;
-                        selection.movie = {
-                            id: _id.toString(),
-                            title, isBlockBuster, debutDateTime
-                        };
-
-                    }
-                    LOGS.logInfo(chatId, `Showtime info: ${JSON.stringify(selection)}`);
-                    sessionToMutate.bookingInfo.ticketing.push(selection);
+                    LOGS.logInfo(chatId, 'Is new seat plan viewed');
                 }
+                LOGS.logInfo(chatId, 'adding showtime info to ticketing arr');
+                const { movieId, dateTime, cinema, hall, isPlatinum } = showtime;
+                const selection = {
+                    isSelected: false,
+                    scheduleId: showtime._id.toString(),
+                    movie: {},
+                    dateTime,
+                    cinema,
+                    hall,
+                    isPlatinum,
+                    seatPlanMsgId: null,
+                    seatPlanFileId: null,
+                    seatPlanCallback: []
+                };
+                if (movieId === sessionToMutate.bookingInfo.movie.id) {
+                    selection.movie = sessionToMutate.bookingInfo.movie;
+                } else {
+                    const movie = await COLLECTIONS.movies.findOne({ _id: movieId }, { title: 1, isBlockBuster: 1, debutDateTime: 1 });
+                    if (movie === null) { throw `movie not found when creating ticketing entry`; }
+                    const { _id, title, isBlockBuster, debutDateTime } = movie;
+                    selection.movie = {
+                        id: _id.toString(),
+                        title, isBlockBuster, debutDateTime
+                    };
+
+                }
+                LOGS.logInfo(chatId, `Showtime info: ${JSON.stringify(selection)}`);
+                sessionToMutate.bookingInfo.ticketing.push(selection);
+
 
                 const { bookingInfo } = sessionToMutate;
                 //#4: if is the only plan sent - set isSelected to true

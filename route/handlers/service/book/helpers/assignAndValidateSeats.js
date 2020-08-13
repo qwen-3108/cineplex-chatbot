@@ -2,7 +2,7 @@
 const validateSeatPhrases = require('../../../../../@util/validateSeatPhrases');
 const assignSeatPhrases = require('../../../../../@util/assignSeatPhrases');
 const expandSeatPhrases = require('../../../../../@util/expandSeatPhrases');
-const { alertSeatProblem } = require('../../../../../_telegram/reply');
+const reply = require('../../../../../_telegram/reply');
 
 const { SEC_STATUS, MAIN_STATUS } = require('../../../../../@global/CONSTANTS');
 const LOGS = require('../../../../../@global/LOGS');
@@ -56,7 +56,7 @@ module.exports = async function assignAndValidateSeats({ text, extractedInfo, se
         LOGS.logInfo(chatId, `invalidSeats ${collatedInvalidSeats}`);
         sessionToMutate.status = { main: MAIN_STATUS.CHOOSE_SEAT, secondary: SEC_STATUS.INVALID_SEAT };
         sessionToMutate.counter.invalidSeatCount++;
-        await alertSeatProblem.invalidSeats(chatId, collatedInvalidSeats, bookingInfo.seatNumbers, sessionToMutate.counter.invalidSeatCount);
+        await reply.alertSeatProblem.invalidSeats(chatId, collatedInvalidSeats, bookingInfo.seatNumbers, sessionToMutate.counter.invalidSeatCount);
         return;
     }
     sessionToMutate.counter.invalidSeatCount = 0;
@@ -87,7 +87,7 @@ module.exports = async function assignAndValidateSeats({ text, extractedInfo, se
         sessionToMutate.status = { main: MAIN_STATUS.CHOOSE_SEAT, secondary: SEC_STATUS.INVALID_SEAT_PHRASE };
         sessionToMutate.counter.invalidSeatPhraseCount++;
         sessionToMutate.confirmPayload.seatPhraseGuess = expandProgressObj;
-        await alertSeatProblem.invalidSeatPhrases(chatId, expandProgressObj, sessionToMutate.counter.invalidSeatPhraseCount);
+        await reply.alertSeatProblem.invalidSeatPhrases(chatId, expandProgressObj, sessionToMutate.counter.invalidSeatPhraseCount);
         return;
     }
     sessionToMutate.counter.invalidSeatPhraseCount = 0;
