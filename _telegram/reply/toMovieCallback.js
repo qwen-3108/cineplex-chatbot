@@ -46,13 +46,14 @@ async function hideMovieDetail(inline_message_id, movie) {
 async function howToFilter(inline_message_id, movieId, movieTitle) {
 
     const { query, state } = await COLLECTIONS.chosenInlineResultCache.findOne({ _id: inline_message_id });
-    const optionText = state === "show" ? "More Info" : "Less Info";
 
     const text = `Tap the 'Showtime' button again and type your preferred time and/or location to filter showtimes, e.g.:\n@cathay_sg_bot ${movieTitle} tomorrow evening near bkt batok\n(Or simply ask me 👩🏻‍💻)`;
+    const stateStr = state === 'show' ? 'hide' : 'show';
+
     const reply_markup = {
         inline_keyboard: [[
             { text: 'Back to List', switch_inline_query_current_chat: query },
-            { text: optionText, callback_data: `movieId =${movieId} ${state}=` },
+            { text: '< Back', callback_data: `movieId =${movieId} ${state}=` },
             { text: 'Showtime', switch_inline_query_current_chat: movieTitle }]]
     };
     await post.editMessageText(inline_message_id, text, { reply_markup });
