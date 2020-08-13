@@ -123,6 +123,7 @@ async function editMessageText(inlineMessageId, text, extraData) {
 
     if (extraData !== undefined) {
         data = { ...data, ...extraData };
+        console.log(data);
     }
 
     const config = {
