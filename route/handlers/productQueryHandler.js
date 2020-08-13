@@ -3,7 +3,7 @@ const PRODUCT_QUERY = INTENT.PRODUCT_QUERY;
 const LOGS = require('../../@global/LOGS');
 
 const nowShowing = require('./productQuery/nowShowing');
-const movie = require('./productQuery/movie');
+const movieHandler = require('./productQuery/movieHandler');
 
 module.exports = async function productQueryHandler({ text, intentArr, extractedInfo, sessionToMutate }) {
 
@@ -15,7 +15,7 @@ module.exports = async function productQueryHandler({ text, intentArr, extracted
             await nowShowing(sessionToMutate.chatId);
             break;
         case PRODUCT_QUERY.MOVIE.SELF:
-            await movie(extractedInfo, sessionToMutate);
+            await movieHandler({ intentArr, extractedInfo, sessionToMutate });
             break;
         default:
             throw `Unrecognized product query sub intent ${intentArr[1]}`;
