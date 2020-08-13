@@ -1,5 +1,4 @@
-const { differenceInCalendarDays } = require('date-fns');
-const { MAIN_STATUS, DATES_IN_DB } = require('../@global/CONSTANTS');
+const { MAIN_STATUS } = require('../@global/CONSTANTS');
 const { COLLECTIONS } = require('../@global/COLLECTIONS');
 const LOGS = require('../@global/LOGS');
 const logType = require('../@util/logType');
@@ -69,15 +68,16 @@ module.exports = class Session {
             LOGS.logInfo(this.chatId, `Existing: ${JSON.stringify(this)}`);
         }
 
-        const docId = this.chatId;
         const logs = await COLLECTIONS.logs.findOne({ _id: this.chatId });
         if (logs === null) {
-            await COLLECTIONS.logs.insertOne(
+            const logInsertOutcome = await COLLECTIONS.logs.insertOne(
                 {
                     _id: this.chatId,
                     data: "",
-                },
-                function (err) { LOGS.logError(docId, `Logs creation error: ${err}`) });
+                });
+            if (logInsertOutcome.result.ok) {
+                LOGS.logInfo(this.chatId, '-----new log inserted-----');
+            }
         }
 
     }
@@ -89,7 +89,7 @@ module.exports = class Session {
         const docId = this.chatId;
         delete this.bookingInfo.dateTime.sessionStartedAt;
         // LOGS.logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
-        await COLLECTIONS.sessions.replaceOne(
+        const sessionUpdateOutcome = await COLLECTIONS.sessions.replaceOne(
             { _id: this.chatId },
             {
                 _id: this.chatId,
@@ -100,22 +100,17 @@ module.exports = class Session {
                 confirmPayload: this.confirmPayload,
                 payload: this.payload,
             },
-            { upsert: true }, function (err) { LOGS.logError(docId, `Session saving error: ${err}`) });
-        LOGS.logInfo(this.chatId, '-----done-----');
-
+            { upsert: true });
+        console.log('sessionUpdateOutcome: ', sessionUpdateOutcome);
     }
 
     end({ isComplete }) {
         this.sessionInfo.endedAt = new Date();
         this.status = isComplete ? { main: MAIN_STATUS.COMPLETE, secondary: null } : { main: MAIN_STATUS.CANCELLED, secondary: null };
-        const todayDay = this.sessionInfo.startedAt.getDay();
-        const todayDbDate = new Date(DATES_IN_DB[todayDay]);
         this.bookingInfo = {
             movie: { title: null, id: null, debutDateTime: null, isBlockBuster: null },
             dateTime: {
                 start: null, end: null,
-                daysToDbDate: differenceInCalendarDays(this.sessionInfo.startedAt, todayDbDate),
-                nextWeekAreDaysLessThan: todayDay,
                 sessionStartedAt: this.sessionInfo.startedAt
             },
             place: null,

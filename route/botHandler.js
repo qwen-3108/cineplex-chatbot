@@ -21,6 +21,7 @@ const productQueryHandler = require('./handlers/productQueryHandler');
 const chosenInlineResultHandler = require('./handlers/chosenInlineResultHandler');
 const toFallback = require('../_telegram/reply/toFallback');
 const axiosErrorCallback = require('../_telegram/axiosErrorCallback');
+const { logInfo } = require('../@global/LOGS');
 
 module.exports = async function botHandler(req, res) {
 
@@ -194,14 +195,14 @@ module.exports = async function botHandler(req, res) {
     } finally {
 
         const logs = LOGS.getLogs(chatId);
-        await COLLECTIONS.logs.updateOne(
+        const outcome = await COLLECTIONS.logs.updateOne(
             { _id: chatId },
             [{
                 $set: {
                     data: { $concat: ["$data", logs] },
                 }
-            }],
-            function (err) { console.log(`Logs updation error: ${err}`) });
+            }]);
+        console.log('log saving outcome: ', outcome);
     }
 
 };

@@ -65,25 +65,25 @@ describe('at seat selection stage', () => {
 
     //spies to test
     const logErrorSpy = jest.spyOn(LOGS, 'logError');
-    const firstShowtimeSpy = jest.spyOn(reply, 'firstShowtimeCard'); //M1, M2
-    const sendSeatPlanSpy = jest.spyOn(reply, 'sendSeatPlan');      //M3, M4
-    const sendSeatLegendSpy = jest.spyOn(reply, 'sendSeatLegend');  //M3, M4
-    const editSeatPlanButtonSpy = jest.spyOn(reply, 'editSeatPlanButton');  //M4
-    const formDataAppendSpy = jest.spyOn(FormData.prototype, 'append');     //M4
-    const deleteRepeatSeatPlanSpy = jest.spyOn(reply, 'deleteRepeatSeatPlan');  //M5
-    const getSeatsSpy = jest.spyOn(reply, 'getSeats');              //M6
-    const invalidSeatsSpy = jest.spyOn(reply.alertSeatProblem, 'invalidSeats')    //M7,M8,M9
-    const invalidSeatPhrasesSpy = jest.spyOn(reply.alertSeatProblem, 'invalidSeatPhrases')    //M10,11,12,13
-    const takenSeatsSpy = jest.spyOn(reply.alertSeatProblem, 'takenSeats')    //M14,15
-    const justTakenSeatsSpy = jest.spyOn(reply.alertSeatProblem, 'justTakenSeats');    //M16,17
-    const confirmDetailsSpy = jest.spyOn(reply, 'confirmDetails');
-    const toEditSeatReqSpy = jest.spyOn(reply, 'toEditSeatReq');
-    const acknowledgeRejectSpy = jest.spyOn(reply, 'acknowledgeReject');
-    const getEditSeatsSpy = jest.spyOn(reply, 'getEditSeats');
-    const confirmSeatsSpy = jest.spyOn(reply, 'confirmSeats');
-    const getPaymentSpy = jest.spyOn(reply, 'getPayment');
-    const sendTicketsSpy = jest.spyOn(reply, 'sendTickets');
-    const finishSpy = jest.spyOn(reply, 'finish');
+    const firstShowtimeSpy = jest.spyOn(reply, 'firstShowtimeCard').mockName('firstShowtimeSpy'); //M1, M2
+    const sendSeatPlanSpy = jest.spyOn(reply, 'sendSeatPlan').mockName('sendSeatPlanSpy');      //M3, M4
+    const sendSeatLegendSpy = jest.spyOn(reply, 'sendSeatLegend').mockName('sendSeatLegendSpy');  //M3, M4
+    const editSeatPlanButtonSpy = jest.spyOn(reply, 'editSeatPlanButton').mockName('editSeatPlanButtonSpy');  //M4
+    const formDataAppendSpy = jest.spyOn(FormData.prototype, 'append').mockName('formDataAppendSpy');     //M4
+    const deleteRepeatSeatPlanSpy = jest.spyOn(reply, 'deleteRepeatSeatPlan').mockName('deleteRepeatSeatPlanSpy');  //M5
+    const getSeatsSpy = jest.spyOn(reply, 'getSeats').mockName('getSeatsSpy');              //M6
+    const invalidSeatsSpy = jest.spyOn(reply.alertSeatProblem, 'invalidSeats').mockName('invalidSeatsSpy');    //M7,M8,M9
+    const invalidSeatPhrasesSpy = jest.spyOn(reply.alertSeatProblem, 'invalidSeatPhrases').mockName('invalidSeatPhrasesSpy');    //M10,11,12,13
+    const takenSeatsSpy = jest.spyOn(reply.alertSeatProblem, 'takenSeats').mockName('takenSeatsSpy');    //M14,15
+    const justTakenSeatsSpy = jest.spyOn(reply.alertSeatProblem, 'justTakenSeats').mockName('justTakenSeatsSpy');    //M16,17
+    const confirmDetailsSpy = jest.spyOn(reply, 'confirmDetails').mockName('confirmDetailsSpy');
+    const toEditSeatReqSpy = jest.spyOn(reply, 'toEditSeatReq').mockName('toEditSeatReqSpy');
+    const acknowledgeRejectSpy = jest.spyOn(reply, 'acknowledgeReject').mockName('acknowledgeRejectSpy');
+    const getEditSeatsSpy = jest.spyOn(reply, 'getEditSeats').mockName('getEditSeatsSpy');
+    const confirmSeatsSpy = jest.spyOn(reply, 'confirmSeats').mockName('confirmSeatsSpy');
+    const getPaymentSpy = jest.spyOn(reply, 'getPayment').mockName('getPaymentSpy');
+    const sendTicketsSpy = jest.spyOn(reply, 'sendTickets').mockName('sendTicketsSpy');
+    const finishSpy = jest.spyOn(reply, 'finish').mockName('finishSpy');
 
     //M1: first showtime picked 
     test('on first showtime card received, botHandler should not throw', () => {
@@ -794,10 +794,12 @@ describe('at seat selection stage', () => {
     });
 
     //M32: successful payment
-    test('on successful payment, botHandler should not throw', () => {
+    test('on successful payment, botHandler should not throw', async done => {
         fs.appendFileSync(`./#test/noBreak/debug.txt`, '120\n');
         const req = mockReq.successful_payment(process.env.MY_CHAT_ID);
-        return expect(botHandler(req, fakeRes)).resolves.toBe(undefined);
+        const returnFromBotHandler = await botHandler(req, fakeRes);
+        expect(returnFromBotHandler).toBe(undefined);
+        done();
     });
     test('& should not catch error', () => {
         fs.appendFileSync(`./#test/noBreak/debug.txt`, '121\n');
