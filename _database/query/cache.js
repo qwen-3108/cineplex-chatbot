@@ -14,12 +14,15 @@ async function inlineQueryResult(cacheId, inlineQueryResult) {
 
 async function chosenInlineResult(inline_message_id, query, state) {
 
-    await COLLECTIONS.chosenInlineResultCache.insertOne({
+    const cache = {
         _id: inline_message_id,
         cachedAt: new Date(),
-        query,
-        state
-    });
+        query
+    };
+
+    if (state !== undefined) { cache.state = state; }
+
+    await COLLECTIONS.chosenInlineResultCache.insertOne(cache);
     console.log('cache chosenInlineResult successfully for query: ', query, ', state: ', state);
 }
 
