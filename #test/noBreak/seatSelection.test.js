@@ -1,7 +1,4 @@
-<<<<<<< Updated upstream
 const fs = require('fs');
-=======
->>>>>>> Stashed changes
 const connect = require('../../_database/connect');
 //files to mock/stub
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
@@ -12,11 +9,8 @@ const reply = require('../../_telegram/reply');
 const mockReq = require('./mockReq/mockReq');
 //files under test
 const botHandler = require('../../route/botHandler');
-<<<<<<< Updated upstream
 const FormData = require('form-data');
 const { ObjectId } = require('mongodb');
-=======
->>>>>>> Stashed changes
 
 describe('at seat selection stage', () => {
 
@@ -26,19 +20,13 @@ describe('at seat selection stage', () => {
     beforeAll(async done => {
         client = await connect(process.env.MONGODB_URI, 'testDB');
         jest.spyOn(COLLECTIONS.logs, 'updateOne').mockImplementation();
-<<<<<<< Updated upstream
         jest.spyOn(COLLECTIONS.logs, 'findOne').mockImplementation();
-=======
-        //seed db with two shotimes
-        //
->>>>>>> Stashed changes
         done();
     });
 
     afterAll(async done => {
         //clear session in db
         await COLLECTIONS.sessions.deleteOne({ _id: process.env.MY_CHAT_ID });
-<<<<<<< Updated upstream
         // clear justTakenSeat & purchased seats
         const seatsToClear = ['A14', 'Q3', 'Q4'];
         const showtimeUpdateStr = {};
@@ -51,14 +39,11 @@ describe('at seat selection stage', () => {
         })
         await COLLECTIONS.showtimes.updateOne({ _id: ObjectId("5f1fbb80b21f8bd3567c532b") }, { $set: showtimeUpdateStr, $inc: { sold: -3 } });
 
-=======
->>>>>>> Stashed changes
         //close connection
         await client.close();
         done();
     });
 
-<<<<<<< Updated upstream
     const sendMessageSpy = jest.spyOn(post, 'sendMessage').mockImplementation();
     jest.spyOn(post, 'sendTypingAction').mockImplementation();
     jest.spyOn(post, 'answerInlineQuery').mockImplementation();
@@ -69,10 +54,6 @@ describe('at seat selection stage', () => {
     jest.spyOn(post, 'editMessageText').mockImplementation();
     jest.spyOn(post, 'sendInvoice').mockImplementation();
     jest.spyOn(post, 'sendPhoto'); //can't mock cuz data from need return
-=======
-    jest.spyOn(post, 'sendMessage').mockImplementation();
-    jest.spyOn(post, 'sendTypingAction').mockImplementation();
->>>>>>> Stashed changes
     jest.spyOn(LOGS, 'initializeLogs').mockImplementation();
     jest.spyOn(LOGS, 'logInfo').mockImplementation();
     jest.spyOn(LOGS, 'logConv').mockImplementation();
@@ -83,7 +64,6 @@ describe('at seat selection stage', () => {
     const fakeRes = { end: function () { } };
 
     //spies to test
-<<<<<<< Updated upstream
     const logErrorSpy = jest.spyOn(LOGS, 'logError');
     const firstShowtimeSpy = jest.spyOn(reply, 'firstShowtimeCard'); //M1, M2
     const sendSeatPlanSpy = jest.spyOn(reply, 'sendSeatPlan');      //M3, M4
@@ -124,25 +104,6 @@ describe('at seat selection stage', () => {
     });
     test("& should set 'seenShowtimeCard' to 1", async done => {
         fs.appendFileSync(`./#test/noBreak/debug.txt`, '4\n');
-=======
-    const logErrorSpy = jest.spyOn(LOGS, 'logError').mockImplementation();
-    const firstShowtimeSpy = jest.spyOn(reply, 'firstShowtimeCard'); //M1, M2
-    const sendSeatLegendSpy = jest.spyOn(reply, 'sendSeatLegend'); //M3
-
-    //M1: first showtime picked 
-    test('on first showtime card received, botHandler should not throw', () => {
-        const req = mockReq.message_via_bot(process.env.MY_CHAT_ID, "sat");
-        return expect(botHandler(req, fakeRes)).resolves.toBe(undefined);
-    });
-    test('& should not catch error', () => {
-        expect(logErrorSpy).not.toHaveBeenCalledWith(process.env.MY_CHAT_ID, '-----! Error-----');
-    });
-    test('& should send first guide', () => {
-        expect(firstShowtimeSpy).toHaveBeenCalled();
-        expect(firstShowtimeSpy).toHaveBeenCalledWith(process.env.MY_CHAT_ID);
-    });
-    test("& should set 'seenShowtimeCard' to 1", async done => {
->>>>>>> Stashed changes
         const session = await COLLECTIONS.sessions.findOne({ _id: process.env.MY_CHAT_ID });
         expect(session.counter.seenShowtimeCard).toBe(1);
         done();
@@ -150,7 +111,6 @@ describe('at seat selection stage', () => {
 
     //M2: second showtime picked
     test('on second showtime card received, botHandler should not throw', () => {
-<<<<<<< Updated upstream
         fs.appendFileSync(`./#test/noBreak/debug.txt`, '5\n');
         const req = mockReq.message_via_bot_showtime(process.env.MY_CHAT_ID, "sun");
         return expect(botHandler(req, fakeRes)).resolves.toBe(undefined);
@@ -851,40 +811,5 @@ describe('at seat selection stage', () => {
         expect(finishSpy).toHaveBeenCalled();
         finishSpy.mockClear();
     });
-=======
-        firstShowtimeSpy.mockClear();
-        const req = mockReq.message_via_bot(process.env.MY_CHAT_ID, "sun");
-        return expect(botHandler(req, fakeRes)).resolves.toBe(undefined);
-    });
-    test('& should not catch error', () => {
-        expect(logErrorSpy).not.toHaveBeenCalledWith(process.env.MY_CHAT_ID, '-----! Error-----');
-    });
-    test('& should not send first guide', () => {
-        expect(firstShowtimeSpy).not.toHaveBeenCalled();
-    });
-
-    //M3: first seating plan picked
-    // test('on first seating plan picked botHandler should not throw', () => {
-    //     const req = mockReq.callback_sId(process.env.MY_CHAT_ID, "sat");
-    //     return expect(botHandler(req, fakeRes)).resolves.toBe(undefined);
-    // });
-    // test('& should not catch error', () => {
-    //     expect(logErrorSpy).not.toHaveBeenCalledWith(process.env.MY_CHAT_ID, '-----! Error-----');
-    // });
-    // test('& should send seat legend', () => {
-    //     expect(sendSeatLegendSpy).toHaveBeenCalled();
-    //     expect(sendSeatLegendSpy).toHaveBeenCalledWith(process.env.MY_CHAT_ID);
-    // });
-    // test('& should send seat plan', () => {
-    //     expect(sendSeatPlanSpy).toHaveBeenCalled();
-    //     expect(sendSeatPlanSpy).toHaveBeenCalledWith();
-    // });
-    // test('& seat plan should not have button', () => {
-
-    // });
-
-    //M4: second seating plan picked
-
->>>>>>> Stashed changes
 
 });

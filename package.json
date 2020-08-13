@@ -4,11 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-<<<<<<< Updated upstream
     "test": "jest --detectOpenHandles /noBreak/seatSelection --runInBand",
-=======
-    "test": "jest --detectOpenHandles /noBreak/",
->>>>>>> Stashed changes
     "start": "node gcpCredGen.js && node server.js",
     "start_local": "set DB=cinemaDB&&nodemon server.js",
     "start_test": "set DB=testDB&& nodemon server.js"

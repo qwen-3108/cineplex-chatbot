@@ -8,11 +8,7 @@ const { COLLECTIONS } = require('../@global/COLLECTIONS');
 const LOGS = require('../@global/LOGS');
 const printTickets = require('../@util/printTickets');
 const reply = require('../_telegram/reply');
-<<<<<<< Updated upstream
 const { sendError } = require('../_telegram/reply');
-=======
-const { basics, sendTickets, finish, sendError } = require('../_telegram/reply');
->>>>>>> Stashed changes
 const post = require('../_telegram/post');
 
 const slotFilling = require('./handlers/service/book/helpers/slotFilling');
@@ -24,11 +20,7 @@ const bookHandler = require('./handlers/service/book');
 const productQueryHandler = require('./handlers/productQueryHandler');
 const chosenInlineResultHandler = require('./handlers/chosenInlineResultHandler');
 const toFallback = require('../_telegram/reply/toFallback');
-<<<<<<< Updated upstream
-const populateBookingInfo = require('../@util/populateBookingInfo');
 const axiosErrorCallback = require('../_telegram/axiosErrorCallback');
-=======
->>>>>>> Stashed changes
 
 module.exports = async function botHandler(req, res) {
 
@@ -42,10 +34,7 @@ module.exports = async function botHandler(req, res) {
     }
 
     try {
-<<<<<<< Updated upstream
         LOGS.initializeLogs(chatId);
-=======
->>>>>>> Stashed changes
         LOGS.logInfo(chatId, '-----Post req received-----');
         LOGS.logInfo(chatId, `Req body: ${JSON.stringify(req.body)}`);
         res.end();
@@ -195,15 +184,11 @@ module.exports = async function botHandler(req, res) {
 
     } catch (ex) {
         LOGS.logError(chatId, '-----! Error-----');
-<<<<<<< Updated upstream
         if (ex.isAxiosError) {
             axiosErrorCallback(chatId, ex);
         } else {
             LOGS.logError(chatId, ex);
         }
-=======
-        LOGS.logError(chatId, ex);
->>>>>>> Stashed changes
         await sendError(chatId);
 
     } finally {

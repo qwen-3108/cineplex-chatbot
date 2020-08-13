@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 module.exports = { message_via_bot_cinema, message_via_bot_showtime, callback_sId, callback_uSId, plain_text, non_existing_seat, weird_seat_phase, taken_seats, just_taken_seats, valid_seats, successful_payment };
 
 function message_via_bot_cinema(chatId, cinema) {
@@ -32,15 +31,6 @@ function message_via_bot_cinema(chatId, cinema) {
 }
 
 function message_via_bot_showtime(chatId, showtime) { //"sat" "sun"
-=======
-module.exports = { chosen_inline_result, message_via_bot, callback_sId };
-
-function chosen_inline_result(scheduleId) {
-
-}
-
-function message_via_bot(chatId, showtime) { //"sat" "sun"
->>>>>>> Stashed changes
 
     let text;
     let scheduleId;
@@ -113,7 +103,6 @@ function callback_sId(chatId, showtime) { //"sat" "sun"
         }
     });
 
-<<<<<<< Updated upstream
 }
 
 function callback_uSId(chatId, showtime) { //"sat" "sun" "selected"
@@ -233,6 +222,3 @@ function successful_payment(chatId) {
         }
     });
 }
-=======
-}
->>>>>>> Stashed changes
