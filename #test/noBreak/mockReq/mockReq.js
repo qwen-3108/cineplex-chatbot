@@ -1,10 +1,40 @@
-module.exports = { chosen_inline_result, message_via_bot, callback_sId, callback_uSId, non_existing_seat, weird_seat_phase, taken_seats, just_taken_seats, valid_seats };
+module.exports = { chosen_inline_result, message_via_bot_cinema, message_via_bot_showtime, callback_sId, callback_uSId, plain_text, non_existing_seat, weird_seat_phase, taken_seats, just_taken_seats, valid_seats };
 
 function chosen_inline_result(scheduleId) {
 
 }
 
-function message_via_bot(chatId, showtime) { //"sat" "sun"
+function message_via_bot_cinema(chatId, cinema) {
+    return ({
+        body: {
+            "update_id": 414892331,
+            "message": {
+                "message_id": 61,
+                "from": {
+                    "id": Number(chatId),
+                    "is_bot": false,
+                    "first_name": "Qwen",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "id": Number(chatId),
+                    "first_name": "Qwen",
+                    "type": "private"
+                },
+                "date": 1594864992,
+                "text": `💬 ${cinema}`,
+                "via_bot": {
+                    "id": 1365952297,
+                    "is_bot": true,
+                    "first_name": "Cathay Cineplex",
+                    "username": "cathay_sg_bot"
+                }
+            }
+        }
+    });
+}
+
+function message_via_bot_showtime(chatId, showtime) { //"sat" "sun"
 
     let text;
     let scheduleId;

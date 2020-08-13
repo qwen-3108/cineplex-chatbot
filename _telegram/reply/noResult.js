@@ -20,10 +20,12 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
         dateTimeStr = makeDateTimePhrase(dateTime) + ' ';
     }
 
-    const suggestionStr = 'But we do have tickets for these showtimes. Does any of them work for you?(If not, feel free to edit the input field to explore other options)';
+    const suggestionStr = 'But we do have tickets for these showtimes. Does any of these work for you? If not, you can edit the input field to explore other options! :)';
 
     let text = '';
     let replyMarkup;
+    let responseCodeforTesting;
+
     switch (noResultReason) {
         case NO_RESULT_REASON.NO_SLOT:
             text = `I'm afraid we don't have showtime for ${movieStr}${dateTimeStr}${locationStr}. ${suggestionStr}`;
@@ -34,6 +36,7 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
                         switch_inline_query_current_chat: makeInlineQueryInput(alternativeQuery, bookingInfo)
                     }]]
             };
+            responseCodeforTesting = 'noSlot';
             break;
         case NO_RESULT_REASON.SOLD_OUT:
             text = `Unfortunately tickets for ${movieStr}${dateTimeStr}${locationStr} are sold out. ${suggestionStr}`;
@@ -44,15 +47,18 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
                         switch_inline_query_current_chat: makeInlineQueryInput(alternativeQuery, bookingInfo)
                     }]]
             };
+            responseCodeforTesting = 'soldOut';
             break;
         case NO_RESULT_REASON.ALL_SOLD_OUT:
             text = `Sorry, it seems like all showtimes for ${movie.title} are fully booked. New showtimes will be released on Wednesday, Thursday and Friday afternoon. Do check back if you are still interested. Meanwhile, let me know if there is anything else I can help :)`;
             replyMarkup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
+            responseCodeforTesting = 'allSoldOut';
             break;
         default:
             throw `${__filename} | Unrecognized no result reason during slot filling ${noResultReason}`;
     }
 
     await post.sendMessage(chat_id, text, { replyMarkup });
+    return responseCodeforTesting;
 
 }

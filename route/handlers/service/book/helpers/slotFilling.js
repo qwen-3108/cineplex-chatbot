@@ -1,6 +1,6 @@
 const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
 const LOGS = require('../../../../../@global/LOGS');
-const { fillSlot, noResult, warnPlatinum } = require('../../../../../_telegram/reply');
+const reply = require('../../../../../_telegram/reply');
 const { checkAvailable, getShowtimes, getCinemas, cache } = require('../../../../../_database/query');
 const makeInlineQueryResult = require('../../../../../@util/makeInlineQueryResult');
 const decideMaxDate = require('../../../../../@util/decideMaxDate');
@@ -30,7 +30,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
 
     //take appropriate action
     if (status.main === MAIN_STATUS.PROMPT_MOVIE) {
-        await fillSlot.getMovie(chatId, text);
+        await reply.fillSlot.getMovie(chatId, text);
     } else {
 
         switch (status.main) {
@@ -40,10 +40,10 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                     const { available, noResultReason, alternativeQuery } = await checkAvailable(bookingInfo);
                     if (!available) {
                         sessionToMutate.status = { main: null, secondary: null };
-                        await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
+                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
                         return;
                     }
-                    await fillSlot.getDateTime(chatId, text, decideMaxDate(sessionToMutate.sessionInfo.startedAt));
+                    await reply.fillSlot.getDateTime(chatId, text, decideMaxDate(sessionToMutate.sessionInfo.startedAt));
                     break;
                 }
             case MAIN_STATUS.GET_CINEMA:
@@ -52,7 +52,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                     const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: { cinema: 1 } });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
-                        await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
+                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
                         return;
                     }
                     const cinemaSet = new Set(showtimes.map(showtime => showtime.cinema));
@@ -63,7 +63,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                     const cacheIdentifier = 'unique result ❤️ ' + cacheId;
                     const inlineQueryResult = makeInlineQueryResult.cinema(cinemaArr);
                     await cache.inlineQueryResult(cacheId, inlineQueryResult);
-                    await fillSlot.getCinema(chatId, text, bookingInfo, cacheIdentifier);
+                    await reply.fillSlot.getCinema(chatId, text, bookingInfo, cacheIdentifier);
                     break;
                 }
             case MAIN_STATUS.GET_CINEMA_TIME_EXP:
@@ -73,7 +73,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                     const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {} });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
-                        await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
+                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
                         return;
                     }
                     const cacheId = new Date().getTime().toString() + chatId;
@@ -81,7 +81,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                     const cacheIdentifier = 'unique result ❤️ ' + cacheId;
                     const inlineQueryResult = makeInlineQueryResult.showtime(showtimes, bookingInfo, cacheIdentifier);
                     await cache.inlineQueryResult(cacheId, inlineQueryResult);
-                    await fillSlot.getExactSlot(chatId, text, bookingInfo, cacheIdentifier);
+                    await reply.fillSlot.getExactSlot(chatId, text, bookingInfo, cacheIdentifier);
                     break;
                 }
             case MAIN_STATUS.CONFIRM_PROCEED:
@@ -90,7 +90,7 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                     const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {} });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
-                        await noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
+                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
                         return;
                     }
                     if (showtimes.length > 1) {
@@ -101,14 +101,14 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
                         const cacheIdentifier = 'unique result ❤️ ' + cacheId;
                         const inlineQueryResult = makeInlineQueryResult.showtime(showtimes, bookingInfo, cacheIdentifier);
                         await cache.inlineQueryResult(cacheId, inlineQueryResult);
-                        await fillSlot.getExperienceOnly(chatId, text, bookingInfo, showtimes, cacheIdentifier);
+                        await reply.fillSlot.getExperienceOnly(chatId, text, bookingInfo, showtimes, cacheIdentifier);
                     } else {
                         sessionToMutate.confirmPayload.uniqueSchedule = showtimes[0];
                         if (sessionToMutate.bookingInfo.experience === undefined && showtimes[0].isPlatinum) {
                             sessionToMutate.status.secondary = SEC_STATUS.WARN_PLATINUM;
-                            await warnPlatinum(chatId, text, bookingInfo, showtimes[0]);
+                            await reply.warnPlatinum(chatId, text, bookingInfo, showtimes[0]);
                         } else {
-                            await fillSlot.confirmProceed(chatId, bookingInfo);
+                            await reply.fillSlot.confirmProceed(chatId, bookingInfo);
                         }
                     }
                     break;

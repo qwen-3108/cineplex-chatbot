@@ -8,7 +8,7 @@ async function start() {
 
     //#2: connect db
     const connect = require('./_database/connect');
-    await connect(process.env.MONGODB_URI, 'cinemaDB');
+    await connect(process.env.MONGODB_URI, process.env.DB);
 
     //#3: start change stream
     const { COLLECTIONS } = require('./@global/COLLECTIONS');

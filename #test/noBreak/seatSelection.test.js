@@ -52,7 +52,7 @@ describe('at seat selection stage', () => {
         done();
     });
 
-    const sendMessageSpy = jest.spyOn(post, 'sendMessage').mockImplementation();
+    jest.spyOn(post, 'sendMessage').mockImplementation();
     jest.spyOn(post, 'sendTypingAction').mockImplementation();
     jest.spyOn(post, 'answerInlineQuery').mockImplementation();
     jest.spyOn(post, 'answerPreCheckoutQuery').mockImplementation();
@@ -88,7 +88,7 @@ describe('at seat selection stage', () => {
     //M1: first showtime picked 
     test('on first showtime card received, botHandler should not throw', () => {
         fs.appendFileSync(`./#test/noBreak/debug.txt`, '1\n');
-        const req = mockReq.message_via_bot(process.env.MY_CHAT_ID, "sat");
+        const req = mockReq.message_via_bot_showtime(process.env.MY_CHAT_ID, "sat");
         return expect(botHandler(req, fakeRes)).resolves.toBe(undefined);
     });
     test('& should not catch error', () => {
@@ -112,7 +112,7 @@ describe('at seat selection stage', () => {
     //M2: second showtime picked
     test('on second showtime card received, botHandler should not throw', () => {
         fs.appendFileSync(`./#test/noBreak/debug.txt`, '5\n');
-        const req = mockReq.message_via_bot(process.env.MY_CHAT_ID, "sun");
+        const req = mockReq.message_via_bot_showtime(process.env.MY_CHAT_ID, "sun");
         return expect(botHandler(req, fakeRes)).resolves.toBe(undefined);
     });
     test('& should not catch error', () => {
@@ -127,7 +127,7 @@ describe('at seat selection stage', () => {
     });
 
     // M3: first seating plan picked
-    test('on first seating plan picked botHandler should not throw', () => {
+    test('on first seating plan picked, botHandler should not throw', () => {
         fs.appendFileSync(`./#test/noBreak/debug.txt`, '8\n');
         const req = mockReq.callback_sId(process.env.MY_CHAT_ID, "sat");
         return expect(botHandler(req, fakeRes)).resolves.toBe(undefined);
@@ -157,7 +157,7 @@ describe('at seat selection stage', () => {
 
     // M4: second seating plan picked
     // (1) whether called or not, (2) called how mnay times, (3) arguments, (4) whether return, (5) return value, (6) whether throw
-    test('on second seating plan picked botHandler should not throw', () => {
+    test('on second seating plan picked, botHandler should not throw', () => {
         fs.appendFileSync(`./#test/noBreak/debug.txt`, '12\n');
         const req = mockReq.callback_sId(process.env.MY_CHAT_ID, "sun");
         return expect(botHandler(req, fakeRes)).resolves.toBe(undefined);
@@ -229,7 +229,7 @@ describe('at seat selection stage', () => {
         expect(logErrorSpy).not.toHaveBeenCalledWith(process.env.MY_CHAT_ID, '-----! Error-----');
         logErrorSpy.mockClear();
     });
-    test('& should that seating plan to selected and edit the clicked button', async done => {
+    test('& should set that seating plan to selected and edit the clicked button', async done => {
         fs.appendFileSync(`./#test/noBreak/debug.txt`, '24\n');
         const session = await COLLECTIONS.sessions.findOne({ _id: process.env.MY_CHAT_ID });
         expect(session.bookingInfo.ticketing[0].isSelected).toBe(true);

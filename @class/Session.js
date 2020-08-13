@@ -22,6 +22,7 @@ module.exports = class Session {
 
             this.sessionInfo = {
                 startedAt: new Date(),
+                // startedAt: new Date('2020-08-08T09:00:00+08:00'),
                 lastUpdated: null,
                 endedAt: null
             };

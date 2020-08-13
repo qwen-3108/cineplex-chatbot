@@ -4,9 +4,10 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --detectOpenHandles /noBreak/",
+    "test": "jest --detectOpenHandles /noBreak/ --runInBand",
     "start": "node gcpCredGen.js && node server.js",
-    "start_local": "nodemon server.js"
+    "start_local": "set DB=cinemaDB&&nodemon server.js",
+    "start_test": "set DB=testDB&& nodemon server.js"
   },
   "keywords": [],
   "author": "",

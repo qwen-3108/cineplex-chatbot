@@ -2,8 +2,7 @@ const setSchema = require('../setSchema');
 
 const cinema = {
     bsonType: "object",
-    minProperties: 5,
-    additionalProperties: false,
+    maxProperties: 6,
     properties: {
         cinema: { bsonType: "string" },
         address: {

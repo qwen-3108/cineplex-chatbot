@@ -2,8 +2,7 @@ const { differenceInCalendarDays, format } = require('date-fns');
 
 module.exports = function makeDateTimePhrase(dateTime) {
 
-    const current = new Date();
-    const { start, end } = dateTime;
+    const { start, end, sessionStartedAt } = dateTime;
     const startDay = start.getDay();
     const endDay = end.getDay();
     const startTime = start.getHours();
@@ -11,7 +10,7 @@ module.exports = function makeDateTimePhrase(dateTime) {
 
     let dateStr = '';
     let timeStr = '';
-    let diffInCalendarDays = differenceInCalendarDays(start, current);
+    let diffInCalendarDays = differenceInCalendarDays(start, sessionStartedAt);
     let dateTimeStr = '';
 
     if (startDay !== endDay) {
@@ -67,7 +66,7 @@ module.exports = function makeDateTimePhrase(dateTime) {
         case 6:
         case 7:
             dateStr = format(start, 'EEEE (d/M)');
-            const daysToSun = [7 - current.getDay()] % 7;
+            const daysToSun = [7 - sessionStartedAt.getDay()] % 7;
             if (daysToSun !== 0 && diffInCalendarDays > daysToSun) {
                 dateTimeStr = `on next ${dateStr}${timeStr === '' ? '' : ' ' + timeStr}`;
             } else {

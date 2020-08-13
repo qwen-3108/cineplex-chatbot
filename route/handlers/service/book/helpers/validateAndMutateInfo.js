@@ -2,7 +2,7 @@ const { COLLECTIONS } = require('../../../../../@global/COLLECTIONS');
 const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
 const LOGS = require('../../../../../@global/LOGS');
 const assignDateTime = require('../../../../../@util/assignDateTime');
-const { upcomingMovie, invalidDateTime } = require('../../../../../_telegram/reply');
+const reply = require('../../../../../_telegram/reply');
 const decideMaxDate = require('../../../../../@util/decideMaxDate');
 
 module.exports = async function validateAndMutateInfo({ extractedInfo, sessionToMutate }) {
@@ -23,7 +23,7 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                     if (movie === null) throw `${__filename} | movie ${extractedInfo.movie} not found in db`;
                     if (movie.debutDateTime > new Date('2020-05-17T23:59')) {
                         LOGS.logInfo(chatId, 'Update: Movie is upcoming movie, notifying users...');
-                        await upcomingMovie(chatId, movie);
+                        await reply.upcomingMovie(chatId, movie);
                         sessionToMutate.status = { main: null, secondary: null };
                         output.ok = false;
                         //? not sure if it's ok to just return here without complete assignment of other parameters
@@ -105,7 +105,7 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
         sessionToMutate.status = dateExceeds.isTotal
             ? { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE_TOTAL }
             : { main: MAIN_STATUS.PROMPT_DATETIME, secondary: SEC_STATUS.EXCEED_SCHEDULE_PARTIAL };
-        await invalidDateTime(chatId, dateExceeds.isTotal, dateExceeds.maxDate);
+        await reply.invalidDateTime(chatId, dateExceeds.isTotal, dateExceeds.maxDate);
     }
 
     //return whether validation ok
