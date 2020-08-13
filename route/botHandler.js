@@ -101,12 +101,12 @@ module.exports = async function botHandler(req, res) {
                                 break;
                             case INTENT.END.SELF:
                                 currentSession.counter.fallbackCount = 0;
-                                await reply.basics.end(currentSession.chatId);
+                                await reply.basics.end(currentSession.chatId, text);
                                 currentSession.end({ isComplete: false });
                                 break;
                             case INTENT.CANCEL.SELF:
                                 currentSession.counter.fallbackCount = 0;
-                                await reply.basics.cancel(currentSession.chatId);
+                                await reply.basics.cancel(currentSession.chatId, text);
                                 break;
                             case INTENT.FALLBACK.SELF:
                                 currentSession.counter.fallbackCount++;
@@ -195,14 +195,14 @@ module.exports = async function botHandler(req, res) {
     } finally {
 
         const logs = LOGS.getLogs(chatId);
-        const outcome = await COLLECTIONS.logs.updateOne(
+        await COLLECTIONS.logs.updateOne(
             { _id: chatId },
             [{
                 $set: {
                     data: { $concat: ["$data", logs] },
                 }
             }]);
-        console.log('log saving outcome: ', outcome);
+        console.log('-----logs saved successfully-----');
     }
 
 };

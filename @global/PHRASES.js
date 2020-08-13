@@ -1,3 +1,5 @@
+const { REGEX } = require("./CONSTANTS");
+
 module.exports = {
     GREETING: function () {
         const chatDate = new Date();
@@ -45,7 +47,8 @@ module.exports = {
         ];
         return phraseBank[Math.floor(Math.random() * phraseBank.length)];
     },
-    CANCEL: function (hasThanks) {
+    CANCEL: function (text) {
+        const hasThanks = REGEX.THANKS.test(text);
         const cancelAcknowledgement = hasThanks ? 'No problem. ' : 'Okay. ';
         const phraseBank = [
             'Is there anything else I can help?',
@@ -53,10 +56,11 @@ module.exports = {
         ]
         return cancelAcknowledgement + phraseBank[Math.floor(Math.random() * phraseBank.length)];
     },
-    END: function (hasThanks) {
+    END: function (text) {
+        const hasThanks = REGEX.THANKS.test(text);
         const hours = new Date().getHours();
         const endAcknowledgement = hasThanks ? 'No problem. ' : 'Sure. ';
-        const phraseBank_2 = ['I am always here to assist. ', "Feel free to talk to me again if there is"];
+        const phraseBank_2 = ['I am always here to assist :)', "Feel free to talk to me again if there is"];
         const wishes = hours > 20 ? 'Have a nice day' : 'Good night';
         return (endAcknowledgement + phraseBank_2[Math.floor(Math.random()) * phraseBank_2.length] + wishes);
     },

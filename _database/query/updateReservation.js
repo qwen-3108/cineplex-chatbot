@@ -68,8 +68,8 @@ module.exports = async function updateReservation(chatId, scheduleId, seatNumber
         return ({ justTakenSeats, takenSeats, stillAvailable });
     }
 
-    const updateOutcome = await COLLECTIONS.showtimes.updateOne({ _id: ObjectId(scheduleId) }, { $set: { ...releaseStr, ...reserveStr } });
-    console.log('update outcome: ', JSON.stringify(updateOutcome));
+    await COLLECTIONS.showtimes.updateOne({ _id: ObjectId(scheduleId) }, { $set: { ...releaseStr, ...reserveStr } });
+    console.log('update ticket reservation successfully');
 
     if (seatNumbers.length !== 0) {
         console.log('not releasing call, seatNumbers.length: ', seatNumbers.length);

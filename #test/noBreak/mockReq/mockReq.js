@@ -222,3 +222,25 @@ function successful_payment(chatId) {
         }
     });
 }
+
+
+function movie_card_callback_showtime(chatId) {
+    return ({
+        body: {
+            "update_id": 414895017,
+            "callback_query": {
+                "id": "3223780133644341596",
+                "from": {
+                    "id": Number(chatId),
+                    "is_bot": false,
+                    "first_name": "Qiao Wen",
+                    "username": "qwenstillsnoozing",
+                    "language_code": "en"
+                },
+                "inline_message_id": "BQAAAPcdAADzKr0syorWWWq2csk",
+                "chat_instance": "5140223267136962557",
+                "data": "movieId =5ec6603c29431975db467384 showtime="
+            }
+        }
+    })
+}

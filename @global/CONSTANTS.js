@@ -215,5 +215,6 @@ module.exports = {
         TO_REMOVE: /(?<=(?:no|don't need|won't get|not getting|not|remove|release|instead of|not taking|delete|get rid of)\s)(?:(?:[A-Z]\d+)(?:\s?(?:to|-)\s?)?(?:[A-Z]\d+)?)(?:(?:,\s?|,?\s?(?:and|&|n)\s)?(?:(?:[A-Z]\d+)(?:\s?(?:to|-)\s?)?(?:[A-Z]\d+)?))*/i,
         IS_YES_NO: /(?:is|are|am|will|would|do|does|did|can)\s(?:i|my|you|your|he|his|she|her|it|the)/i,
         NOT_YES_NO: /(?:what|when|where|how|why|who)/i,
+        THANKS: /(?:thanks|thank you)/i
     }
 }

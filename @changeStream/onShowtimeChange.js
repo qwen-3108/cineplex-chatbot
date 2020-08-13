@@ -34,8 +34,7 @@ module.exports = async function onShowtimeChange(data) {
             //#3: for each session, edit seat plan, update new file id
             console.log('Sending edit requests');
             const requests = relevantSessions.map(session => reply.editSeatPlan(session._id, _id.toString(), session.bookingInfo));
-            const outcome = await Promise.all(requests);
-            console.log('seat plan editing outcome: ', outcome);
+            await Promise.all(requests);
 
             //#4: when all done, delete seat plan from server
             console.log('Deleting seating plan from server');

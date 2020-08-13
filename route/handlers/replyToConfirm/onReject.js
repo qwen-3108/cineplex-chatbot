@@ -30,7 +30,7 @@ module.exports = async function onReject({ text, sessionToMutate }) {
             case MAIN_STATUS.PROMPT_DATETIME:
                 {
                     if (status.secondary === SEC_STATUS.EXCEED_SCHEDULE_TOTAL || status.secondary === SEC_STATUS.EXCEED_SCHEDULE_PARTIAL) {
-                        await reply.basics.cancel(chatId);
+                        await reply.basics.cancel(chatId, text);
                     }
                 }
                 break;

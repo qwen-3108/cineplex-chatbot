@@ -119,7 +119,7 @@ async function editMessageReplyMarkup(chatId, messageId, replyMarkup) {
 
 async function editMessageText(inlineMessageId, text, extraData) {
 
-    const data = { inline_message_id: inlineMessageId, text: text };
+    let data = { inline_message_id: inlineMessageId, text: text };
 
     if (extraData !== undefined) {
         data = { ...data, ...extraData };

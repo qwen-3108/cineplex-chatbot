@@ -43,8 +43,8 @@ module.exports = async function bookTickets(chatId, ticketing, seatNumbers, orde
     }
     console.log('bookStr: ', JSON.stringify(showtimeUpdateStr));
     console.log('Number of ticket purchased: ', Object.keys(showtimeUpdateStr).length);
-    const updateOutcome = await COLLECTIONS.showtimes.updateOne({ _id: ObjectId(selected[0].scheduleId) }, { $set: showtimeUpdateStr, $inc: { sold: Object.keys(showtimeUpdateStr).length } });
-    console.log('update outcome: ', JSON.stringify(updateOutcome));
+    await COLLECTIONS.showtimes.updateOne({ _id: ObjectId(selected[0].scheduleId) }, { $set: showtimeUpdateStr, $inc: { sold: Object.keys(showtimeUpdateStr).length } });
+    console.log('-----tickets booked successfully-----');
 
     return savedTickets;
 

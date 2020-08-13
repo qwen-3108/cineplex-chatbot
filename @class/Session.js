@@ -70,14 +70,12 @@ module.exports = class Session {
 
         const logs = await COLLECTIONS.logs.findOne({ _id: this.chatId });
         if (logs === null) {
-            const logInsertOutcome = await COLLECTIONS.logs.insertOne(
+            await COLLECTIONS.logs.insertOne(
                 {
                     _id: this.chatId,
                     data: "",
                 });
-            if (logInsertOutcome.result.ok) {
-                LOGS.logInfo(this.chatId, '-----new log inserted-----');
-            }
+            LOGS.logInfo(this.chatId, '-----new log inserted to db-----')
         }
 
     }
@@ -89,7 +87,7 @@ module.exports = class Session {
         const docId = this.chatId;
         delete this.bookingInfo.dateTime.sessionStartedAt;
         // LOGS.logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
-        const sessionUpdateOutcome = await COLLECTIONS.sessions.replaceOne(
+        await COLLECTIONS.sessions.replaceOne(
             { _id: this.chatId },
             {
                 _id: this.chatId,
@@ -101,7 +99,7 @@ module.exports = class Session {
                 payload: this.payload,
             },
             { upsert: true });
-        console.log('sessionUpdateOutcome: ', sessionUpdateOutcome);
+        LOGS.logInfo(this.chatId, '-----session saved successfully-----');
     }
 
     end({ isComplete }) {
