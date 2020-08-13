@@ -48,7 +48,7 @@ async function howToFilter(inline_message_id, movieId, movieTitle) {
     const { query, state } = await COLLECTIONS.chosenInlineResultCache.findOne({ _id: inline_message_id });
     const optionText = state === "show" ? "More Info" : "Less Info";
 
-    const text = `To check showtimes, tap 'Showtime' button again and enter your preferred time and/or location to find showtimes that meet your preferences, e.g.: @cathay_sg_bot ${movieTitle} tomorrow evening near bkt batok\n(Or simply ask me 👩🏻‍💻)`;
+    const text = `Tap the 'Showtime' button again and type your preferred time and/or location to filter showtimes, e.g.:\n@cathay_sg_bot ${movieTitle} tomorrow evening near bkt batok\n(Or simply ask me 👩🏻‍💻)`;
     const replyMarkup = {
         inline_keyboard: [[
             { text: 'Back to List', switch_inline_query_current_chat: query },
