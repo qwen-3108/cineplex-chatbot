@@ -37,7 +37,7 @@ async function hideMovieDetail(inline_message_id, movie) {
             { text: 'More Info', callback_data: `movieId =${_id} show=` },
             { text: 'Showtime', callback_data: `movieId =${_id} showtime=` }]]
     };
-    await post.editMessageText(inline_message_id, text, { parse_mode: 'Markdown', reply_markup, disableWebPagePreview: true });
+    await post.editMessageText(inline_message_id, text, { parse_mode: 'Markdown', reply_markup });
 
     // await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id, state: "hide" });
     await COLLECTIONS.chosenInlineResultCache.updateOne({ _id: inline_message_id }, { $set: { state: "hide" } });

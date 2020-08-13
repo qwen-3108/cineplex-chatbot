@@ -175,7 +175,11 @@ module.exports = async function botHandler(req, res) {
                 await chosenInlineResultHandler({ result_id, sessionToMutate: currentSession });
                 await currentSession.saveToDb();
                 console.log('-----Cache inline_message_id and corresponding query-----');
-                await cache.chosenInlineResult(inline_message_id, query);
+                let state;
+                if (result_id.split(':')[0] === 'movieId') {
+                    state = 'show';
+                }
+                await cache.chosenInlineResult(inline_message_id, query, state);
 
             } else {
                 LOGS.logInfo(chatId, 'Chosen inline result without cb button, no action needed');
