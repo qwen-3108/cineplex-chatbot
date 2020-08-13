@@ -1,10 +1,6 @@
 const { MAIN_STATUS, SEC_STATUS } = require('../../../../../@global/CONSTANTS');
 const LOGS = require('../../../../../@global/LOGS');
-<<<<<<< Updated upstream
 const reply = require('../../../../../_telegram/reply');
-=======
-const { fillSlot, noResult, warnPlatinum } = require('../../../../../_telegram/reply');
->>>>>>> Stashed changes
 const { checkAvailable, getShowtimes, getCinemas, cache } = require('../../../../../_database/query');
 const makeInlineQueryResult = require('../../../../../@util/makeInlineQueryResult');
 const decideMaxDate = require('../../../../../@util/decideMaxDate');

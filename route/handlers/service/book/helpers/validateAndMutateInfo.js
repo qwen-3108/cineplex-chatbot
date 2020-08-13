@@ -23,11 +23,7 @@ module.exports = async function validateAndMutateInfo({ extractedInfo, sessionTo
                     if (movie === null) throw `${__filename} | movie ${extractedInfo.movie} not found in db`;
                     if (movie.debutDateTime > new Date('2020-05-17T23:59')) {
                         LOGS.logInfo(chatId, 'Update: Movie is upcoming movie, notifying users...');
-<<<<<<< Updated upstream
                         await reply.upcomingMovie(chatId, movie);
-=======
-                        await upcomingMovie(chatId, movie);
->>>>>>> Stashed changes
                         sessionToMutate.status = { main: null, secondary: null };
                         output.ok = false;
                         //? not sure if it's ok to just return here without complete assignment of other parameters
