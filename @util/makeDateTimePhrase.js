@@ -14,12 +14,12 @@ module.exports = function makeDateTimePhrase(dateTime) {
     let dateTimeStr = '';
 
     if (startDay !== endDay) {
-        if (startDay === 6 && endDay === 0) {
+        if (startDay === 6 && endDay === 0 && startTime === 0 && endTime === 23) {
             dateTimeStr = diffInCalendarDays < 7 ? 'this weekend ' : 'next weekend ';
-            dateTimeStr += `(${format(start, 'd')} - ${format(end, 'd MMMM')})`;
+            dateTimeStr += `(${format(start, 'd')}-${format(end, 'd MMM')})`;
             return dateTimeStr;
         } else {
-            if (startDay > endDay) {
+            if (startDay > endDay && startTime === 0 && endTime === 23) {
                 return `from ${format(start, 'EEEE')} to coming ${format(end, 'EEEE')}`;
             } else {
                 return `from ${format(start, 'EEEE')} to ${format(end, 'EEEE')}`;
