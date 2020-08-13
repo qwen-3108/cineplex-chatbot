@@ -53,10 +53,18 @@ module.exports = class Session {
 
             this.confirmPayload = { adjustedDateTime: {}, uniqueSchedule: {}, seatPhraseGuess: {} };
             this.payload = { seatNumber: [], movie: { title: null, id: null, debutDateTime: null, isBlockBuster: null } };
+<<<<<<< Updated upstream
+=======
+            LOGS.initializeLogs(this.chatId);
+>>>>>>> Stashed changes
             LOGS.logInfo(this.chatId, '-----Instantiating new session-----');
             LOGS.logInfo(this.chatId, `New session: ${JSON.stringify(this)}`);
 
         } else {
+<<<<<<< Updated upstream
+=======
+            LOGS.initializeLogs(this.chatId);
+>>>>>>> Stashed changes
             LOGS.logInfo(this.chatId, '-----Reconstructing existing session-----');
             const { sessionInfo, status, bookingInfo, counter, confirmPayload, payload } = sessionInDb;
             this.sessionInfo = sessionInfo;
@@ -87,6 +95,10 @@ module.exports = class Session {
         this.sessionInfo.lastUpdated = new Date();
         LOGS.logInfo(this.chatId, `Session to save: ${JSON.stringify(this)}`);
         const docId = this.chatId;
+<<<<<<< Updated upstream
+=======
+        // LOGS.logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
+>>>>>>> Stashed changes
         delete this.bookingInfo.dateTime.sessionStartedAt;
         // LOGS.logInfo(this.chatId, `Session object with type: ${logType(this, 0)}`);
         await COLLECTIONS.sessions.replaceOne(

@@ -115,6 +115,7 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                 if (sameSeatingPlan.length !== 0) {
                     LOGS.logInfo(chatId, 'Same plan was viewed previously');
                     toDeleteMsgId = sameSeatingPlan[0].seatPlanMsgId;
+<<<<<<< Updated upstream
                     LOGS.logInfo(chatId, `To delete plan msg id: ${toDeleteMsgId}, removing seat plan info from ticketing array`);
                     sessionToMutate.bookingInfo.ticketing = ticketing.filter(selection => selection.scheduleId !== scheduleId);
                 } else {
@@ -143,8 +144,31 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                     selection.movie = {
                         id: _id.toString(),
                         title, isBlockBuster, debutDateTime
+=======
+                    LOGS.logInfo(chatId, `To delete plan msg id: ${toDeleteMsgId}`);
+                } else {
+                    LOGS.logInfo(chatId, 'Is new seat plan viewed, adding showtime info to ticketing');
+                    const { movieId, dateTime, cinema, hall, isPlatinum } = showtime;
+                    const selection = {
+                        isSelected: false,
+                        scheduleId: showtime._id.toString(),
+                        movie: {},
+                        dateTime,
+                        cinema,
+                        hall,
+                        isPlatinum,
+                        seatPlanMsgId: null,
+                        seatPlanFileId: null,
+                        seatPlanCallback: []
+>>>>>>> Stashed changes
                     };
 
+<<<<<<< Updated upstream
+=======
+                    }
+                    LOGS.logInfo(chatId, `Showtime info: ${JSON.stringify(selection)}`);
+                    sessionToMutate.bookingInfo.ticketing.push(selection);
+>>>>>>> Stashed changes
                 }
                 LOGS.logInfo(chatId, `Showtime info: ${JSON.stringify(selection)}`);
                 sessionToMutate.bookingInfo.ticketing.push(selection);

@@ -1,10 +1,19 @@
 const { addDays } = require('date-fns');
+<<<<<<< Updated upstream:route/handlers/productQuery/movie/availability.js
 const makeDateTimePhrase = require('../../../../@util/makeDateTimePhrase');
 const mapDateTime = require('../../../../@util/mapDateTime');
 const { SEC_STATUS } = require('../../../../@global/CONSTANTS');
 const { COLLECTIONS } = require('../../../../@global/COLLECTIONS');
 const LOGS = require('../../../../@global/LOGS');
 const post = require('../../../../_telegram/post');
+=======
+const makeDateTimePhrase = require('../../../@util/makeDateTimePhrase');
+const mapDateTime = require('../../../@util/mapDateTime');
+const { SEC_STATUS } = require('../../../@global/CONSTANTS');
+const { COLLECTIONS } = require('../../../@global/COLLECTIONS');
+const LOGS = require('../../../@global/LOGS');
+const post = require('../../../_telegram/post');
+>>>>>>> Stashed changes:route/handlers/productQuery/movie.js
 
 module.exports = async function movieAvailability(extractedInfo, sessionToMutate) {
     LOGS.logInfo(sessionToMutate.chatId, '-----checking movie availability-----');
