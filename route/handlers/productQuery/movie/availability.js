@@ -1,10 +1,10 @@
 const { addDays } = require('date-fns');
-const makeDateTimePhrase = require('../../../@util/makeDateTimePhrase');
-const mapDateTime = require('../../../@util/mapDateTime');
-const { SEC_STATUS } = require('../../../@global/CONSTANTS');
-const { COLLECTIONS } = require('../../../@global/COLLECTIONS');
-const LOGS = require('../../../@global/LOGS');
-const post = require('../../../_telegram/post');
+const makeDateTimePhrase = require('../../../../@util/makeDateTimePhrase');
+const mapDateTime = require('../../../../@util/mapDateTime');
+const { SEC_STATUS } = require('../../../../@global/CONSTANTS');
+const { COLLECTIONS } = require('../../../../@global/COLLECTIONS');
+const LOGS = require('../../../../@global/LOGS');
+const post = require('../../../../_telegram/post');
 
 module.exports = async function movieAvailability(extractedInfo, sessionToMutate) {
     LOGS.logInfo(sessionToMutate.chatId, '-----checking movie availability-----');
@@ -14,7 +14,7 @@ module.exports = async function movieAvailability(extractedInfo, sessionToMutate
     let text = '';
     if (movie === null) throw `${__filename} | movie ${extractedInfo.movie} not found in db`;
     if (movie.debutDateTime > latestDate) {
-        const debutDate = mapDateTime(movie.debutDateTime, currentSession.bookingInfo.dateTime.sessionStartedAt);
+        const debutDate = mapDateTime(movie.debutDateTime, sessionToMutate.bookingInfo.dateTime.sessionStartedAt);
         const ticketAvailableDate = addDays(debutDate, -7);
         LOGS.logInfo(sessionToMutate.chatId, `requested movie is upcoming. Debut date: ${debutDate.toLocaleDateString()}`);
 
@@ -38,6 +38,6 @@ module.exports = async function movieAvailability(extractedInfo, sessionToMutate
         sessionToMutate.payload.movie.isBlockBuster = movie.isBlockBuster;
     }
 
-    await post.sendMessage(currentSession.chatId, text);
+    await post.sendMessage(sessionToMutate.chatId, text);
 
 }

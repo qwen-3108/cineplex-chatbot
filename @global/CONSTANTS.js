@@ -92,7 +92,8 @@ module.exports = {
                 SELF: 'movie',
                 AVAILABLE: { SELF: 'available' },
                 IS_BLOCKBUSTER: { SELF: 'isBlockBuster' },
-                PRICE: { SELF: 'price' }
+                PRICE: { SELF: 'price' },
+                SHOWTIME: { SELF: 'showtime' },
             }
         },
         FAQ: {
