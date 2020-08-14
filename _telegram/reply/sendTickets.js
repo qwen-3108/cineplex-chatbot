@@ -13,7 +13,7 @@ module.exports = async function sendTickets(chat_id, ticketBuffers) {
         try {
             await post.sendPhoto(formData);
             fs.unlinkSync(`#asset/image/e_ticket/${chat_id}_${i}.png`);
-            logInfo(`#asset/image/e_ticket/${chat_id}_${i}.png was deleted`);
+            logInfo(chat_id, `#asset/image/e_ticket/${chat_id}_${i}.png was deleted`);
 
         } catch (err) {
             axiosErrorCallback(chat_id, err);

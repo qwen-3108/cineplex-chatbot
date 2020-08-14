@@ -5,7 +5,7 @@ const LOGS = require('../../../../@global/LOGS');
 const mutateSeatNumbers = require('./helpers/mutateSeatNumbers');
 const assignAndValidateSeats = require('./helpers/assignAndValidateSeats');
 const alertMultipleShowtimes = require('../../../../_telegram/reply/alertMultipleShowtimes');
-const toEditSeatReq = require('../../../../_telegram/reply/toEditSeatReq');
+const reply = require('../../../../_telegram/reply');
 
 module.exports = async function seat({ text, intentArr, extractedInfo, sessionToMutate }) {
 
@@ -37,7 +37,7 @@ module.exports = async function seat({ text, intentArr, extractedInfo, sessionTo
                     main: MAIN_STATUS.CHOOSE_SEAT,
                     secondary: SEC_STATUS.MODIFY_SEAT
                 };
-                await toEditSeatReq(sessionToMutate.chatId, text, intentArr[3]);
+                await reply.toEditSeatReq(sessionToMutate.chatId, text, intentArr[3]);
             }
             break;
         default:

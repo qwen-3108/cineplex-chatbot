@@ -5,6 +5,7 @@ const { TICKET } = require('../@global/CONSTANTS');
 const mapDateTime = require('./mapDateTime');
 
 module.exports = async function printTickets(savedTickets, bookingInfo) {
+    console.time('print-tickets');
     const { WIDTH, HEIGHT, LABEL_TEXTS, DETAIL_TEXTS, DISCLAIMER_LINE_1, DISCLAIMER_LINE_2 } = TICKET;
     const selected = bookingInfo.ticketing.filter(selection => selection.isSelected);
     if (selected.length !== 1) throw `Seating plan selected not unique in printTickets.js ${JSON.stringify(selected)}`;
@@ -74,6 +75,6 @@ module.exports = async function printTickets(savedTickets, bookingInfo) {
 
         ticketBuffers.push(ticketCanvas.toBuffer());
     }
-
+    console.timeEnd('print-tickets');
     return ticketBuffers;
 }

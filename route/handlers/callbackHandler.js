@@ -74,7 +74,7 @@ module.exports = async function onCallback({ data, inline_message_id, sessionToM
                 }
                 //#3a: if seat number exists in payload, use that directly
                 LOGS.logInfo(chatId, `payload: ${sessionToMutate.payload}`);
-                if (sessionToMutate.payload.seatNumber.length != 0) {
+                if (sessionToMutate.payload.seatNumber.length !== 0) {
                     LOGS.logInfo(chatId, `payload contains seatNumber, using ${sessionToMutate.payload.seatNumber} as seat number`);
                     const text = '';
                     const extractedInfo = {};

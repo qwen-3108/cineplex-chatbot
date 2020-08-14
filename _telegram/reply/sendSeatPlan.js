@@ -19,7 +19,7 @@ module.exports = async function sendSeatPlan({ chat_id, bookingInfo, seatingPlan
 
     //#2: form field: reply_markup, add button if not the first seat plan sent
     if (bookingInfo.ticketing.length > 1) {
-        logInfo('Seating plan has button');
+        logInfo(chat_id, 'Seating plan has button');
         const reply_markup = { inline_keyboard: [[{ text: '📍 Choose seats', callback_data: `uSId =${scheduleId}=` }]] };
         formData.append('reply_markup', JSON.stringify(reply_markup));
     }
@@ -33,7 +33,7 @@ module.exports = async function sendSeatPlan({ chat_id, bookingInfo, seatingPlan
     const mappedDate = mapDateTime(dateTime, bookingInfo.dateTime.sessionStartedAt);
     const experienceStr = isPlatinum ? '\n💎 (Platinum Movie Suites)' : '';
     const caption = `*${movie.title}*\n☁️ ${format(mappedDate, 'd MMMM yyyy (E)')}, ${format(mappedDate, 'h aa')}\n🎥 ${cinema}${experienceStr}\n\`last updated: ${format(new Date(), 'yyyy-MM-dd HH:mm')}\``;
-    logInfo('caption: ', caption.split('\n').join(' '));
+    logInfo(chat_id, `caption: '${caption.split('\n').join(' ')}`);
     formData.append('caption', caption);
 
     //posting
