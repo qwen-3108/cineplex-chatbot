@@ -222,3 +222,4 @@ function successful_payment(chatId) {
         }
     });
 }
+
