@@ -1,4 +1,3 @@
-const { addDays } = require('date-fns');
 const mapDateTime = require("./mapDateTime");
 const makeDateTimePhrase = require("./makeDateTimePhrase");
 
@@ -12,21 +11,19 @@ module.exports = function makeInlineQueryInput(alternativeQuery, bookingInfo) {
         switch (prop) {
             case '$or': {
                 let date = { start: null, end: null };
-                const { daysToDbDate } = bookingInfo.dateTime;
                 const [week1, week2] = alternativeQuery.$or;
                 const week1Start = week1.dateTime.$gte;
-                const week1End = week1.dateTime.$lte;
-                const week2Start = week2.dateTime.$gte;
                 const week2End = week2.dateTime.$lte;
-                date.start = week1Start.getDay() === 0 ? addDays(week2Start, daysToDbDate) : addDays(week1Start, daysToDbDate);
-                date.end = week1Start.getDay() === 0 ? addDays(week1End, daysToDbDate + 7) : addDays(week2End, daysToDbDate + 7);
+                date.start = mapDateTime(week1Start, bookingInfo.dateTime.sessionStartedAt);
+                date.end = mapDateTime(week2End, bookingInfo.dateTime.sessionStartedAt);
+                date.sessionStartedAt = bookingInfo.dateTime.sessionStartedAt;
                 alternativeSearchStr.push(makeDateTimePhrase(date));
             }
             case 'dateTime': {
                 const { $gte, $lte } = alternativeQuery.dateTime;
                 const start = mapDateTime($gte, bookingInfo.dateTime.sessionStartedAt);
                 const end = mapDateTime($lte, bookingInfo.dateTime.sessionStartedAt);
-                const dateTimeSearchStr = makeDateTimePhrase({ start, end });
+                const dateTimeSearchStr = makeDateTimePhrase({ start, end, sessionStartedAt: bookingInfo.dateTime.sessionStartedAt });
                 alternativeSearchStr.push(dateTimeSearchStr);
             }
             case 'isPlatinum':

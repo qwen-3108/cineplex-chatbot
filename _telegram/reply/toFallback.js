@@ -1,4 +1,5 @@
 const { MAIN_STATUS } = require('../../@global/CONSTANTS');
+const Phrases = require('../../@global/PHRASES');
 const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 const post = require('../post');
 
@@ -18,28 +19,32 @@ module.exports = async function toFallback({ chat_id, currentSession }) {
     if (counter.fallbackCount === 1) {
         switch (status.main) {
             case MAIN_STATUS.PROMPT_MOVIE:
-                text = "Hmm I don't get you? To see the full list of now showing movie, type \n\`@cathay_sg_bot now showing\`";
+                text = Phrases.DONT_UNDERSTAND() + "To see the full list of now showing movie, type \n\`@cathay_sg_bot now showing\`";
                 break;
             case MAIN_STATUS.PROMPT_DATETIME:
                 text = "Um that does not sound like a date? You can say phrases like 'this evening', 'Tuesday', or 'tonight' to let me know when you'd like to watch the movie";
                 break;
             case MAIN_STATUS.GET_CINEMA:
-                text = "I'm sorry? What's the cinema or area you prefer again?";
+                text = Phrases.DONT_UNDERSTAND() + "What's the cinema or area you prefer again? :)";
                 break;
             case MAIN_STATUS.GET_CINEMA_TIME_EXP:
             case MAIN_STATUS.GET_TIME_EXP:
+                text = Phrases.DONT_UNDERSTAND() + `If you'd still like to get tickets for ${bookingInfo.movie.title} ${makeDateTimePhrase(bookingInfo.dateTime)}, kindly tap the 'Showtime' button and pick one from the list :)`;
+                break;
             case MAIN_STATUS.GET_EXP:
-                text = `Sur- Sorry, what? If you'd still like to get tickets for ${bookingInfo.movie.title} ${makeDateTimePhrase(bookingInfo.dateTime)}, please pick one from the list in 'Showtime' button so we can move on to choosing the seats`;
+                text = Phrases.DONT_UNDERSTAND() + "Do you prefer the regular or platinum showtime? :)";
                 break;
             case MAIN_STATUS.CHOOSE_SEAT:
                 if (bookingInfo.ticketing.length > 1 && bookingInfo.ticketing.every(selection => !selection.isSelected)) {
-                    text = "I think I missed that. If you've decided which showtime to go, use its 'Pick Seat' button to let me know and we'll start choosing seats'"
+                    text = "I think I missed that. If you've decided which showtime to go, kindly tap its 'Choose Seat' button so I know how to proceed :)"
                 } else {
                     text = "I think I missed that. What's your preferred seat again? Let me know the seat numbers or range, like 'H1 to H4'"
                 }
                 break;
+            case MAIN_STATUS.CONFIRM_PROCEED:
+            case MAIN_STATUS.CONFIRM_DETAILS:
             case MAIN_STATUS.AWAIT_PAYMENT:
-                text = "Sorry...? If you wish to edit your order, simply let me know what movie/time/place you'd like to switch to :)";
+                text = Phrases.DONT_UNDERSTAND() + "If you change your mind, just let me know the new movie/time/place you are considering :)";
                 break;
             case MAIN_STATUS.COMPLETE:
             case MAIN_STATUS.CANCELLED:

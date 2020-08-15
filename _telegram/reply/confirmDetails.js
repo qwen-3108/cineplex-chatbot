@@ -14,7 +14,7 @@ module.exports = async function confirmDetails(chat_id, bookingInfo) {
     const experienceStr = isPlatinum ? 'platinum ' : '';
     const ticketStr = seatNumbers.length > 1 ? 'tickets' : 'ticket';
     const seatStr = seatNumbers.length > 1 ? 'seats' : 'seat';
-    const text = `Great! So ${seatNumbers.length} ${experienceStr}movie ${ticketStr} for ${movie.title} ${makeDateTimePhrase({ start: mappedDate, end: mappedDate })} at ${cinema}, ${seatStr} ${makeSeatNumPhrase(bookingInfo.seatNumbers)}. ${Phrases.DOUBLE_CHECK()}`
+    const text = `Great! So ${seatNumbers.length} ${experienceStr}movie ${ticketStr} for ${movie.title} ${makeDateTimePhrase(mappedDate, { sessionStartedAt: bookingInfo.dateTime.sessionStartedAt })} at ${cinema}, ${seatStr} ${makeSeatNumPhrase(bookingInfo.seatNumbers)}. ${Phrases.DOUBLE_CHECK()}`
 
     await post.sendMessage(chat_id, text);
 

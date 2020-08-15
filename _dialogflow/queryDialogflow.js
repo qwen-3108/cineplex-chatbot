@@ -96,7 +96,7 @@ function extendNightRange(dateTimeObj) {
         throw `Custom error IN extendNightRange: startTime - ${startTime}, endTime - ${endTime} not NIGHT`;
     } else {
         newStartDateTime = addHours(startDateTime, 2);
-        newEndDateTime = addHours(endDateTime, 7);
+        newEndDateTime = addHours(endDateTime, 6);
         return ({ startDateTime: newStartDateTime.toString(), endDateTime: newEndDateTime.toString() });
     }
 }

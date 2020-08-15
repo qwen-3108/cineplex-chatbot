@@ -136,7 +136,7 @@ describe('main flow', () => {
         expect(logErrorSpy).not.toHaveBeenCalledWith(process.env.MY_CHAT_ID, '-----! Error-----');
         logErrorSpy.mockClear();
     });
-    test('& should ask for date/time', async done => {
+    test('& ask user any day before max date works', async done => {
         fs.appendFileSync(`./#test/noBreak/debug_slotFilling.txt`, '12\n');
         expect(invalidDateTimeSpy).toHaveBeenCalled();
         expect(await invalidDateTimeSpy.mock.results[0].value).toBe('totalExceed');
@@ -157,7 +157,7 @@ describe('main flow', () => {
         expect(logErrorSpy).not.toHaveBeenCalledWith(process.env.MY_CHAT_ID, '-----! Error-----');
         logErrorSpy.mockClear();
     });
-    test('& should ask for date/time', async done => {
+    test('& suggest to provide showtimes within range', async done => {
         fs.appendFileSync(`./#test/noBreak/debug_slotFilling.txt`, '15\n');
         expect(invalidDateTimeSpy).toHaveBeenCalled();
         expect(await invalidDateTimeSpy.mock.results[0].value).toBe('partialExceed');
@@ -178,7 +178,7 @@ describe('main flow', () => {
         expect(logErrorSpy).not.toHaveBeenCalledWith(process.env.MY_CHAT_ID, '-----! Error-----');
         logErrorSpy.mockClear();
     });
-    test('& should ask for date/time', async done => {
+    test('& suggest to provide showtimes within range', async done => {
         fs.appendFileSync(`./#test/noBreak/debug_slotFilling.txt`, '18\n');
         expect(invalidDateTimeSpy).toHaveBeenCalled();
         expect(await invalidDateTimeSpy.mock.results[0].value).toBe('partialExceed');
@@ -199,7 +199,7 @@ describe('main flow', () => {
         expect(logErrorSpy).not.toHaveBeenCalledWith(process.env.MY_CHAT_ID, '-----! Error-----');
         logErrorSpy.mockClear();
     });
-    test('& should show available showtimes', async done => {
+    test('& should get cinema/place', async done => {
         fs.appendFileSync(`./#test/noBreak/debug_slotFilling.txt`, '21\n');
         expect(getCinemaSpy).toHaveBeenCalled();
         getCinemaSpy.mockClear();
@@ -219,7 +219,7 @@ describe('main flow', () => {
         expect(logErrorSpy).not.toHaveBeenCalledWith(process.env.MY_CHAT_ID, '-----! Error-----');
         logErrorSpy.mockClear();
     });
-    test('& should ask for cinema/place', async done => {
+    test('& should show available showtimes', async done => {
         fs.appendFileSync(`./#test/noBreak/debug_slotFilling.txt`, '24\n');
         expect(getExactSlotSpy).toHaveBeenCalled();
         getExactSlotSpy.mockClear();

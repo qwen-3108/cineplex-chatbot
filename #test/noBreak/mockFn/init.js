@@ -6,7 +6,7 @@ module.exports = async function init() {
     if (sessionInDb === null) {
 
         this.sessionInfo = {
-            startedAt: new Date('2020-08-08T09:00:00+08:00'),
+            startedAt: new Date('2020-08-15T09:00:00+08:00'), //the most recent saturday
             lastUpdated: null,
             endedAt: null
         };

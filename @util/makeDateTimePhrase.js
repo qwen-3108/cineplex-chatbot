@@ -1,82 +1,240 @@
-const { differenceInCalendarDays, format } = require('date-fns');
+const { addDays, differenceInCalendarDays, format, differenceInHours } = require("date-fns");
 
-module.exports = function makeDateTimePhrase(dateTime) {
+//input: Date | { start: Date, end: Date, sessionStartedAt: Date } **can only pass single Date when it comes from db
+//additionalInfo: { sessionStartedAt:Date, includeTimePhrase: Bool }
+module.exports = function makeDateTimePhrase(input, additionalInfo) {
 
-    const { start, end, sessionStartedAt } = dateTime;
-    const startDay = start.getDay();
-    const endDay = end.getDay();
-    const startTime = start.getHours();
-    const endTime = end.getHours();
+    let sessionStartedAt;
+    let includeTimePhrase = true;
 
-    let dateStr = '';
-    let timeStr = '';
-    let diffInCalendarDays = differenceInCalendarDays(start, sessionStartedAt);
-    let dateTimeStr = '';
-
-    if (startDay !== endDay) {
-        if (startDay === 6 && endDay === 0 && startTime === 0 && endTime === 23) {
-            dateTimeStr = diffInCalendarDays < 7 ? 'this weekend ' : 'next weekend ';
-            dateTimeStr += `(${format(start, 'd')}-${format(end, 'd MMM')})`;
-            return dateTimeStr;
+    if (additionalInfo !== undefined) {
+        if (additionalInfo.sessionStartedAt instanceof Date) {
+            sessionStartedAt = additionalInfo.sessionStartedAt;
+        } else if (!input.sessionStartedAt instanceof Date) {
+            throw `invalid sessionStartedAt passed to makeDateTimePhrase, please ensure it is either passed along in dateTimeObj or as key in additional info`;
         } else {
-            if (startDay > endDay && startTime === 0 && endTime === 23) {
-                return `from ${format(start, 'EEEE')} to coming ${format(end, 'EEEE')}`;
-            } else {
-                return `from ${format(start, 'EEEE')} to ${format(end, 'EEEE')}`;
-            }
+            sessionStartedAt = input.sessionStartedAt;
         }
-    }
 
-    //decide timeStr
-    if (startTime === 0 && endTime === 23) {
-        //only date: do nth
-    } else if (startTime === endTime) {
-        //exact time given
-        timeStr = 'at ' + format(start, 'h aaaa');
+        if (additionalInfo.includeTimePhrase !== undefined) {
+            includeTimePhrase = additionalInfo.includeTimePhrase;
+        }
+
     } else {
-        //time range
-        if (startTime === 5 && endTime === 11) {
-            timeStr = 'morning';
-        } else if (startTime === 12 && endTime === 17) {
-            timeStr = 'afternoon';
-        } else if (startTime === 17 && endTime === 23) {
-            timeStr = 'evening';
-        } else if (startTime === 19 && endTime === 6) {
-            timeStr = 'night';
+        if (!input.sessionStartedAt instanceof Date) {
+            throw `invalid sessionStartedAt ${input.sessionStartedAt} passed to makeDateTimePhrase`;
         } else {
-            const endStr = endTime === 23 && end.getMinutes() === 59 ? 'midnight' : format(end, 'h aaaa');
-            timeStr = 'from ' + format(start, 'h aaaa') + ' to ' + endStr;
-            console.log(`timeStr ${timeStr}`);
+            sessionStartedAt = input.sessionStartedAt;
         }
     }
 
-    switch (diffInCalendarDays) {
-        case 0:
-            dateStr = (timeStr === 'morning' || timeStr === 'afternoon' || timeStr === 'evening') ? 'this' : 'today';
-            dateTimeStr = timeStr === 'night' ? 'tonight' : `${dateStr}${timeStr === '' ? '' : ' ' + timeStr}`;
-            break;
-        case 1:
-            dateStr = 'tomorrow';
-            dateTimeStr = `${dateStr}${timeStr === '' ? '' : ' ' + timeStr}`;
-            break;
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-            dateStr = format(start, 'EEEE (d/M)');
-            const daysToSun = [7 - sessionStartedAt.getDay()] % 7;
-            if (daysToSun !== 0 && diffInCalendarDays > daysToSun) {
-                dateTimeStr = `on next ${dateStr}${timeStr === '' ? '' : ' ' + timeStr}`;
+    //real operation begins
+
+    if (input.start instanceof Date && input.end instanceof Date) {
+
+        if (input.start.getHours() === input.end.getHours()) {
+
+            //for cases where user provide exact time, captured in bookingInfo and assigned
+            return makeDateTimePhrase(input.start, { sessionStartedAt, includeTimePhrase });
+
+        } else {
+
+            const timeDiff = differenceInHours(input.end, input.start);
+            if (timeDiff >= 48) {
+                //include time phrase or not is irrelevant because time will not be included in the first place
+                const startDateStatus = isThisNextWeekOrMore(input.start, sessionStartedAt);
+                const endDateStatus = isThisNextWeekOrMore(input.end, sessionStartedAt);
+                if (startDateStatus === 1 && endDateStatus === 1) { //both are next week date
+                    return `from next ${format(input.start, 'EEEE (d/M)')} to ${format(input.end, 'EEEE (d/M)')}`; //to eliminate weird output like from next wed to next fri
+                } else if (startDateStatus === 2 && endDateStatus === 2) {
+                    return `from ${format(input.start, 'MMMM d')} to ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
+                } else {
+                    let startDateStr = makeDateTimeStr(input.start, sessionStartedAt);
+                    if (!(/(?:today|tomorrow)/).test(startDateStr)) {
+                        startDateStr = startDateStr.slice(3);
+                    }
+                    let endDateStr = makeDateTimeStr(input.end, sessionStartedAt);
+                    if (!(/(?:today|tomorrow)/).test(endDateStr)) {
+                        endDateStr = endDateStr.slice(3);
+                    }
+                    return `from ${startDateStr} to ${endDateStr}`;
+                }
+
+            } else if (timeDiff >= 24 && timeDiff < 48) {
+
+                //include time phrase or not is irrelevant because time will not be included in the first place
+                const startDateStatus = isThisNextWeekOrMore(input.start, sessionStartedAt);
+                const isWeekend = input.start.getDay() === 6 && input.end.getDay() === 0;
+                switch (startDateStatus) {
+                    case 0:
+                        if (isWeekend) {
+                            return `this weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
+                        } else {
+                            return `on ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
+                        }
+                    case 1:
+                        if (isWeekend) {
+                            return `next weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
+                        } else {
+                            return `on next ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
+                        }
+                    case 2:
+                        return `on ${format(input.start, 'MMMM d')} and ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
+                    default:
+                        throw `Unexpected output ${dateStatus} from isThisNextWeekOrMore`;
+                }
+
             } else {
-                dateTimeStr = `on ${dateStr}${timeStr === '' ? '' : ' ' + timeStr}`;
+
+                if (!includeTimePhrase) {
+                    //can just take input.start since timeDiff <24 means is the same day, even though date might be diff in case like 'tomorrow night'
+                    //don't pass any timeStr to get output without time
+                    return makeDateTimeStr(input.start, sessionStartedAt);
+
+                } else {
+
+                    let timeStr;
+                    let wDuration = true;
+                    //is time duration (morning, afternoon, evening, night) or without time
+                    const startHour = input.start.getHours();
+                    const endHour = input.end.getHours();
+                    const endMinute = input.end.getMinutes();
+                    //full day
+                    if (startHour === 0 && endHour === 23 && endMinute === 59) {
+                        //let timeStr stay undefined and attach..Date is irrelevant
+                    } else if (startHour === 5 && endHour === 11 && endMinute === 59) {
+                        timeStr = 'morning';
+                    } else if (startHour === 12 && endHour === 17 && endMinute === 59) {
+                        timeStr = 'afternoon';
+                    } else if (startHour === 17 && endHour === 23 && endMinute === 59) {
+                        timeStr = 'evening';
+                    } else if (startHour === 19 && endHour === 5 && endMinute === 59) {
+                        timeStr = 'night';
+                    } else {
+                        const startTimeStr = makeIndividualTimeStr(input.start).slice(3);
+                        const endTimeStr = makeIndividualTimeStr(input.end).slice(3);
+                        timeStr = `from ${startTimeStr} to ${endTimeStr}`;
+                        wDuration = false; //special case to move timeStr to back
+                    }
+                    return makeDateTimeStr(input.start, sessionStartedAt, wDuration, timeStr);
+
+                }
             }
-            break;
-        default:
-            dateStr = format(start, 'd MMMM');
-            dateTimeStr = (timeStr === 'morning' || timeStr === 'afternoon' || timeStr === 'evening') ? `on the ${timeStr} of ${dateStr}` : `on ${dateStr}${timeStr === '' ? '' : ' ' + timeStr}`;
+
+        }
+
+    } else if (input instanceof Date) {
+
+        //exact time, could be from user input or showtimes in db
+        const timeStr = includeTimePhrase ? makeIndividualTimeStr(input) : undefined;
+        //pass undefined to timeStr option to get output without time
+        return makeDateTimeStr(input, sessionStartedAt, false, timeStr);
+
+    } else {
+
+        throw `Invalid input ${input} to makeDateTimePhrase`;
+
     }
-    console.log(`Making dateTime phrase... input: ${JSON.stringify(dateTime)}  extracted: ${JSON.stringify({ startDay, endDay, startTime, endTime })}`);
-    return dateTimeStr;
+
 };
+
+/*----helper function-----*/
+
+function makeIndividualTimeStr(input) { //input: Date
+    if (input.getHours() === 12 && input.getMinutes() === 0) {
+        return 'at noon';
+    } else if ((input.getHours() === 0 && input.getMinutes() === 0) || (input.getHours() === 23 && input.getMinutes() === 59)) {
+        return 'at midnight';
+    } else {
+        return `at ${format(input, 'h aaaa')}`;
+    }
+}
+
+//input: Date
+//timeStr : "morning"/"evening" | "at 7 p.m." | "from 1 p.m. to 7 p.m."/"from tomorrow noon to midnight"
+function makeDateTimeStr(input, sessionStartedAt, wDuration = false, timeStr) {
+
+    const daysFromSessionStart = differenceInCalendarDays(input, sessionStartedAt);
+    let dateTimeStr;
+
+    if (daysFromSessionStart < 0) {
+
+        throw `daysFromSessionStart is negative: ${daysFromSessionStart}, check order of input to differenceInCalendarDays again`;
+
+    } else if (daysFromSessionStart === 0) {
+
+        if (timeStr === undefined) {
+            dateTimeStr = 'today';
+        } else if (wDuration) {
+            dateTimeStr = timeStr === 'night' ? 'tonight' : `this ${timeStr}`;
+        } else {
+            dateTimeStr = `today ${timeStr}`;
+        }
+
+    } else if (daysFromSessionStart === 1) {
+
+        if (timeStr === undefined) {
+            dateTimeStr = 'tomorrow';
+        } else {
+            dateTimeStr = `tomorrow ${timeStr}`;
+        }
+
+    } else {
+        //given daysToSessionStart > 1
+        const dateStatus = isThisNextWeekOrMore(input, sessionStartedAt);
+        let dateStr = format(input, 'EEEE (d/M)');
+        switch (dateStatus) {
+            case 0: //before coming sun, or coming sun itself when ask date not sun, don't need to add next
+                dateTimeStr = timeStr === undefined ? `on ${dateStr}` : `on ${dateStr} ${timeStr}`;
+                break;
+            case 1: //before coming coming sun, or coming sun itself when ask date is sun, add 'next'
+                dateTimeStr = timeStr === undefined ? `on next ${dateStr}` : `on next ${dateStr} ${timeStr}`;
+                break;
+            case 2: //coming coming sun & after, denote with date
+                dateStr = format(input, 'MMMM d (EEE)');
+                if (timeStr === undefined) {
+                    dateTimeStr = `on ${dateStr}`;
+                } else if (wDuration) {
+                    dateTimeStr = `on the ${timeStr} of ${dateStr}`;
+                } else {
+                    dateTimeStr = `on ${dateStr} ${timeStr}`;
+                }
+                break;
+            default:
+                throw `Unexpected output ${dateStatus} from isThisNextWeekOrMore`;
+        }
+
+    }
+
+    return dateTimeStr;
+
+}
+
+function isThisNextWeekOrMore(input, sessionStartedAt) {
+
+    const daysToSun = (7 - sessionStartedAt.getDay());
+    const comingSun = addDays(sessionStartedAt, daysToSun);
+    const nextSun = addDays(sessionStartedAt, daysToSun + 7);
+
+    let dateStatus;
+
+    if (sessionStartedAt.getDay() !== 0 && differenceInCalendarDays(input, comingSun) <= 0) {
+        dateStatus = 0;
+    } else if (sessionStartedAt.getDay() === 0 && differenceInCalendarDays(input, comingSun) < 0) {
+        dateStatus = 0;
+    } else if (sessionStartedAt.getDay() === 0 && differenceInCalendarDays(input, comingSun) === 0) {
+        dateStatus = 1;
+    } else if (differenceInCalendarDays(input, comingSun) > 0 && differenceInCalendarDays(input, nextSun) < 0) {
+        dateStatus = 1;
+    } else if (differenceInCalendarDays(input, nextSun) >= 0) {
+        dateStatus = 2;
+    } else {
+        console.log(input, sessionStartedAt, comingSun, nextSun);
+        console.log(differenceInCalendarDays(input, comingSun));
+        console.log(differenceInCalendarDays(input, nextSun));
+        throw `Unable to decide dateStatus`;
+    }
+
+    return dateStatus;
+
+}

@@ -9,7 +9,7 @@ module.exports = async function getSeats(chat_id, bookingInfo) {
     const mappedDate = mapDateTime(dateTime, bookingInfo.dateTime.sessionStartedAt);
     const ticketStr = isPlatinum ? 'Platinum tickets' : 'Tickets';
 
-    const text = `Got it. ${ticketStr} for ${movie.title} ${makeDateTimePhrase({ start: mappedDate, end: mappedDate })} at ${cinema}. What are your preferred seats?`;
+    const text = `Got it. ${ticketStr} for ${movie.title} ${makeDateTimePhrase(mappedDate, { sessionStartedAt: bookingInfo.dateTime.sessionStartedAt })} at ${cinema}. What are your preferred seats?`;
     await post.sendMessage(chat_id, text);
 
 }

@@ -4,8 +4,6 @@ const testCase = require('./testCase');
 const mapDateTime = require('../../mapDateTime');
 const decideMaxDate = require('../../decideMaxDate');
 const decideMaxDatePhrase = require('../../decideMaxDatePhrase');
-const makeDbQuery = require('../../makeDbQuery');
-const makeDateTimePhrase = require('../../makeDateTimePhrase');
 
 describe('dateHandling', () => {
 
@@ -20,14 +18,6 @@ describe('dateHandling', () => {
         });
     });
 
-    describe('.makeDbQuery', () => {
-        test.each(testCase.makeDbQuery)('%s', (description) => {
-            //execute
-
-            //assert
-        });
-    });
-
     describe('.mapDateTime', () => {
         test.each(testCase.mapDateTime)('%s', (description, sessionStartedAt, dateToMap, expectedMappedDate) => {
             //execute
@@ -36,10 +26,5 @@ describe('dateHandling', () => {
             expect(mappedDate).toEqual(expectedMappedDate);
         });
     });
-
-    describe('.makeDateTimePhrase', () => {
-
-    });
-
 
 });

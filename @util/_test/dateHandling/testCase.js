@@ -33,10 +33,6 @@ module.exports = {
 
     ],
 
-    makeDbQuery: [
-        []
-    ],
-
     mapDateTime: [
         ['day > nextWeekAreDaysLessThan --> should NOT add extra 7 days',
             new Date("2020-08-12T12:00:00+08:00"),
@@ -55,21 +51,6 @@ module.exports = {
             new Date("2020-08-12T12:00:00+08:00"),
             new Date("2020-05-25T10:00:00+08:00"),
             new Date("2020-08-17T10:00:00+08:00")]
-    ],
-
-    makeDateTimePhrase: [],
-
-    integration: [
-        //startedAt | request date by day diff
-        [new Date("2020-08-09T00:00:00+08:00")],
-        [new Date("2020-08-09T00:03:00+08:00")],
-        [new Date("2020-08-09T00:06:00+08:00")],
-        [new Date("2020-08-09T00:09:00+08:00")],
-        [new Date("2020-08-09T00:12:00+08:00")],
-        [new Date("2020-08-09T00:15:00+08:00")],
-        [new Date("2020-08-09T00:18:00+08:00")],
-        [new Date("2020-08-09T00:21:00+08:00")]
-
     ]
 
 };

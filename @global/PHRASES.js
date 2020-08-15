@@ -80,5 +80,14 @@ module.exports = {
             'What do you think?'
         ];
         return phraseBank[Math.floor(Math.random() * phraseBank.length)];
+    },
+    DONT_UNDERSTAND: function () {
+        const phraseBank = [
+            "Hm I don't get you? ",
+            "I'm sorry? ",
+            "Sorry I don't get you. ",
+            "I don't quite get that. "
+        ];
+        return phraseBank[Math.floor(Math.random() * phraseBank.length)];
     }
 };
