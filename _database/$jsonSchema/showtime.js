@@ -3,8 +3,7 @@ const { SEAT_STATUS } = require('../../@global/CONSTANTS');
 
 const showtime = {
     bsonType: "object",
-    minProperties: 9,
-    additionalProperties: false,
+    maxProperties: 9,
     properties: {
         _id: { bsonType: "objectId" },
         cinema: { bsonType: "string" },
