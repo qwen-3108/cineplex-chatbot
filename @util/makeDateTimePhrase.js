@@ -6,6 +6,7 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
 
     let sessionStartedAt;
     let includeTimePhrase = true;
+    console.log('making date time phrase, input: ', JSON.stringify(input));
 
     if (additionalInfo !== undefined) {
         if (additionalInfo.sessionStartedAt instanceof Date) {
@@ -35,11 +36,13 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
         if (input.start.getHours() === input.end.getHours()) {
 
             //for cases where user provide exact time, captured in bookingInfo and assigned
+            console.log('date.start = date.end, recalling make date time phrase with single date');
             return makeDateTimePhrase(input.start, { sessionStartedAt, includeTimePhrase });
 
         } else {
 
             const timeDiff = differenceInHours(input.end, input.start);
+            console.log('timeDiff between date.start & date.end ', timeDiff);
             if (timeDiff >= 48) {
                 //include time phrase or not is irrelevant because time will not be included in the first place
                 const startDateStatus = isThisNextWeekOrMore(input.start, sessionStartedAt);

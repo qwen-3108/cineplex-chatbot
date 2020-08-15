@@ -5,6 +5,9 @@ const { addDays } = require('date-fns');
 const mapDateTime = require('../../../../@util/mapDateTime');
 
 module.exports = async function movieShowtime(extractedInfo, sessionToMutate) {
+
+    //um.. okay, what's the showtimes of tenet?
+
     LOGS.logInfo(sessionToMutate.chatId, '-----checking movie showtime-----');
 
     const movie = await COLLECTIONS.movies.findOne({ title: extractedInfo.movie }, { projection: { title: 1, debutDateTime: 1, isBlockBuster: 1 } });

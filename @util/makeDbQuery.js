@@ -32,11 +32,17 @@ module.exports = function makeDbQuery(bookingInfo) {
 
         //if day is today, trim away time before ask time
         if (isToday) {
-            console.log('isToday, trimming start time');
+            console.log('isToday');
             console.log(`Enquiry hour: ${sessionStartedAt.getHours()}`);
-            const sessionStartTime = sessionStartedAt.getHours();
-            adjustedStart = new Date(start);
-            adjustedStart.setHours(sessionStartTime);
+            if (dateTime.start < sessionStartedAt) {
+                console.log('dateTime.start is before sessionStartedAt, trimming start time');
+                const sessionStartTime = sessionStartedAt.getHours();
+                adjustedStart = new Date(start);
+                adjustedStart.setHours(sessionStartTime);
+            } else {
+                console.log('dateTime.start is later than sessionStartedAt, no action required');
+                adjustedStart = new Date(start);
+            }
         } else {
             adjustedStart = new Date(start);
         }
