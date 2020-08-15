@@ -1,5 +1,5 @@
 const { DATES_IN_DB } = require('../@global/CONSTANTS');
-const { differenceInCalendarDays, addHours } = require('date-fns');
+const { differenceInCalendarDays, addHours, isSameWeek } = require('date-fns');
 const decideMaxDate = require('./decideMaxDate');
 
 module.exports = function makeDbQuery(bookingInfo) {
@@ -30,23 +30,21 @@ module.exports = function makeDbQuery(bookingInfo) {
         const isWholeDay = start.getDay() === end.getDay() && start.getHours() === 0 && end.getHours() === 23;
         const isToday = start.toDateString() === sessionStartedAt.toDateString();
 
-        //if ask for whole day, include time up till 6am of second day
-        if (isWholeDay) {
-            //if day is today, trim away time before ask time
-            if (isToday) {
-                console.log('isToday, trimming start time');
-                console.log(`Enquiry hour: ${sessionStartedAt.getHours()}`);
-                const sessionStartTime = sessionStartedAt.getHours();
-                adjustedStart = new Date(start);
-                adjustedStart.setHours(sessionStartTime);
-                adjustedEnd = addHours(end, 6);
-            } else {
-                adjustedStart = addHours(start, 6);
-                adjustedEnd = addHours(end, 6);
-            }
-
+        //if day is today, trim away time before ask time
+        if (isToday) {
+            console.log('isToday, trimming start time');
+            console.log(`Enquiry hour: ${sessionStartedAt.getHours()}`);
+            const sessionStartTime = sessionStartedAt.getHours();
+            adjustedStart = new Date(start);
+            adjustedStart.setHours(sessionStartTime);
         } else {
             adjustedStart = new Date(start);
+        }
+
+        //if ask for whole day, include time up till 6am of second day
+        if (isWholeDay) {
+            adjustedEnd = addHours(end, 6);
+        } else {
             adjustedEnd = new Date(end);
         }
 
@@ -63,28 +61,14 @@ module.exports = function makeDbQuery(bookingInfo) {
         //if startDay =/= endDay (e.g. weekend, night, adjusted whole day)
         const startDay = adjustedStart.getDay();
         const endDay = adjustedEnd.getDay();
-        if (dayDiff !== 0 && startDay > endDay) {
+        if (dayDiff > 0 && startDay >= endDay) {
             console.log("startDay > endDay, spliting query..");
-            // if (startDay !== endDay && startDay > endDay) {
-            let day = startDay;
-            const thisWeekArr = [day];
-            const nextWeekArr = [];
-            while ((day % 7) !== endDay) {
-                day += 1;
-                if (day % 7 < day) {
-                    nextWeekArr.push(day % 7);
-                } else {
-                    thisWeekArr.push(day % 7);
-                }
-            }
-            console.log(`thisWeekArr ${thisWeekArr}`);
-            console.log(`nextWeekArr ${nextWeekArr}`);
-            const thisWeekStartDateTime = new Date(DATES_IN_DB[thisWeekArr[0]]);
-            thisWeekStartDateTime.setHours(adjustedStart.getHours());
-            const thisWeekEndDateTime = new Date(DATES_IN_DB[thisWeekArr[thisWeekArr.length - 1]] + 'T23:59');
-            const nextWeekStartDateTime = new Date(DATES_IN_DB[nextWeekArr[0]] + 'T00:00');
-            const nextWeekEndDateTime = new Date(DATES_IN_DB[nextWeekArr[nextWeekArr.length - 1]]);
-            nextWeekEndDateTime.setHours(adjustedEnd.getHours());
+            const thisWeekStartDateTime = new Date(DATES_IN_DB[startDay]);
+            thisWeekStartDateTime.setHours(adjustedStart.getHours(), adjustedStart.getMinutes(), adjustedStart.getSeconds());
+            const thisWeekEndDateTime = new Date(DATES_IN_DB[6] + 'T23:59:59');
+            const nextWeekStartDateTime = new Date(DATES_IN_DB[0] + 'T00:00:00');
+            const nextWeekEndDateTime = new Date(DATES_IN_DB[endDay]);
+            nextWeekEndDateTime.setHours(adjustedEnd.getHours(), adjustedEnd.getMinutes(), adjustedEnd.getSeconds());
             dateTimeQuery = {
                 $or: [
                     { dateTime: { $gte: thisWeekStartDateTime, $lte: thisWeekEndDateTime } },
@@ -92,15 +76,10 @@ module.exports = function makeDbQuery(bookingInfo) {
                 ]
             };
 
-        } else if (dayDiff >= 7) {
-            console.log("dayDiff >= 7, no filter for dateTime");
-            // get the whole week
-            dateTimeQuery = {};
-
         } else {
             console.log("forming dateTime filter as usual");
             const dbStart = new Date(DATES_IN_DB[startDay]); dbStart.setHours(adjustedStart.getHours());
-            const dbEnd = new Date(DATES_IN_DB[endDay]); dbEnd.setHours(adjustedEnd.getHours());
+            const dbEnd = new Date(DATES_IN_DB[endDay]); dbEnd.setHours(adjustedEnd.getHours(), adjustedEnd.getMinutes(), adjustedEnd.getSeconds());
             dateTimeQuery = { dateTime: { $gte: dbStart, $lte: dbEnd } };
         }
     }

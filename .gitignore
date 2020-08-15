@@ -3,6 +3,7 @@ node_modules
 mock_data
 .eslintrc.json
 *.txt
+*.html
 development_aid
 connection_string.js
 box-office-clerk-nd9r-ffa6e5fc42fa.json

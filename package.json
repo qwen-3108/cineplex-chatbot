@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --detectOpenHandles /noBreak/ --runInBand",
+    "test": "jest --detectOpenHandles dateHandling --runInBand",
     "start": "node gcpCredGen.js && node server.js",
     "start_local": "set DB=cinemaDB&&nodemon server.js",
     "start_test": "set DB=testDB&& nodemon server.js"
