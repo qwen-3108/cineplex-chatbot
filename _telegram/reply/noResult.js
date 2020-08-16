@@ -17,7 +17,7 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
             replyMarkup = {
                 inline_keyboard: [[
                     {
-                        text: `Showtimes · ${movie.title}`,
+                        text: `Showtimes · ${bookingInfo.movie.title}`,
                         switch_inline_query_current_chat: makeInlineQueryInput(alternativeQuery, bookingInfo)
                     }]]
             };
@@ -28,14 +28,14 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
             replyMarkup = {
                 inline_keyboard: [[
                     {
-                        text: `Showtimes · ${movie.title}`,
+                        text: `Showtimes · ${bookingInfo.movie.title}`,
                         switch_inline_query_current_chat: makeInlineQueryInput(alternativeQuery, bookingInfo)
                     }]]
             };
             responseCodeforTesting = 'soldOut';
             break;
         case NO_RESULT_REASON.ALL_SOLD_OUT:
-            text = `Sorry, it seems like all showtimes for ${movie.title} are fully booked. New showtimes will be released on Wednesday, Thursday and Friday afternoon. Do check back if you are still interested. Meanwhile, let me know if there is anything else I can help :)`;
+            text = `Sorry, it seems like all showtimes for ${bookingInfo.movie.title} are fully booked. New showtimes will be released on Wednesday, Thursday and Friday afternoon. Do check back if you are still interested. Meanwhile, let me know if there is anything else I can help :)`;
             replyMarkup = { inline_keyboard: [[INLINE_KEYBOARD.MOVIE]] };
             responseCodeforTesting = 'allSoldOut';
             break;
