@@ -33,6 +33,8 @@ module.exports = {
             phraseBank = [''];
         } else if ((/(you have)/i).test(text)) {
             phraseBank = ['Yep. ', 'Yep, we do. '];
+        } else if ((/(?:perhaps|maybe)\syou can/)) {
+            phraseBank = ['Okay. '];
         } else {
             phraseBank = ['Okay. '];
         }
