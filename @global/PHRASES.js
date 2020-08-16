@@ -89,5 +89,13 @@ module.exports = {
             "I don't quite get that. "
         ];
         return phraseBank[Math.floor(Math.random() * phraseBank.length)];
+    },
+    PREFERENCE: function () {
+        const phraseBank = [
+            "Which would you prefer? ",
+            "Which works best for you?",
+            "Which is your choice?"
+        ];
+        return phraseBank[Math.floor(Math.random() * phraseBank.length)];
     }
 };

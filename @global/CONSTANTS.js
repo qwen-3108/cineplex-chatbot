@@ -93,7 +93,10 @@ module.exports = {
                 AVAILABLE: { SELF: 'available' },
                 IS_BLOCKBUSTER: { SELF: 'isBlockBuster' },
                 PRICE: { SELF: 'price' },
-                SHOWTIME: { SELF: 'showtime' },
+                SHOWTIME: {
+                    SELF: 'showtime',
+                    ANY: { SELF: 'any' }
+                },
             }
         },
         FAQ: {
@@ -158,6 +161,7 @@ module.exports = {
     },
     MAIN_STATUS: {
         NULL: null,
+        NARROW_SEARCH: 'narrow-search',
         PROMPT_MOVIE: 'prompt-movie',
         PROMPT_DATETIME: 'prompt-datetime',
         GET_CINEMA: 'get-cinema',

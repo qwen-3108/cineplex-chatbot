@@ -1,29 +1,51 @@
-const post = require('../../../../_telegram/post');
+const validateAndMutateInfo = require('../../service/book/helpers/validateAndMutateInfo');
+const translateShowtimes = require('./helpers/translateShowtimes');
+const reply = require('../../../../_telegram/reply');
 const LOGS = require('../../../../@global/LOGS');
-const { COLLECTIONS } = require('../../../../@global/COLLECTIONS');
-const { addDays } = require('date-fns');
-const mapDateTime = require('../../../../@util/mapDateTime');
+const { INTENT, MAIN_STATUS } = require('../../../../@global/CONSTANTS');
+const SHOWTIME = INTENT.PRODUCT_QUERY.MOVIE.SHOWTIME;
 
-module.exports = async function movieShowtime(extractedInfo, sessionToMutate) {
+module.exports = async function showtime({ text, intentArr, extractedInfo, sessionToMutate }) {
 
     //um.. okay, what's the showtimes of tenet?
+    LOGS.logInfo(sessionToMutate.chatId, '-----showtime triggered-----');
+    LOGS.logInfo(sessionToMutate.chatId, `showtime subintent: ${intentArr[3]}`);
 
-    LOGS.logInfo(sessionToMutate.chatId, '-----checking movie showtime-----');
-
-    const movie = await COLLECTIONS.movies.findOne({ title: extractedInfo.movie }, { projection: { title: 1, debutDateTime: 1, isBlockBuster: 1 } });
-    const latestDate = addDays(new Date('2020-05-17T23:59'), 7);
-
-    if (movie === null) throw `${__filename} | movie ${extractedInfo.movie} not found in db`;
-
-    let text = '';
-    if (movie.debutDateTime > latestDate) {
-        const mappedDebutDate = mapDateTime(movie.debutDateTime, sessionToMutate.bookingInfo.dateTime.sessionStartedAt);
-        text = `The showtime of ${movie.title} is not available yet... It debuts only at ${mappedDebutDate.toLocaleDateString()}. `;
-        await post.sendMessage(sessionToMutate.chatId, text);
-    } else {
-        text = `Just tap the button below to view the showtimes of ${movie.title}. This button simply shows the result of '@cathay_sg_bot ${movie.title}'. To filter the showtimes, you could also type your preferred date and place, e.g. '@cathay_sg_bot ${movie.title} tomorrow JEM' :)`;
-        const replyMarkup = { inline_keyboard: [[{ text: 'Showtime', switch_inline_query_current_chat: `${movie.title}` }]] };
-        await post.sendMessage(sessionToMutate.chatId, text, { replyMarkup });
+    switch (intentArr[3]) {
+        case undefined:
+            {
+                const { ok } = await validateAndMutateInfo({ extractedInfo, sessionToMutate });
+                if (ok) {
+                    const { chatId, bookingInfo } = sessionToMutate;
+                    if (bookingInfo.movie.id === null) {
+                        throw `No movie in bookingInfo, should not match productQuery.movie.showtime intent`;
+                    }
+                    if (bookingInfo.dateTime.start === null) {
+                        LOGS.logInfo(chatId, 'search range too wide, attempt to narrow by asking user follow up questions');
+                        sessionToMutate.status.main = MAIN_STATUS.NARROW_SEARCH;
+                        await reply.narrowSearch(chatId, bookingInfo);
+                    } else {
+                        LOGS.logInfo(chatId, 'reasonable search range, retrieving showtimes for user');
+                        await translateShowtimes({ text, sessionToMutate });
+                    }
+                }
+            }
+            break;
+        case SHOWTIME.ANY.SELF:
+            {
+                LOGS.logInfo('user request all showtimes');
+                const { chatId, bookingInfo } = sessionToMutate;
+                const reply = `Okay. Here are all the showtimes for ${bookingInfo.movie.title}. You can type in time/place as you view to filter the showtimes. I'll be back when you've made your choice :)`
+                const replyMarkup = {
+                    inline_keyboard: [
+                        [{ text: `Showtimes · ${bookingInfo.movie.title}`, switch_inline_query_current_chat: bookingInfo.movie.title }]
+                    ]
+                };
+                await post.sendMessage(chatId, reply, { replyMarkup });
+            }
+            break;
+        default:
+            throw `Unrecognized product query sub intent ${intentArr[3]}`;
     }
 
 }

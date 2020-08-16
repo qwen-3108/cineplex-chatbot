@@ -6,6 +6,7 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
 
     let sessionStartedAt;
     let includeTimePhrase = true;
+    let lite = false;
     console.log('making date time phrase, input: ', JSON.stringify(input));
 
     if (additionalInfo !== undefined) {
@@ -19,6 +20,10 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
 
         if (additionalInfo.includeTimePhrase !== undefined) {
             includeTimePhrase = additionalInfo.includeTimePhrase;
+        }
+
+        if (additionalInfo.lite !== undefined) {
+            lite = additionalInfo.lite;
         }
 
     } else {
@@ -37,7 +42,7 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
 
             //for cases where user provide exact time, captured in bookingInfo and assigned
             console.log('date.start = date.end, recalling make date time phrase with single date');
-            return makeDateTimePhrase(input.start, { sessionStartedAt, includeTimePhrase });
+            return makeDateTimePhrase(input.start, { sessionStartedAt, includeTimePhrase, lite });
 
         } else {
 
@@ -48,19 +53,25 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
                 const startDateStatus = isThisNextWeekOrMore(input.start, sessionStartedAt);
                 const endDateStatus = isThisNextWeekOrMore(input.end, sessionStartedAt);
                 if (startDateStatus === 1 && endDateStatus === 1) { //both are next week date
-                    return `from next ${format(input.start, 'EEEE (d/M)')} to ${format(input.end, 'EEEE (d/M)')}`; //to eliminate weird output like from next wed to next fri
+                    return lite
+                        ? `next ${format(input.start, 'E')} to ${format(input.end, 'E')}`
+                        : `from next ${format(input.start, 'EEEE (d/M)')} to ${format(input.end, 'EEEE (d/M)')}`; //to eliminate weird output like from next wed to next fri
                 } else if (startDateStatus === 2 && endDateStatus === 2) {
-                    return `from ${format(input.start, 'MMMM d')} to ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
+                    return lite
+                        ? `${format(input.start, 'd')}=${format(input.end, 'd MMM')}`
+                        : `from ${format(input.start, 'MMMM d')} to ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
                 } else {
-                    let startDateStr = makeDateTimeStr(input.start, sessionStartedAt);
+                    let startDateStr = makeDateTimeStr(input.start, sessionStartedAt, { lite });
                     if (!(/(?:today|tomorrow)/).test(startDateStr)) {
                         startDateStr = startDateStr.slice(3);
                     }
-                    let endDateStr = makeDateTimeStr(input.end, sessionStartedAt);
+                    let endDateStr = makeDateTimeStr(input.end, sessionStartedAt, { lite });
                     if (!(/(?:today|tomorrow)/).test(endDateStr)) {
                         endDateStr = endDateStr.slice(3);
                     }
-                    return `from ${startDateStr} to ${endDateStr}`;
+                    return lite
+                        ? `${startDateStr} to ${endDateStr}`
+                        : `from ${startDateStr} to ${endDateStr}`;
                 }
 
             } else if (timeDiff >= 24 && timeDiff < 48) {
@@ -71,18 +82,28 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
                 switch (startDateStatus) {
                     case 0:
                         if (isWeekend) {
-                            return `this weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
+                            return lite
+                                ? 'this weekend'
+                                : `this weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
                         } else {
-                            return `on ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
+                            return lite
+                                ? `${format(input.start, 'E')}-${format(input.end, 'E')}`
+                                : `on ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
                         }
                     case 1:
                         if (isWeekend) {
-                            return `next weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
+                            return lite
+                                ? 'next weekend'
+                                : `next weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
                         } else {
-                            return `on next ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
+                            return lite
+                                ? `next ${format(input.start, 'E')}-${format(input.end, 'E')}`
+                                : `on next ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
                         }
                     case 2:
-                        return `on ${format(input.start, 'MMMM d')} and ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
+                        return lite
+                            ? `${format(input.start, 'd')}-${format(input.start, 'd MMM')}`
+                            : `on ${format(input.start, 'MMMM d')} and ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
                     default:
                         throw `Unexpected output ${dateStatus} from isThisNextWeekOrMore`;
                 }
@@ -92,7 +113,7 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
                 if (!includeTimePhrase) {
                     //can just take input.start since timeDiff <24 means is the same day, even though date might be diff in case like 'tomorrow night'
                     //don't pass any timeStr to get output without time
-                    return makeDateTimeStr(input.start, sessionStartedAt);
+                    return makeDateTimeStr(input.start, sessionStartedAt, { lite });
 
                 } else {
 
@@ -119,7 +140,7 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
                         timeStr = `from ${startTimeStr} to ${endTimeStr}`;
                         wDuration = false; //special case to move timeStr to back
                     }
-                    return makeDateTimeStr(input.start, sessionStartedAt, wDuration, timeStr);
+                    return makeDateTimeStr(input.start, sessionStartedAt, { wDuration, timeStr, lite });
 
                 }
             }
@@ -131,7 +152,7 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
         //exact time, could be from user input or showtimes in db
         const timeStr = includeTimePhrase ? makeIndividualTimeStr(input) : undefined;
         //pass undefined to timeStr option to get output without time
-        return makeDateTimeStr(input, sessionStartedAt, false, timeStr);
+        return makeDateTimeStr(input, sessionStartedAt, { wDuration: false, timeStr, lite });
 
     } else {
 
@@ -155,9 +176,19 @@ function makeIndividualTimeStr(input) { //input: Date
 
 //input: Date
 //timeStr : "morning"/"evening" | "at 7 p.m." | "from 1 p.m. to 7 p.m."/"from tomorrow noon to midnight"
-function makeDateTimeStr(input, sessionStartedAt, wDuration = false, timeStr) {
+function makeDateTimeStr(input, sessionStartedAt, config) {
+
+    let wDuration = false;
+    let timeStr;
+    let lite = false;
+    if (config !== undefined) {
+        wDuration = config.wDuration === undefined ? wDuration : config.wDuration;
+        timeStr = config.timeStr === undefined ? timeStr : config.timeStr;
+        lite = config.lite === undefined ? lite : config.lite;
+    }
 
     const daysFromSessionStart = differenceInCalendarDays(input, sessionStartedAt);
+
     let dateTimeStr;
 
     if (daysFromSessionStart < 0) {
@@ -185,7 +216,7 @@ function makeDateTimeStr(input, sessionStartedAt, wDuration = false, timeStr) {
     } else {
         //given daysToSessionStart > 1
         const dateStatus = isThisNextWeekOrMore(input, sessionStartedAt);
-        let dateStr = format(input, 'EEEE (d/M)');
+        let dateStr = lite ? format(input, 'E') : format(input, 'EEEE (d/M)');
         switch (dateStatus) {
             case 0: //before coming sun, or coming sun itself when ask date not sun, don't need to add next
                 dateTimeStr = timeStr === undefined ? `on ${dateStr}` : `on ${dateStr} ${timeStr}`;
@@ -194,7 +225,7 @@ function makeDateTimeStr(input, sessionStartedAt, wDuration = false, timeStr) {
                 dateTimeStr = timeStr === undefined ? `on next ${dateStr}` : `on next ${dateStr} ${timeStr}`;
                 break;
             case 2: //coming coming sun & after, denote with date
-                dateStr = format(input, 'MMMM d (EEE)');
+                dateStr = lite ? format(input, 'd MMM') : format(input, 'MMMM d (EEE)');
                 if (timeStr === undefined) {
                     dateTimeStr = `on ${dateStr}`;
                 } else if (wDuration) {

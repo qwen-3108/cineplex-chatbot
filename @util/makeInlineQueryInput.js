@@ -24,7 +24,7 @@ module.exports = function makeInlineQueryInput(alternativeQuery, bookingInfo) {
                 const { $gte, $lte } = alternativeQuery.dateTime;
                 const start = mapDateTime($gte, bookingInfo.dateTime.sessionStartedAt);
                 const end = mapDateTime($lte, bookingInfo.dateTime.sessionStartedAt);
-                const dateTimeSearchStr = makeDateTimePhrase({ start, end, sessionStartedAt: bookingInfo.dateTime.sessionStartedAt });
+                const dateTimeSearchStr = makeDateTimePhrase({ start, end, sessionStartedAt: bookingInfo.dateTime.sessionStartedAt }, { lite: true });
                 alternativeSearchStr.push(dateTimeSearchStr);
             }
             case 'isPlatinum':

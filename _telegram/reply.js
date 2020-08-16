@@ -43,5 +43,7 @@ module.exports = {
     //rejectedConfirm
     acknowledgeReject: require('./reply/acknowledgeReject'),
     askForMoreInfo: require('./reply/askForMoreInfo'),
-    askToRepeat: require('./reply/askToRepeat')
+    askToRepeat: require('./reply/askToRepeat'),
+    //productQuery
+    narrowSearch: require('./reply/narrowSearch'),
 }

@@ -1,9 +1,10 @@
 const { INLINE_KEYBOARD } = require('../../@global/CONSTANTS');
+const LOGS = require('../../@global/LOGS');
 const Phrases = require('../../@global/PHRASES');
 const calculatePrice = require('../../@util/calculatePrice');
 const post = require('../post');
-const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
 const decideMaxDatePhrase = require('../../@util/decideMaxDatePhrase');
+const makeDetailsStr = require('../../@util/makeDetailsStr');
 
 module.exports = { getMovie, getDateTime, getCinema, getExactSlot, getExperienceOnly, confirmProceed };
 
@@ -24,7 +25,7 @@ async function getDateTime(chat_id, text, maxDate) {
 
 async function getCinema(chat_id, text, bookingInfo, cacheIdentifier) {
 
-    const reply = `${Phrases.ACKNOWLEDGEMENT(text)}Any specific location in mind? These cinemas have tickets for ${bookingInfo.movie.title} ${makeDateTimePhrase(bookingInfo.dateTime)}. Pick one or simply tell me your preferred area :) like "near Jurong East"`;
+    const reply = `${Phrases.ACKNOWLEDGEMENT(text)}Any specific location in mind? These cinemas have tickets for ${makeDetailsStr(bookingInfo)}. Pick one or simply tell me your preferred area :) like "near Jurong East"`;
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Cinemas', switch_inline_query_current_chat: cacheIdentifier }]]
     };
@@ -34,23 +35,7 @@ async function getCinema(chat_id, text, bookingInfo, cacheIdentifier) {
 
 async function getExactSlot(chat_id, text, bookingInfo, cacheIdentifier) {
 
-    const movieStr = bookingInfo.movie.title + ' ';
-
-    let locationStr = '';
-    if (bookingInfo.place !== null) {
-        locationStr = `near ${bookingInfo.place}`;
-    } else if (bookingInfo.cinema.length === 1) {
-        locationStr = `at ${bookingInfo.cinema}`;
-    } else {
-        throw `getExactSlot.js - More than one cinema with no place value in bookingInfo`;
-    }
-
-    let dateTimeStr = '';
-    if (bookingInfo.dateTime.start !== null) {
-        dateTimeStr = makeDateTimePhrase(bookingInfo.dateTime);
-    }
-
-    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Here are the showtimes ${locationStr} for ${movieStr}${dateTimeStr}. Which do you prefer?`;
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Here are the showtimes ${makeDetailsStr(bookingInfo)}. ` + Phrases.PREFERENCE();
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Showtimes', switch_inline_query_current_chat: cacheIdentifier }]]
     };
@@ -74,7 +59,7 @@ async function getExperienceOnly(chat_id, text, bookingInfo, showtimes, cacheIde
         }
     }
 
-    const reply = Phrases.ACKNOWLEDGEMENT(text) + `We have both platinum (S$${platinumPrice.toFixed(2)}) and regular (S$${regularPrice.toFixed(2)}) tickets for ${movie.title} ${makeDateTimePhrase(dateTime)} at ${cinema}. Which ticket type would you like to get?`;
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + `We have both platinum (S$${platinumPrice.toFixed(2)}) and regular (S$${regularPrice.toFixed(2)}) tickets for ${makeDetailsStr(bookingInfo, { ignoreExperience: true })}. Which ticket type would you like to get?`;
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Experiences', switch_inline_query_current_chat: cacheIdentifier }]]
     };
@@ -89,7 +74,7 @@ async function confirmProceed(chat_id, bookingInfo) {
     if (experience === 'Platinum Movie Suites') experienceStr = '(platinum) ';
     if (experience === 'Regular') experienceStr = '(regular) ';
 
-    const text = Phrases.POSITIVE() + `So I'll proceed to get tickets ${experienceStr}for ${movie.title} ${makeDateTimePhrase(dateTime)} at ${cinema}?`;
+    const text = Phrases.POSITIVE() + `So I'll proceed to get tickets ${experienceStr}for ${makeDetailsStr(bookingInfo, { ignoreExperience: true })}?`;
     await post.sendMessage(chat_id, text);
 
 }
