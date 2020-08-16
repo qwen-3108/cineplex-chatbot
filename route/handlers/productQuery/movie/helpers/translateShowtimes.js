@@ -15,12 +15,12 @@ module.exports = async function translateShowtimes({ text, sessionToMutate }) {
         return;
     }
 
-    const reply = PHRASES.ACKNOWLEDGEMENT(text) + `Here are the showtimes ${makeDetailsStr(bookingInfo)}. ` + PHRASES.PREFERENCE();
+    const replyText = PHRASES.ACKNOWLEDGEMENT(text) + `Here are the showtimes ${makeDetailsStr(bookingInfo)}. ` + PHRASES.PREFERENCE();
     const replyMarkup = {
         inline_keyboard: [
             [{ text: `Showtimes · ${bookingInfo.movie.title}`, switch_inline_query_current_chat: makeInlineQueryInput(bookingInfo) }]
         ]
     }
-    await post.sendMessage(chatId, reply, { replyMarkup });
+    await post.sendMessage(chatId, replyText, { replyMarkup });
 
 } 
