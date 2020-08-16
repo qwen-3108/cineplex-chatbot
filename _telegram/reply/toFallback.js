@@ -18,6 +18,9 @@ module.exports = async function toFallback({ chat_id, currentSession }) {
 
     if (counter.fallbackCount === 1) {
         switch (status.main) {
+            case MAIN_STATUS.NARROW_SEARCH:
+                text = Phrases.DONT_UNDERSTAND() + "Let me know if you have any time/place preferences, else you could also say things like 'not particularly', then I will get back to you with all showtimes available :)";
+                break;
             case MAIN_STATUS.PROMPT_MOVIE:
                 text = Phrases.DONT_UNDERSTAND() + "To see the full list of now showing movie, type \n\`@cathay_sg_bot now showing\`";
                 break;

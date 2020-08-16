@@ -4,6 +4,8 @@ const reply = require('../../../../_telegram/reply');
 const post = require('../../../../_telegram/post');
 const LOGS = require('../../../../@global/LOGS');
 const { INTENT, MAIN_STATUS } = require('../../../../@global/CONSTANTS');
+const makeDetailsStr = require('../../../../@util/makeDetailsStr');
+const makeInlineQueryInput = require('../../../../@util/makeInlineQueryInput');
 const SHOWTIME = INTENT.PRODUCT_QUERY.MOVIE.SHOWTIME;
 
 module.exports = async function showtime({ text, intentArr, extractedInfo, sessionToMutate }) {
@@ -36,10 +38,10 @@ module.exports = async function showtime({ text, intentArr, extractedInfo, sessi
             {
                 LOGS.logInfo('user request all showtimes');
                 const { chatId, bookingInfo } = sessionToMutate;
-                const reply = `Okay. Here are all the showtimes for ${bookingInfo.movie.title}. You can type in time/place as you view to filter the showtimes. I'll be back when you've made your choice :)`
+                const reply = `Okay. Here are all the showtimes ${makeDetailsStr(bookingInfo)}. You can type in time/place as you view to filter the showtimes. I'll be back when you've made your choice :)`
                 const replyMarkup = {
                     inline_keyboard: [
-                        [{ text: `Showtimes · ${bookingInfo.movie.title}`, switch_inline_query_current_chat: bookingInfo.movie.title }]
+                        [{ text: `Showtimes · ${bookingInfo.movie.title}`, switch_inline_query_current_chat: makeInlineQueryInput(bookingInfo) }]
                     ]
                 };
                 await post.sendMessage(chatId, reply, { replyMarkup });

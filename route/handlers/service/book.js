@@ -1,4 +1,4 @@
-const { INTENT, SEC_STATUS } = require('../../../@global/CONSTANTS');
+const { INTENT, SEC_STATUS, MAIN_STATUS } = require('../../../@global/CONSTANTS');
 const BOOK = INTENT.SERVICE.BOOK;
 const LOGS = require('../../../@global/LOGS');
 
@@ -7,6 +7,7 @@ const slotFilling = require('./book/helpers/slotFilling');
 const resetBookingInfo = require('../../../@util/resetBookingInfo');
 const confirmEdit = require('../../../_telegram/reply/confirmEdit');
 const seat = require('./book/seat');
+const translateShowtimes = require('../productQuery/movie/helpers/translateShowtimes');
 
 module.exports = async function bookHandler({ text, intentArr, extractedInfo, sessionToMutate }) {
 
@@ -24,7 +25,11 @@ module.exports = async function bookHandler({ text, intentArr, extractedInfo, se
                 }
                 const { ok } = await validateAndMutateInfo({ extractedInfo, sessionToMutate });
                 if (ok) {
-                    await slotFilling({ text, sessionToMutate });
+                    if (sessionToMutate.status.main === MAIN_STATUS.NARROW_SEARCH) {
+                        await translateShowtimes({ text, sessionToMutate });
+                    } else {
+                        await slotFilling({ text, sessionToMutate });
+                    }
                 }
             }
             break;

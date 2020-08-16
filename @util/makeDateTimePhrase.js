@@ -38,114 +38,112 @@ module.exports = function makeDateTimePhrase(input, additionalInfo) {
 
     if (input.start instanceof Date && input.end instanceof Date) {
 
-        if (input.start.getHours() === input.end.getHours()) {
 
+        const timeDiff = differenceInHours(input.end, input.start);
+        console.log('timeDiff between date.start & date.end ', timeDiff);
+        if (timeDiff === 0) {
             //for cases where user provide exact time, captured in bookingInfo and assigned
             console.log('date.start = date.end, recalling make date time phrase with single date');
             return makeDateTimePhrase(input.start, { sessionStartedAt, includeTimePhrase, lite });
 
+        } else if (timeDiff >= 48) {
+            //include time phrase or not is irrelevant because time will not be included in the first place
+            const startDateStatus = isThisNextWeekOrMore(input.start, sessionStartedAt);
+            const endDateStatus = isThisNextWeekOrMore(input.end, sessionStartedAt);
+            if (startDateStatus === 1 && endDateStatus === 1) { //both are next week date
+                return lite
+                    ? `next ${format(input.start, 'E')} to ${format(input.end, 'E')}`
+                    : `from next ${format(input.start, 'EEEE (d/M)')} to ${format(input.end, 'EEEE (d/M)')}`; //to eliminate weird output like from next wed to next fri
+            } else if (startDateStatus === 2 && endDateStatus === 2) {
+                return lite
+                    ? `${format(input.start, 'd')}=${format(input.end, 'd MMM')}`
+                    : `from ${format(input.start, 'MMMM d')} to ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
+            } else {
+                let startDateStr = makeDateTimeStr(input.start, sessionStartedAt, { lite });
+                if (!(/(?:today|tomorrow)/).test(startDateStr)) {
+                    startDateStr = startDateStr.slice(3);
+                }
+                let endDateStr = makeDateTimeStr(input.end, sessionStartedAt, { lite });
+                if (!(/(?:today|tomorrow)/).test(endDateStr)) {
+                    endDateStr = endDateStr.slice(3);
+                }
+                return lite
+                    ? `${startDateStr} to ${endDateStr}`
+                    : `from ${startDateStr} to ${endDateStr}`;
+            }
+
+        } else if (timeDiff >= 24 && timeDiff < 48) {
+
+            //include time phrase or not is irrelevant because time will not be included in the first place
+            const startDateStatus = isThisNextWeekOrMore(input.start, sessionStartedAt);
+            const isWeekend = input.start.getDay() === 6 && input.end.getDay() === 0;
+            switch (startDateStatus) {
+                case 0:
+                    if (isWeekend) {
+                        return lite
+                            ? 'this weekend'
+                            : `this weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
+                    } else {
+                        return lite
+                            ? `${format(input.start, 'E')}-${format(input.end, 'E')}`
+                            : `on ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
+                    }
+                case 1:
+                    if (isWeekend) {
+                        return lite
+                            ? 'next weekend'
+                            : `next weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
+                    } else {
+                        return lite
+                            ? `next ${format(input.start, 'E')}-${format(input.end, 'E')}`
+                            : `on next ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
+                    }
+                case 2:
+                    return lite
+                        ? `${format(input.start, 'd')}-${format(input.start, 'd MMM')}`
+                        : `on ${format(input.start, 'MMMM d')} and ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
+                default:
+                    throw `Unexpected output ${dateStatus} from isThisNextWeekOrMore`;
+            }
+
         } else {
 
-            const timeDiff = differenceInHours(input.end, input.start);
-            console.log('timeDiff between date.start & date.end ', timeDiff);
-            if (timeDiff >= 48) {
-                //include time phrase or not is irrelevant because time will not be included in the first place
-                const startDateStatus = isThisNextWeekOrMore(input.start, sessionStartedAt);
-                const endDateStatus = isThisNextWeekOrMore(input.end, sessionStartedAt);
-                if (startDateStatus === 1 && endDateStatus === 1) { //both are next week date
-                    return lite
-                        ? `next ${format(input.start, 'E')} to ${format(input.end, 'E')}`
-                        : `from next ${format(input.start, 'EEEE (d/M)')} to ${format(input.end, 'EEEE (d/M)')}`; //to eliminate weird output like from next wed to next fri
-                } else if (startDateStatus === 2 && endDateStatus === 2) {
-                    return lite
-                        ? `${format(input.start, 'd')}=${format(input.end, 'd MMM')}`
-                        : `from ${format(input.start, 'MMMM d')} to ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
-                } else {
-                    let startDateStr = makeDateTimeStr(input.start, sessionStartedAt, { lite });
-                    if (!(/(?:today|tomorrow)/).test(startDateStr)) {
-                        startDateStr = startDateStr.slice(3);
-                    }
-                    let endDateStr = makeDateTimeStr(input.end, sessionStartedAt, { lite });
-                    if (!(/(?:today|tomorrow)/).test(endDateStr)) {
-                        endDateStr = endDateStr.slice(3);
-                    }
-                    return lite
-                        ? `${startDateStr} to ${endDateStr}`
-                        : `from ${startDateStr} to ${endDateStr}`;
-                }
-
-            } else if (timeDiff >= 24 && timeDiff < 48) {
-
-                //include time phrase or not is irrelevant because time will not be included in the first place
-                const startDateStatus = isThisNextWeekOrMore(input.start, sessionStartedAt);
-                const isWeekend = input.start.getDay() === 6 && input.end.getDay() === 0;
-                switch (startDateStatus) {
-                    case 0:
-                        if (isWeekend) {
-                            return lite
-                                ? 'this weekend'
-                                : `this weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
-                        } else {
-                            return lite
-                                ? `${format(input.start, 'E')}-${format(input.end, 'E')}`
-                                : `on ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
-                        }
-                    case 1:
-                        if (isWeekend) {
-                            return lite
-                                ? 'next weekend'
-                                : `next weekend (${format(input.start, 'd')}-${format(input.end, 'd MMM')})`;
-                        } else {
-                            return lite
-                                ? `next ${format(input.start, 'E')}-${format(input.end, 'E')}`
-                                : `on next ${format(input.start, 'EEEE (d/M)')} and ${format(input.end, 'EEEE (d/M)')}`;
-                        }
-                    case 2:
-                        return lite
-                            ? `${format(input.start, 'd')}-${format(input.start, 'd MMM')}`
-                            : `on ${format(input.start, 'MMMM d')} and ${format(input.end, 'd')} (${format(input.start, 'E')}-${format(input.end, 'E')})`
-                    default:
-                        throw `Unexpected output ${dateStatus} from isThisNextWeekOrMore`;
-                }
+            if (!includeTimePhrase) {
+                //can just take input.start since timeDiff <24 means is the same day, even though date might be diff in case like 'tomorrow night'
+                //don't pass any timeStr to get output without time
+                return makeDateTimeStr(input.start, sessionStartedAt, { lite });
 
             } else {
 
-                if (!includeTimePhrase) {
-                    //can just take input.start since timeDiff <24 means is the same day, even though date might be diff in case like 'tomorrow night'
-                    //don't pass any timeStr to get output without time
-                    return makeDateTimeStr(input.start, sessionStartedAt, { lite });
-
+                let timeStr;
+                let wDuration = true;
+                //is time duration (morning, afternoon, evening, night) or without time
+                const startHour = input.start.getHours();
+                const endHour = input.end.getHours();
+                const endMinute = input.end.getMinutes();
+                //full day
+                if (startHour === 0 && endHour === 23 && endMinute === 59) {
+                    //let timeStr stay undefined and attach..Date is irrelevant
+                } else if (startHour === 5 && endHour === 11 && endMinute === 59) {
+                    timeStr = 'morning';
+                } else if (startHour === 12 && endHour === 17 && endMinute === 59) {
+                    timeStr = 'afternoon';
+                } else if (startHour === 17 && endHour === 23 && endMinute === 59) {
+                    timeStr = 'evening';
+                } else if (startHour === 19 && endHour === 5 && endMinute === 59) {
+                    timeStr = 'night';
                 } else {
-
-                    let timeStr;
-                    let wDuration = true;
-                    //is time duration (morning, afternoon, evening, night) or without time
-                    const startHour = input.start.getHours();
-                    const endHour = input.end.getHours();
-                    const endMinute = input.end.getMinutes();
-                    //full day
-                    if (startHour === 0 && endHour === 23 && endMinute === 59) {
-                        //let timeStr stay undefined and attach..Date is irrelevant
-                    } else if (startHour === 5 && endHour === 11 && endMinute === 59) {
-                        timeStr = 'morning';
-                    } else if (startHour === 12 && endHour === 17 && endMinute === 59) {
-                        timeStr = 'afternoon';
-                    } else if (startHour === 17 && endHour === 23 && endMinute === 59) {
-                        timeStr = 'evening';
-                    } else if (startHour === 19 && endHour === 5 && endMinute === 59) {
-                        timeStr = 'night';
-                    } else {
-                        const startTimeStr = makeIndividualTimeStr(input.start).slice(3);
-                        const endTimeStr = makeIndividualTimeStr(input.end).slice(3);
-                        timeStr = `from ${startTimeStr} to ${endTimeStr}`;
-                        wDuration = false; //special case to move timeStr to back
-                    }
-                    return makeDateTimeStr(input.start, sessionStartedAt, { wDuration, timeStr, lite });
-
+                    const startTimeStr = makeIndividualTimeStr(input.start).slice(3);
+                    const endTimeStr = makeIndividualTimeStr(input.end).slice(3);
+                    timeStr = `from ${startTimeStr} to ${endTimeStr}`;
+                    wDuration = false; //special case to move timeStr to back
                 }
-            }
+                return makeDateTimeStr(input.start, sessionStartedAt, { wDuration, timeStr, lite });
 
+            }
         }
+
+
 
     } else if (input instanceof Date) {
 
