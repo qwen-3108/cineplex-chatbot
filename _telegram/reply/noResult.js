@@ -1,24 +1,9 @@
 const { NO_RESULT_REASON, INLINE_KEYBOARD } = require('../../@global/CONSTANTS');
-const makeDateTimePhrase = require('../../@util/makeDateTimePhrase');
+const makeDetailsStr = require('../../@util/makeDetailsStr');
 const makeInlineQueryInput = require('../../@util/makeInlineQueryInput');
 const post = require('../post');
 
 module.exports = async function noResult(chat_id, bookingInfo, noResultReason, alternativeQuery) {
-
-    const { movie, dateTime } = bookingInfo;
-    const movieStr = movie.title + ' ';
-
-    let locationStr = '';
-    if (bookingInfo.cinema !== undefined) {
-        locationStr = `at ${bookingInfo.cinema}`;
-    } else if (bookingInfo.place !== undefined) {
-        locationStr = `near ${bookingInfo.place}`;
-    }
-
-    let dateTimeStr = '';
-    if (dateTime !== undefined) {
-        dateTimeStr = makeDateTimePhrase(dateTime) + ' ';
-    }
 
     const suggestionStr = 'But we do have tickets for these showtimes. Does any of these work for you? If not, you can edit the input field to explore other options! :)';
 
@@ -28,7 +13,7 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
 
     switch (noResultReason) {
         case NO_RESULT_REASON.NO_SLOT:
-            text = `I'm afraid we don't have showtime for ${movieStr}${dateTimeStr}${locationStr}. ${suggestionStr}`;
+            text = `I'm afraid we don't have showtime ${makeDetailsStr(bookingInfo)}. ${suggestionStr}`;
             replyMarkup = {
                 inline_keyboard: [[
                     {
@@ -39,7 +24,7 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
             responseCodeforTesting = 'noSlot';
             break;
         case NO_RESULT_REASON.SOLD_OUT:
-            text = `Unfortunately tickets for ${movieStr}${dateTimeStr}${locationStr} are sold out. ${suggestionStr}`;
+            text = `Unfortunately tickets ${makeDetailsStr(bookingInfo)} are sold out. ${suggestionStr}`;
             replyMarkup = {
                 inline_keyboard: [[
                     {

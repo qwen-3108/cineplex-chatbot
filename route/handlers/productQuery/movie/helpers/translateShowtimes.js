@@ -1,5 +1,6 @@
 const LOGS = require('../../../../../@global/LOGS');
 const reply = require('../../../../../_telegram/reply');
+const { checkAvailable } = require('../../../../../_database/query');
 const makeInlineQueryInput = require('../../../../../@util/makeInlineQueryInput');
 const PHRASES = require('../../../../../@global/PHRASES');
 const makeDetailsStr = require('../../../../../@util/makeDetailsStr');
