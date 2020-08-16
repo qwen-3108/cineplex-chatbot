@@ -17,7 +17,7 @@ module.exports = function makeInlineQueryInput(alternativeQuery, bookingInfo) {
                 date.start = mapDateTime(week1Start, bookingInfo.dateTime.sessionStartedAt);
                 date.end = mapDateTime(week2End, bookingInfo.dateTime.sessionStartedAt);
                 date.sessionStartedAt = bookingInfo.dateTime.sessionStartedAt;
-                alternativeSearchStr.push(makeDateTimePhrase(date));
+                alternativeSearchStr.push(makeDateTimePhrase(date, { lite: true }));
                 break;
             }
             case 'dateTime': {
