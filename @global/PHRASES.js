@@ -34,7 +34,7 @@ module.exports = {
         } else if ((/(you have)/i).test(text)) {
             phraseBank = ['Yep. ', 'Yep, we do. '];
         } else {
-            phraseBank = ['Cool. ', 'Great. ', 'Okay. '];
+            phraseBank = ['Okay. '];
         }
         return (phraseBank[Math.floor(Math.random() * phraseBank.length)]);
     },

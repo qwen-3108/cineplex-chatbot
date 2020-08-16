@@ -95,6 +95,7 @@ module.exports = {
                 PRICE: { SELF: 'price' },
                 SHOWTIME: {
                     SELF: 'showtime',
+                    MORE_FILTER: { SELF: 'moreFilter' },
                     ANY: { SELF: 'any' }
                 },
             }

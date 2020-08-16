@@ -16,6 +16,7 @@ module.exports = async function showtime({ text, intentArr, extractedInfo, sessi
 
     switch (intentArr[3]) {
         case undefined:
+        case SHOWTIME.MORE_FILTER.SELF:
             {
                 const { ok } = await validateAndMutateInfo({ extractedInfo, sessionToMutate });
                 if (ok) {
