@@ -150,7 +150,7 @@ describe('inline query: ', () => {
     test('on receive cache query and has cache, should not call resultExpired', async done => {
         expect(resultExpiredSpy).not.toBeCalled();
         resultExpiredSpy.mockClear();
-        await COLLECTIONS.inlineQueryResultCache.remove({ _id: "1234567890" });
+        await COLLECTIONS.inlineQueryResultCache.deleteOne({ _id: "1234567890" });
         done();
     });
 

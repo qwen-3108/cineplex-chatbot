@@ -30,7 +30,7 @@ module.exports = async function getShowtimes(bookingInfo, { projection = {}, off
     } else {
         console.log('> No matching schedules found, determining reason...');
         output.success = false;
-        const { noResultReason, alternativeQuery } = await whyNoSchedules({ combinedQueryInput: combinedQuery, availabilityQueryInput: availabilityQuery });
+        const { noResultReason, alternativeQuery } = await whyNoSchedules(bookingInfo);
         output.noResultReason = noResultReason;
         output.alternativeQuery = alternativeQuery;
         console.log('Reason & alternative query: ', output.noResultReason, JSON.stringify(output.alternativeQuery));

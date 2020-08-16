@@ -1,14 +1,16 @@
-const { addDays, subDays } = require('date-fns');
+const { addDays, subDays, isBefore, differenceInCalendarDays } = require('date-fns');
 
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const { NO_RESULT_REASON } = require('../../@global/CONSTANTS');
+const makeDbQuery = require('../../@util/makeDbQuery');
 
-module.exports = async function whyNoSchedules({ combinedQueryInput, availabilityQueryInput }) {
+module.exports = async function whyNoSchedules(bookingInfo) {
 
-    console.log('whyNoSchedules received input: ', JSON.stringify(combinedQueryInput), JSON.stringify(availabilityQueryInput));
+    const { combinedQuery, availabilityQuery } = makeDbQuery(bookingInfo);
+    // console.log('whyNoSchedules received input: ', JSON.stringify(combinedQueryInput), JSON.stringify(availabilityQueryInput));
     const output = { noResultReason: null, alternativeQuery: null };
-    const combinedQuery = { ...combinedQueryInput };
-    const availabilityQuery = { ...availabilityQueryInput };
+    // const combinedQuery = { ...combinedQueryInput };
+    // const availabilityQuery = { ...availabilityQueryInput };
 
     //try removing pax restriction to check if it's cause ticket sold out
     output.noResultReason = NO_RESULT_REASON.NO_SLOT;
@@ -40,15 +42,27 @@ module.exports = async function whyNoSchedules({ combinedQueryInput, availabilit
             //if got other search criteria, widen
             for (const prop in combinedQuery) {
                 switch (prop) {
+                    case "$or":
                     case "dateTime":
                         if (timesWiden === 0) {
-                            const newEndDate = addDays(combinedQuery.dateTime.$lte, 2);
-                            newEndDate.setHours(6);
-                            const newStartDate = subDays(combinedQuery.dateTime.$gte, 1);
-                            newStartDate.setHours(0);
-                            combinedQuery.dateTime = { $gte: newStartDate, $lte: newEndDate };
+                            const newStartDate = subDays(bookingInfo.dateTime.start, 1);
+                            const newEndDate = addDays(bookingInfo.dateTime.end, 2);
+                            const { combinedQuery: newCombinedQuery, availabilityQuery: newAvailabilityQuery } = makeDbQuery({
+                                movie: { id: null },
+                                dateTime: { start: newStartDate, end: newEndDate, sessionStartedAt: bookingInfo.dateTime.sessionStartedAt },
+                                cinema: [],
+                            });
+                            if (newCombinedQuery.hasOwnProperty('dateTime')) {
+                                combinedQuery.dateTime = newCombinedQuery.dateTime;
+                            } else {
+                                delete combinedQuery.dateTime;
+                                combinedQuery.$or = newCombinedQuery.$or;
+                            }
                         }
-                        if (timesWiden === 1) delete combinedQuery.dateTime;
+                        if (timesWiden === 1) {
+                            delete combinedQuery.dateTime;
+                            delete combinedQuery.$or;
+                        }
                         break;
                     case "cinema":
                         if (timesWiden === 1) delete combinedQuery.cinema;

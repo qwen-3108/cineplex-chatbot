@@ -3,7 +3,7 @@ const makeDateTimePhrase = require("./makeDateTimePhrase");
 
 module.exports = function makeInlineQueryInput(alternativeQuery, bookingInfo) {
 
-    console.log(`Making inline query input. alternativeQuery received: ${alternativeQuery}`);
+    console.log(`Making inline query input. alternativeQuery received: ${JSON.stringify(alternativeQuery)}`);
 
     const alternativeSearchStr = [];
 
@@ -18,6 +18,7 @@ module.exports = function makeInlineQueryInput(alternativeQuery, bookingInfo) {
                 date.end = mapDateTime(week2End, bookingInfo.dateTime.sessionStartedAt);
                 date.sessionStartedAt = bookingInfo.dateTime.sessionStartedAt;
                 alternativeSearchStr.push(makeDateTimePhrase(date));
+                break;
             }
             case 'dateTime': {
                 const { $gte, $lte } = alternativeQuery.dateTime;

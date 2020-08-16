@@ -21,7 +21,7 @@ module.exports = async function checkAvailable(bookingInfo) {
         console.log('> No showtime matches given condition, determining reason...');
         output.available = false;
         //determine no result reason (no slot or sold out)
-        const { noResultReason, alternativeQuery } = await whyNoSchedules({ combinedQuery, availabilityQuery });
+        const { noResultReason, alternativeQuery } = await whyNoSchedules(bookingInfo);
         output.noResultReason = noResultReason;
         output.alternativeQuery = alternativeQuery;
         console.log('Reason & alternative query: ', output.noResultReason, JSON.stringify(output.alternativeQuery));

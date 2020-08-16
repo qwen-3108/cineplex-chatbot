@@ -44,7 +44,7 @@ describe('when no results found based on user input', () => {
     const fakeRes = { end: function () { } };
 
     //spies to test
-    const logErrorSpy = jest.spyOn(LOGS, 'logError').mockImplementation();
+    const logErrorSpy = jest.spyOn(LOGS, 'logError').mockImplementation(function (chatId, error) { console.error(error) });
     const getCinemaSpy = jest.spyOn(reply.fillSlot, 'getCinema');
     const getExactSlotSpy = jest.spyOn(reply.fillSlot, 'getExactSlot');
     const getExperienceOnlySpy = jest.spyOn(reply.fillSlot, 'getExperienceOnly');
@@ -69,6 +69,7 @@ describe('when no results found based on user input', () => {
         });
         test(`& should not get cinema`, () => {
             expect(getCinemaSpy).not.toHaveBeenCalled();
+            getCinemaSpy.mockClear();
         });
     });
 
@@ -89,6 +90,7 @@ describe('when no results found based on user input', () => {
         });
         test(`& should not get exact slot`, () => {
             expect(getExactSlotSpy).not.toHaveBeenCalled();
+            getExactSlotSpy.mockClear();
         });
     });
 
@@ -109,6 +111,7 @@ describe('when no results found based on user input', () => {
         });
         test(`& should not get exact slot`, () => {
             expect(getExactSlotSpy).not.toHaveBeenCalled();
+            getExactSlotSpy.mockClear();
         });
     });
 
@@ -131,6 +134,9 @@ describe('when no results found based on user input', () => {
             expect(getExperienceOnlySpy).not.toHaveBeenCalled();
             expect(warnPlatinumSpy).not.toHaveBeenCalled();
             expect(confirmProceedSpy).not.toHaveBeenCalled();
+            getExperienceOnlySpy.mockClear();
+            warnPlatinumSpy.mockClear();
+            confirmProceedSpy.mockClear();
         });
     });
 
