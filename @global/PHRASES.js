@@ -29,7 +29,7 @@ module.exports = {
             phraseBank = ['No problem :) ', 'Okay :) ', 'Sure :) '];
         } else if ((/(i|please )('d like| would like| want|help)\s(to)?/i).test(text)) {
             phraseBank = ['Okay. '];
-        } else if ((/(what about|how about)/i).test(text)) {
+        } else if ((/(what about|how about|when|where)/i).test(text)) {
             phraseBank = [''];
         } else if ((/(you have)/i).test(text)) {
             phraseBank = ['Yep. ', 'Yep, we do. '];
