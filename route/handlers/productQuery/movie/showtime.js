@@ -29,6 +29,7 @@ module.exports = async function showtime({ text, intentArr, extractedInfo, sessi
                         await reply.narrowSearch(chatId, bookingInfo);
                     } else {
                         LOGS.logInfo(chatId, 'reasonable search range, retrieving showtimes for user');
+                        sessionToMutate.status.main = MAIN_STATUS.GET_TIME_EXP;
                         await translateShowtimes({ text, sessionToMutate });
                     }
                 }
@@ -37,6 +38,7 @@ module.exports = async function showtime({ text, intentArr, extractedInfo, sessi
         case SHOWTIME.ANY.SELF:
             {
                 LOGS.logInfo('user request all showtimes');
+                sessionToMutate.status.main = MAIN_STATUS.GET_TIME_EXP;
                 const { chatId, bookingInfo } = sessionToMutate;
                 const reply = `Okay. Here are all the showtimes ${makeDetailsStr(bookingInfo)}. You can type in time/place as you view to filter the showtimes. I'll be back when you've made your choice :)`
                 const replyMarkup = {

@@ -68,7 +68,7 @@ const combineDateTimeTestCase = [
     [[{ start: new Date('2020-08-23T12:00:00+08:00'), end: new Date('2020-08-23T17:59:00+08:00'), sessionStartedAt: sessionStartedOnMon }], "on the afternoon of August 23 (Sun)"],
     [[{ start: new Date('2020-08-23T17:00:00+08:00'), end: new Date('2020-08-23T23:59:00+08:00'), sessionStartedAt: sessionStartedOnMon }], "on the evening of August 23 (Sun)"],
     [[{ start: new Date('2020-08-23T19:00:00+08:00'), end: new Date('2020-08-24T05:59:00+08:00'), sessionStartedAt: sessionStartedOnMon }], "on the night of August 23 (Sun)"],
-    [[{ start: new Date('2020-08-23T07:00:00+08:00'), end: new Date('2020-08-24T07:00:00+08:00'), sessionStartedAt: sessionStartedOnMon }], "on August 23 (Sun) at 7 a.m."],
+    [[{ start: new Date('2020-08-23T07:00:00+08:00'), end: new Date('2020-08-23T07:00:00+08:00'), sessionStartedAt: sessionStartedOnMon }], "on August 23 (Sun) at 7 a.m."],
     [[{ start: new Date('2020-08-23T14:00:00+08:00'), end: new Date('2020-08-23T16:00:00+08:00'), sessionStartedAt: sessionStartedOnMon }], "on August 23 (Sun) from 2 p.m. to 4 p.m."],
 
 ];

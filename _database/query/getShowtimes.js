@@ -6,7 +6,7 @@ const whyNoSchedules = require('./whyNoSchedules');
 module.exports = async function getShowtimes(bookingInfo, { projection = {}, offset }) {
 
     console.log('Filtering and retrieving showtimes - getShowtimes.js');
-    const output = { success: undefined, showtimes: [], noResultReason: null, alternativeQuery: null };
+    const output = { success: undefined, showtimes: [], noResultReason: null, alternativeBookingInfo: null };
 
     const { combinedQuery, availabilityQuery } = makeDbQuery(bookingInfo);
 
@@ -30,10 +30,10 @@ module.exports = async function getShowtimes(bookingInfo, { projection = {}, off
     } else {
         console.log('> No matching schedules found, determining reason...');
         output.success = false;
-        const { noResultReason, alternativeQuery } = await whyNoSchedules(bookingInfo);
+        const { noResultReason, alternativeBookingInfo } = await whyNoSchedules(bookingInfo);
         output.noResultReason = noResultReason;
-        output.alternativeQuery = alternativeQuery;
-        console.log('Reason & alternative query: ', output.noResultReason, JSON.stringify(output.alternativeQuery));
+        output.alternativeBookingInfo = alternativeBookingInfo;
+        console.log('Reason & alternative booking info: ', output.noResultReason, JSON.stringify(output.alternativeBookingInfo));
         return output;
     }
 }

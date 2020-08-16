@@ -3,14 +3,28 @@ const { addDays, subDays, isBefore, differenceInCalendarDays } = require('date-f
 const { COLLECTIONS } = require('../../@global/COLLECTIONS');
 const { NO_RESULT_REASON } = require('../../@global/CONSTANTS');
 const makeDbQuery = require('../../@util/makeDbQuery');
+const decideMaxDate = require('../../@util/decideMaxDate');
 
 module.exports = async function whyNoSchedules(bookingInfo) {
 
     const { combinedQuery, availabilityQuery } = makeDbQuery(bookingInfo);
-    // console.log('whyNoSchedules received input: ', JSON.stringify(combinedQueryInput), JSON.stringify(availabilityQueryInput));
-    const output = { noResultReason: null, alternativeQuery: null };
-    // const combinedQuery = { ...combinedQueryInput };
-    // const availabilityQuery = { ...availabilityQueryInput };
+
+    //copying bookingInfo to output.alternativeBookingInfo
+    const { movie, dateTime, place, cinema, experience } = bookingInfo;
+    const output = {
+        noResultReason: null,
+        alternativeBookingInfo: {
+            movie: { title: movie.title, id: movie.id, isBlockBuster: movie.isBlockBuster, debutDateTime: new Date(movie.debutDateTime) },
+            dateTime: {
+                start: new Date(dateTime.start),
+                end: new Date(dateTime.end),
+                sessionStartedAt: new Date(dateTime.sessionStartedAt)
+            },
+            place,
+            cinema: [...cinema],
+            experience
+        }
+    };
 
     //try removing pax restriction to check if it's cause ticket sold out
     output.noResultReason = NO_RESULT_REASON.NO_SLOT;
@@ -31,7 +45,7 @@ module.exports = async function whyNoSchedules(bookingInfo) {
     while (alternatives === null) {
         //only movieId and pax left in search criteria
         console.log('Query: ', JSON.stringify(combinedQuery));
-        if (Object.keys(combinedQuery).length === 1 && combinedQuery.hasOwnProperty('movieId')) {
+        if (output.alternativeBookingInfo.dateTime.start === null && output.alternativeBookingInfo.place === null && output.alternativeBookingInfo.cinema.length === 0 && output.alternativeBookingInfo.experience === undefined) {
             output.noResultReason = NO_RESULT_REASON.ALL_SOLD_OUT;
             //if no pax, movie is now showing but no result in schedule, is bug
             if (!availabilityQuery.hasOwnProperty('$expr')) {
@@ -40,46 +54,47 @@ module.exports = async function whyNoSchedules(bookingInfo) {
             break;
         } else {
             //if got other search criteria, widen
-            for (const prop in combinedQuery) {
-                switch (prop) {
-                    case "$or":
-                    case "dateTime":
+            for (const param in output.alternativeBookingInfo) {
+                switch (param) {
+                    case 'dateTime':
                         if (timesWiden === 0) {
-                            const newStartDate = subDays(bookingInfo.dateTime.start, 1);
-                            const newEndDate = addDays(bookingInfo.dateTime.end, 2);
-                            const { combinedQuery: newCombinedQuery, availabilityQuery: newAvailabilityQuery } = makeDbQuery({
-                                movie: { id: null },
-                                dateTime: { start: newStartDate, end: newEndDate, sessionStartedAt: bookingInfo.dateTime.sessionStartedAt },
-                                cinema: [],
-                            });
-                            if (newCombinedQuery.hasOwnProperty('dateTime')) {
-                                combinedQuery.dateTime = newCombinedQuery.dateTime;
-                            } else {
-                                delete combinedQuery.dateTime;
-                                combinedQuery.$or = newCombinedQuery.$or;
+                            const { start, end, sessionStartedAt } = output.alternativeBookingInfo.dateTime;
+                            output.alternativeBookingInfo.dateTime.start = subDays(start, 1);
+                            output.alternativeBookingInfo.dateTime.end = addDays(end, 2);
+                            if (output.alternativeBookingInfo.dateTime.start < sessionStartedAt) {
+                                output.alternativeBookingInfo.dateTime.start = new Date(sessionStartedAt);
+                            }
+                            if (output.alternativeBookingInfo.dateTime.end > decideMaxDate(sessionStartedAt)) {
+                                output.alternativeBookingInfo.dateTime.end = decideMaxDate(sessionStartedAt);
                             }
                         }
                         if (timesWiden === 1) {
-                            delete combinedQuery.dateTime;
-                            delete combinedQuery.$or;
+                            output.alternativeBookingInfo.dateTime.start = null;
+                            output.alternativeBookingInfo.dateTime.end = null;
                         }
                         break;
-                    case "cinema":
-                        if (timesWiden === 1) delete combinedQuery.cinema;
+                    case 'place':
+                        if (timesWiden === 1) {
+                            output.alternativeBookingInfo.place = null;
+                        }
                         break;
-                    case "isPlatinum":
-                        delete combinedQuery.isPlatinum;
+                    case 'cinema':
+                        if (timesWiden === 1) {
+                            output.alternativeBookingInfo.cinema = [];
+                        }
                         break;
-                    case "movieId":
+                    case 'experience':
+                        delete output.alternativeBookingInfo.experience;
+                        break;
                     default:
                         break;
                 }
             }
             timesWiden++;
-            alternatives = await COLLECTIONS.showtimes.findOne({ ...combinedQuery, ...availabilityQuery });
+            const { combinedQuery: newCombinedQuery, availabilityQuery: newAvailabilityQuery } = makeDbQuery(output.alternativeBookingInfo);
+            alternatives = await COLLECTIONS.showtimes.findOne({ ...newCombinedQuery, ...newAvailabilityQuery });
         }
     }
 
-    output.alternativeQuery = { ...combinedQuery, ...availabilityQuery };
     return output;
 }

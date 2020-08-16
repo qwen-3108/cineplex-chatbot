@@ -3,7 +3,7 @@ const makeDetailsStr = require('../../@util/makeDetailsStr');
 const makeInlineQueryInput = require('../../@util/makeInlineQueryInput');
 const post = require('../post');
 
-module.exports = async function noResult(chat_id, bookingInfo, noResultReason, alternativeQuery) {
+module.exports = async function noResult(chat_id, bookingInfo, noResultReason, alternativeBookingInfo) {
 
     const suggestionStr = 'But we do have tickets for these showtimes. Does any of these work for you? If not, you can edit the input field to explore other options! :)';
 
@@ -18,7 +18,7 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
                 inline_keyboard: [[
                     {
                         text: `Showtimes · ${bookingInfo.movie.title}`,
-                        switch_inline_query_current_chat: makeInlineQueryInput(alternativeQuery, bookingInfo)
+                        switch_inline_query_current_chat: makeInlineQueryInput(alternativeBookingInfo)
                     }]]
             };
             responseCodeforTesting = 'noSlot';
@@ -29,7 +29,7 @@ module.exports = async function noResult(chat_id, bookingInfo, noResultReason, a
                 inline_keyboard: [[
                     {
                         text: `Showtimes · ${bookingInfo.movie.title}`,
-                        switch_inline_query_current_chat: makeInlineQueryInput(alternativeQuery, bookingInfo)
+                        switch_inline_query_current_chat: makeInlineQueryInput(alternativeBookingInfo)
                     }]]
             };
             responseCodeforTesting = 'soldOut';

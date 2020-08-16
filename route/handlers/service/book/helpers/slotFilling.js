@@ -37,10 +37,10 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
             case MAIN_STATUS.PROMPT_DATETIME:
                 {
                     LOGS.logInfo(chatId, '-----Prepare to get date time-----');
-                    const { available, noResultReason, alternativeQuery } = await checkAvailable(bookingInfo);
+                    const { available, noResultReason, alternativeBookingInfo } = await checkAvailable(bookingInfo);
                     if (!available) {
                         sessionToMutate.status = { main: null, secondary: null };
-                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
+                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeBookingInfo);
                         return;
                     }
                     await reply.fillSlot.getDateTime(chatId, text, decideMaxDate(sessionToMutate.sessionInfo.startedAt));
@@ -49,10 +49,10 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
             case MAIN_STATUS.GET_CINEMA:
                 {
                     LOGS.logInfo(chatId, '-----Prepare to get cinema-----');
-                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: { cinema: 1 } });
+                    const { success, showtimes, noResultReason, alternativeBookingInfo } = await getShowtimes(bookingInfo, { projection: { cinema: 1 } });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
-                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
+                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeBookingInfo);
                         return;
                     }
                     const cinemaSet = new Set(showtimes.map(showtime => showtime.cinema));
@@ -70,10 +70,10 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
             case MAIN_STATUS.GET_TIME_EXP:
                 {
                     LOGS.logInfo(chatId, '-----Prepare to get exact showtime-----');
-                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {} });
+                    const { success, showtimes, noResultReason, alternativeBookingInfo } = await getShowtimes(bookingInfo, { projection: {} });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
-                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
+                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeBookingInfo);
                         return;
                     }
                     const cacheId = new Date().getTime().toString() + chatId;
@@ -87,10 +87,10 @@ module.exports = async function slotFilling({ text, sessionToMutate }) {
             case MAIN_STATUS.CONFIRM_PROCEED:
                 {
                     LOGS.logInfo(chatId, '-----Prepare to get final confirmation-----')
-                    const { success, showtimes, noResultReason, alternativeQuery } = await getShowtimes(bookingInfo, { projection: {} });
+                    const { success, showtimes, noResultReason, alternativeBookingInfo } = await getShowtimes(bookingInfo, { projection: {} });
                     if (!success) {
                         sessionToMutate.status = { main: null, secondary: null };
-                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeQuery);
+                        await reply.noResult(chatId, bookingInfo, noResultReason, alternativeBookingInfo);
                         return;
                     }
                     if (showtimes.length > 1) {

@@ -31,8 +31,8 @@ module.exports = {
             phraseBank = ['Okay. '];
         } else if ((/(what about|how about)/i).test(text)) {
             phraseBank = [''];
-        } else if ((/(do you have)/i).test(text)) {
-            phraseBank = ['Yep. ', 'We do. '];
+        } else if ((/(you have)/i).test(text)) {
+            phraseBank = ['Yep. ', 'Yep, we do. '];
         } else {
             phraseBank = ['Cool. ', 'Great. ', 'Okay. '];
         }
@@ -94,7 +94,7 @@ module.exports = {
         const phraseBank = [
             "Which would you prefer? ",
             "Which works best for you?",
-            "Which is your choice?"
+            "What's your choice? 😁"
         ];
         return phraseBank[Math.floor(Math.random() * phraseBank.length)];
     }

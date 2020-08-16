@@ -26,6 +26,8 @@ module.exports = async function bookHandler({ text, intentArr, extractedInfo, se
                 const { ok } = await validateAndMutateInfo({ extractedInfo, sessionToMutate });
                 if (ok) {
                     if (sessionToMutate.status.main === MAIN_STATUS.NARROW_SEARCH) {
+                        console.log('is follow up on narrowing search');
+                        sessionToMutate.status.main = MAIN_STATUS.GET_TIME_EXP;
                         await translateShowtimes({ text, sessionToMutate });
                     } else {
                         await slotFilling({ text, sessionToMutate });
