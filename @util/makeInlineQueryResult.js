@@ -1,4 +1,4 @@
-const { format, addDays, isBefore } = require('date-fns');
+const { format, addDays, isBefore, differenceInHours } = require('date-fns');
 
 const { INLINE_KEYBOARD, CINEMA_THUMB, NA_THUMB } = require('../@global/CONSTANTS');
 const calculatePrice = require('./calculatePrice');
@@ -83,7 +83,7 @@ function showtime(showtimeArr, bookingInfo, queryIdentifier) {
         const bBeforeA = isBefore(b.mappedDate, a.mappedDate);
         if (bBeforeA) {
             return 1;
-        } else if (b.mappedDate.getTime() == a.mappedDate.getTime()) {
+        } else if (differenceInHours(a, b) === 0) {
             return 0;
         } else {
             return -1;

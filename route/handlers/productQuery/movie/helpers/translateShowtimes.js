@@ -16,7 +16,12 @@ module.exports = async function translateShowtimes({ text, sessionToMutate }) {
         return;
     }
 
-    const replyText = PHRASES.ACKNOWLEDGEMENT(text) + `Here are the showtimes ${makeDetailsStr(bookingInfo)}. ` + PHRASES.PREFERENCE();
+    const replyPhraseBank = [
+        `Here are the showtimes ${makeDetailsStr(bookingInfo)}. `,
+        `We have the following showtimes ${makeDetailsStr(bookingInfo)}. `,
+        `These showtimes are available ${makeDetailsStr(bookingInfo)}`
+    ];
+    const replyText = PHRASES.ACKNOWLEDGEMENT(text) + replyPhraseBank[Math.floor(Math.random() * (replyPhraseBank.length - 1))] + PHRASES.PREFERENCE();
     const replyMarkup = {
         inline_keyboard: [
             [{ text: `Showtimes · ${bookingInfo.movie.title}`, switch_inline_query_current_chat: makeInlineQueryInput(bookingInfo) }]
