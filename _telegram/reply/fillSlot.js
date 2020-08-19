@@ -35,7 +35,12 @@ async function getCinema(chat_id, text, bookingInfo, cacheIdentifier) {
 
 async function getExactSlot(chat_id, text, bookingInfo, cacheIdentifier) {
 
-    const reply = Phrases.ACKNOWLEDGEMENT(text) + `Here are the showtimes ${makeDetailsStr(bookingInfo)}. ` + Phrases.PREFERENCE();
+    const replyPhraseBank = [
+        `Here are the showtimes ${makeDetailsStr(bookingInfo)}. `,
+        `We have the following showtimes ${makeDetailsStr(bookingInfo)}. `,
+        `These showtimes are available ${makeDetailsStr(bookingInfo)}`
+    ];
+    const reply = Phrases.ACKNOWLEDGEMENT(text) + replyPhraseBank[Math.floor(Math.random() * (replyPhraseBank.length - 1))] + Phrases.PREFERENCE();
     const replyMarkup = {
         inline_keyboard: [[{ text: 'Showtimes', switch_inline_query_current_chat: cacheIdentifier }]]
     };

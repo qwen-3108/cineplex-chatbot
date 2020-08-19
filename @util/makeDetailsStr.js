@@ -36,7 +36,7 @@ module.exports = function makeDetailsStr(bookingInfo, options) {
         throw `getExactSlot.js - More than one cinema with no place value in bookingInfo`;
     }
 
-    if (experience !== undefined && !ignoreExperience) {
+    if (experience === 'Platinum Movie Suites' && !ignoreExperience) {
         experienceStr = ' in Platinum Movie Suites';
     }
 
