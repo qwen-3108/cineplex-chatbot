@@ -7,8 +7,7 @@
     "test": "jest --detectOpenHandles --runInBand",
     "start": "node gcpCredGen.js && node server.js",
     "start_local": "set DB=cinemaDB&&nodemon server.js",
-    "start_test": "set DB=testDB&& nodemon server.js",
-    "ping": "node selfPing.js"
+    "start_test": "set DB=testDB&& nodemon server.js"
   },
   "keywords": [],
   "author": "",

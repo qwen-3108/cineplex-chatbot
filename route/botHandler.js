@@ -31,6 +31,7 @@ module.exports = async function botHandler(req, res) {
         console.log('-----Post req received-----');
         console.log(`Req body: ${JSON.stringify(req.body)}`);
         console.log('No logic defined to handle such request yet');
+        res.end();
         return;
     }
 
