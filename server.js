@@ -1,5 +1,4 @@
 require('dotenv').config();
-require('heroku-self-ping').default(process.env.APP_URL);
 const express = require('express');
 const bodyParser = require('body-parser');
 
