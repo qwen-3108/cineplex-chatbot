@@ -73,10 +73,12 @@ module.exports = async function botHandler(req, res) {
                     post.sendTypingAction(currentSession.chatId);
                     await reply.firstMovieCard(currentSession.chatId);
                     currentSession.counter.seenMovieCard++;
+                    return; //let chosen_inline_result perform saveToDb
                 } else if ((/ticket price/i).test(text) && !currentSession.counter.seenShowtimeCard) {
                     post.sendTypingAction(currentSession.chatId);
                     await reply.firstShowtimeCard(currentSession.chatId);
                     currentSession.counter.seenShowtimeCard++;
+                    return;
                 }
             }
 

@@ -19,7 +19,7 @@ module.exports = async function getShowtimes(bookingInfo, { projection = {}, off
             return output;
         }
     } else {
-        const searchCursor = await COLLECTIONS.showtimes.find({ ...combinedQuery, ...availabilityQuery }, projection).sort({ dateTime: 1 });
+        const searchCursor = await COLLECTIONS.showtimes.find({ ...combinedQuery, ...availabilityQuery }, projection).sort({ dateTime: 1, cinema: 1 });
         output.showtimes = await searchCursor.project(projection).toArray();
     }
 
