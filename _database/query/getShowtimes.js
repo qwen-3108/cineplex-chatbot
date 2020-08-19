@@ -11,7 +11,7 @@ module.exports = async function getShowtimes(bookingInfo, { projection = {}, off
     const { combinedQuery, availabilityQuery } = makeDbQuery(bookingInfo);
 
     if (offset !== undefined) {
-        const searchCursor = await COLLECTIONS.showtimes.find({ ...combinedQuery, ...availabilityQuery }, projection).skip(offset).limit(10).sort({ dateTime: 1 });
+        const searchCursor = await COLLECTIONS.showtimes.find({ ...combinedQuery, ...availabilityQuery }, projection).sort({ dateTime: 1, cinema: 1 }).skip(offset).limit(10);
         output.showtimes = await searchCursor.project(projection).toArray();
         if (output.showtimes.length === 0 && offset !== 0) {
             output.success = false;
