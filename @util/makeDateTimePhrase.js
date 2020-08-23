@@ -1,7 +1,7 @@
 const { addDays, differenceInCalendarDays, format, differenceInHours } = require("date-fns");
 
 //input: Date | { start: Date, end: Date, sessionStartedAt: Date } **can only pass single Date when it comes from db
-//additionalInfo: { sessionStartedAt:Date, includeTimePhrase: Bool }
+//additionalInfo: { sessionStartedAt:Date, includeTimePhrase: Bool, lite: Bool }
 module.exports = function makeDateTimePhrase(input, additionalInfo) {
 
     let sessionStartedAt;
